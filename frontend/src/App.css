@@ -76,3 +76,19 @@
   cursor: pointer;
   text-decoration: underline;
 }
+.hemare-input option {
+  background: #2a1a1f;
+  color: #fff;
+}
+select.hemare-input {
+  cursor: pointer;
+}
+.hemare-destaque-ouro {
+  background: linear-gradient(135deg, #4a3a10, #6b5518);
+  border: 1px solid #e0b000;
+  color: #ffe9a8;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}

@@ -1,4 +1,4 @@
-// Hemare - Tela de cadastro de novo usuario (comecando pelo doador).
+// Hemare - Cadastro simples (so cria a conta). O perfil e preenchido depois do login.
 import { useState } from 'react';
 
 const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
@@ -10,7 +10,6 @@ function Cadastro() {
   const [mensagem, setMensagem] = useState('');
 
   async function cadastrar() {
-    // Confere se preencheu tudo antes de enviar.
     if (!nome || !email || !senha) {
       setMensagem('❌ Preencha todos os campos.');
       return;
@@ -26,11 +25,8 @@ function Cadastro() {
       const dados = await resposta.json();
 
       if (resposta.ok) {
-        setMensagem('✅ Conta criada! Agora você já pode fazer login.');
-        // Limpa os campos apos o sucesso.
-        setNome('');
-        setEmail('');
-        setSenha('');
+        setMensagem('✅ Conta criada! Agora faça login para completar seu perfil.');
+        setNome(''); setEmail(''); setSenha('');
       } else {
         setMensagem('❌ ' + dados.erro);
       }
@@ -42,30 +38,15 @@ function Cadastro() {
   return (
     <div className="hemare-tela">
       <h1 className="hemare-logo">🩸 Hemare</h1>
-      <p className="hemare-sub">Criar conta de doador</p>
+      <p className="hemare-sub">Criar sua conta</p>
 
       <div className="hemare-form">
-        <input
-          className="hemare-input"
-          type="text"
-          placeholder="Nome completo"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-        <input
-          className="hemare-input"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          className="hemare-input"
-          type="password"
-          placeholder="Senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
+        <input className="hemare-input" type="text" placeholder="Nome completo"
+          value={nome} onChange={(e) => setNome(e.target.value)} />
+        <input className="hemare-input" type="email" placeholder="Email"
+          value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input className="hemare-input" type="password" placeholder="Senha"
+          value={senha} onChange={(e) => setSenha(e.target.value)} />
         <button className="hemare-botao" onClick={cadastrar}>Cadastrar</button>
       </div>
 

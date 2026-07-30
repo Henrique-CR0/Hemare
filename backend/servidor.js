@@ -14,6 +14,10 @@ app.use(express.json());
 const rotasAuth = require('./rotas/auth');
 app.use('/auth', rotasAuth);
 
+// Rotas do doador (perfil).
+const rotasDoador = require('./rotas/doador');
+app.use('/doador', rotasDoador);
+
 // Rota de teste: quando alguem acessar a raiz, responde uma mensagem.
 app.get('/', (req, res) => {
     res.json({ mensagem: 'Ola, Hemare! O backend esta funcionando.' });
