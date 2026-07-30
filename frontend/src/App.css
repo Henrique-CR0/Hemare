@@ -59,3 +59,20 @@
   margin-top: 4px;
 }
 .hemare-botao:hover { background: #c92d42; }
+.hemare-troca {
+  text-align: center;
+  margin-top: 18px;
+  color: #c9a9b0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  padding-bottom: 30px;
+}
+.hemare-link {
+  background: none;
+  border: none;
+  color: #e63950;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
