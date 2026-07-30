@@ -27,3 +27,35 @@
   border-radius: 10px;
   font-size: 15px;
 }
+.hemare-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 280px;
+  margin-top: 10px;
+}
+.hemare-input {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #5a3a42;
+  background: #2a1a1f;
+  color: #fff;
+  font-size: 15px;
+}
+.hemare-input::placeholder { color: #9a7a82; }
+.hemare-input:focus {
+  outline: none;
+  border-color: #e63950;
+}
+.hemare-botao {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #e63950;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.hemare-botao:hover { background: #c92d42; }
