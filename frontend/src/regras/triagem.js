@@ -2,7 +2,6 @@
 // Niveis: 'verde' (parece apto), 'amarelo' (atencao/confirme), 'vermelho' (impedimento a verificar).
 
 function avaliarTriagem(r) {
-    // Listas que vamos preencher com os motivos encontrados.
     const impedimentos = []; // definitivos -> vermelho
     const atencoes = [];     // temporarios ou "confirme" -> amarelo
 
@@ -15,10 +14,10 @@ function avaliarTriagem(r) {
     if (r.hepatiteAposOnzeAnos) { impedimentos.push('Você marcou hepatite após os 11 anos de idade.'); }
 
     // --- Requisitos basicos (viram atencao se nao cumpridos) ---
-    if (r.peso !== undefined && r.peso < 50) {
+    if (r.peso !== undefined && r.peso > 0 && r.peso < 50) {
         atencoes.push('Seu peso está abaixo de 50 kg, que é o mínimo para doar.');
     }
-    if (r.idade !== undefined && (r.idade < 16 || r.idade > 69)) {
+    if (r.idade !== undefined && r.idade > 0 && (r.idade < 16 || r.idade > 69)) {
         atencoes.push('A idade para doar é de 16 a 69 anos.');
     }
     if (r.dormiuBem === false) {
@@ -30,7 +29,7 @@ function avaliarTriagem(r) {
 
     // --- Impedimentos temporarios (viram atencao) ---
     if (r.tatuagemRecente) {
-        atencoes.push('Tatuagem/micropigmentação nos últimos 12 meses pede um tempo de espera.');
+        atencoes.push('Tatuagem/micropigmentação nos últimos 12 meses (1 ano) pede um tempo de espera.');
     }
     if (r.gripeResfriado) {
         atencoes.push('Gripe ou resfriado recente pede aguardar alguns dias.');
@@ -49,27 +48,18 @@ function avaliarTriagem(r) {
     if (r.temHipertensao) {
         atencoes.push('Hipertensão: se controlada, geralmente não impede — confirme na triagem.');
     }
+    if (r.usaMedicacaoContinua) {
+        atencoes.push('Você usa medicação contínua/controlada. Muitos remédios não impedem a doação, mas alguns pedem um tempo de espera. NUNCA pare um remédio por conta própria para doar — entre em contato com o hemocentro onde vai doar para confirmar.');
+    }
 
     // --- Decide o nivel final (vermelho tem prioridade) ---
     if (impedimentos.length > 0) {
-        return {
-            nivel: 'vermelho',
-            titulo: 'Há um ponto importante a verificar',
-            motivos: impedimentos
-        };
+        return { nivel: 'vermelho', titulo: 'Há um ponto importante a verificar', motivos: impedimentos };
     }
     if (atencoes.length > 0) {
-        return {
-            nivel: 'amarelo',
-            titulo: 'Atenção: confirme alguns pontos no hemocentro',
-            motivos: atencoes
-        };
+        return { nivel: 'amarelo', titulo: 'Atenção: confirme alguns pontos no hemocentro', motivos: atencoes };
     }
-    return {
-        nivel: 'verde',
-        titulo: 'Tudo indica que você pode doar!',
-        motivos: []
-    };
+    return { nivel: 'verde', titulo: 'Tudo indica que você pode doar!', motivos: [] };
 }
 
 export { avaliarTriagem };

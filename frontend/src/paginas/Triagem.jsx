@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { avaliarTriagem } from '../regras/triagem';
 
-// As perguntas de sim/nao, agrupadas. 'campo' e o nome usado na regra.
 const PERGUNTAS_SAUDE = [
   { campo: 'temHIV', texto: 'Você tem HIV/AIDS?' },
   { campo: 'temHepatiteB', texto: 'Você tem Hepatite B?' },
@@ -22,26 +21,23 @@ const PERGUNTAS_RECENTES = [
 
 const PERGUNTAS_ATENCAO = [
   { campo: 'temDiabetes', texto: 'Você tem diabetes?' },
-  { campo: 'temHipertensao', texto: 'Você tem hipertensão (pressão alta)?' }
+  { campo: 'temHipertensao', texto: 'Você tem hipertensão (pressão alta)?' },
+  { campo: 'usaMedicacaoContinua', texto: 'Você usa algum medicamento controlado ou de uso contínuo?' }
 ];
 
 function Triagem() {
-  // Um objeto guarda TODAS as respostas. Comeca vazio.
   const [respostas, setRespostas] = useState({});
   const [resultado, setResultado] = useState(null);
 
-  // Atualiza uma resposta (marca sim/nao para uma pergunta).
   function responder(campo, valor) {
     setRespostas((anterior) => ({ ...anterior, [campo]: valor }));
   }
 
   function verResultado() {
-    // Chama a regra que ja testamos, passando todas as respostas.
     const r = avaliarTriagem(respostas);
     setResultado(r);
   }
 
-  // Desenha um grupo de perguntas sim/nao.
   function grupo(titulo, perguntas) {
     return (
       <div className="triagem-grupo">
@@ -69,7 +65,6 @@ function Triagem() {
       <p className="hemare-sub">Triagem — será que você pode doar hoje?</p>
 
       <div className="triagem-conteudo">
-        {/* Peso e idade sao numeros */}
         <div className="triagem-grupo">
           <h3 className="triagem-grupo-titulo">Sobre você</h3>
           <div className="triagem-pergunta">
@@ -92,7 +87,6 @@ function Triagem() {
 
         <button className="hemare-botao" onClick={verResultado}>Ver resultado</button>
 
-        {/* O resultado aparece aqui depois de clicar */}
         {resultado && (
           <div className={'triagem-resultado nivel-' + resultado.nivel}>
             <h3>{resultado.titulo}</h3>
