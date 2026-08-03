@@ -1,10 +1,12 @@
 // Hemare - Tela de login.
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Endereco do backend (a porta 3000 do Codespace).
 const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
 
 function Login() {
+  const navegar = useNavigate();
   // Um estado para cada campo do formulario.
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -23,10 +25,10 @@ function Login() {
       const dados = await resposta.json();
 
       if (resposta.ok) {
-        // Deu certo: guarda o token no navegador e avisa.
         localStorage.setItem('hemare_token', dados.token);
         localStorage.setItem('hemare_usuario', JSON.stringify(dados.usuario));
-        setMensagem('✅ Bem-vindo(a), ' + dados.usuario.nome + '!');
+        // Leva o doador para a area dele.
+        navegar('/area-doador');
       } else {
         // Deu erro: mostra a mensagem que o backend devolveu.
         setMensagem('❌ ' + dados.erro);
