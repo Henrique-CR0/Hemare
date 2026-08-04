@@ -201,3 +201,18 @@ select.hemare-input {
 .area-card p { font-size: 14px; color: #c4c4d4; line-height: 1.5; }
 .area-sair { margin-top: 30px; background: none; border: 1px solid #5a3a42; color: #c9a9b0; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-size: 14px; }
 .area-sair:hover { background: #2a1a1f; }
+.locais { max-width: 800px; margin: 0 auto; }
+.locais h1 { text-align: center; margin-bottom: 8px; }
+.locais-sub { text-align: center; color: #c4c4d4; margin-bottom: 24px; }
+.locais-busca { display: flex; gap: 10px; margin-bottom: 24px; }
+.locais-input { flex: 1; padding: 12px 14px; border-radius: 8px; border: 1px solid #5a3a42; background: #2a1a1f; color: #fff; font-size: 15px; }
+.locais-input:focus { outline: none; border-color: #e63950; }
+.locais-info { text-align: center; color: #9a9aae; padding: 20px; }
+.locais-lista { display: flex; flex-direction: column; gap: 14px; }
+.local-card { background: #1c1c26; border-radius: 12px; padding: 18px 20px; border-left: 4px solid #e63950; }
+.local-cabecalho { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.local-cabecalho h3 { font-size: 17px; }
+.local-uf { background: #2a2a38; color: #c4c4d4; font-size: 12px; padding: 3px 10px; border-radius: 12px; }
+.local-cidade { font-size: 14px; color: #e6e6ee; margin-bottom: 4px; }
+.local-endereco { font-size: 13px; color: #9a9aae; margin-bottom: 4px; }
+.local-telefone { font-size: 13px; color: #c4c4d4; }

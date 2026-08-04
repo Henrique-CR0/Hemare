@@ -8,6 +8,12 @@ function Layout() {
       <header className="site-topo">
         <Link to="/" className="site-logo">🩸 Hemare</Link>
         <nav className="site-menu">
+          <nav className="site-menu">
+          <Link to="/">Início</Link>
+          <Link to="/locais">Onde doar</Link>
+          <Link to="/triagem">Posso doar?</Link>
+          <Link to="/login">Entrar</Link>
+        </nav>
           <Link to="/">Início</Link>
           <Link to="/triagem">Posso doar?</Link>
           <Link to="/login">Entrar</Link>
