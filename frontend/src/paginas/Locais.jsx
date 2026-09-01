@@ -1,6 +1,7 @@
-// Hemare - Diretorio de locais com busca por cidade E ordenacao por proximidade (GPS).
+// Hemare - Diretorio de locais: busca por cidade, proximidade (GPS) e mapa visual.
 import { useState, useEffect } from 'react';
 import { calcularDistancia } from '../regras/distancia';
+import MapaLocais from '../componentes/MapaLocais';
 
 const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
 
@@ -8,10 +9,9 @@ function Locais() {
   const [locais, setLocais] = useState([]);
   const [busca, setBusca] = useState('');
   const [carregando, setCarregando] = useState(true);
-  const [minhaPos, setMinhaPos] = useState(null); // {lat, lng} do doador
+  const [minhaPos, setMinhaPos] = useState(null);
   const [avisoGps, setAvisoGps] = useState('');
 
-  // Busca os locais no backend.
   function buscarLocais(termo) {
     setCarregando(true);
     const url = termo
@@ -28,7 +28,6 @@ function Locais() {
     buscarLocais('');
   }, []);
 
-  // Pede a localizacao do doador ao navegador.
   function usarMinhaLocalizacao() {
     if (!navigator.geolocation) {
       setAvisoGps('Seu navegador não suporta geolocalização.');
@@ -46,7 +45,7 @@ function Locais() {
     );
   }
 
-  // Se temos a posicao do doador, calcula a distancia de cada local e ordena.
+  // Calcula distancia e ordena, se tivermos a posicao do doador.
   let listaExibida = locais;
   if (minhaPos) {
     listaExibida = locais
@@ -76,6 +75,9 @@ function Locais() {
 
       <button className="botao-gps" onClick={usarMinhaLocalizacao}>📍 Usar minha localização</button>
       {avisoGps && <p className="locais-info">{avisoGps}</p>}
+
+      {/* O MAPA */}
+      {!carregando && <MapaLocais locais={listaExibida} centro={minhaPos} />}
 
       {carregando ? (
         <p className="locais-info">Carregando...</p>
