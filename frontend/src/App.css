@@ -95,3 +95,6 @@
 .nivel-amarelo { background: #fdf6e3; border-color: #e0b000; color: #7a5c00; }
 .nivel-vermelho { background: #fdeaec; border-color: #e8112d; color: #a01020; }
 .triagem-aviso { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.1); font-size: 12px; opacity: 0.85; line-height: 1.4; }
+.botao-gps { background: #fff; color: #c8102e; border: 1px solid #e8112d; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; margin-bottom: 20px; }
+.botao-gps:hover { background: #ffe9ec; }
+.local-distancia { font-size: 13px; color: #c8102e; font-weight: 600; margin-top: 6px; }

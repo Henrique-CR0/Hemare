@@ -1,5 +1,6 @@
-// Hemare - Pagina do diretorio de locais de doacao (com busca por cidade/estado).
+// Hemare - Diretorio de locais com busca por cidade E ordenacao por proximidade (GPS).
 import { useState, useEffect } from 'react';
+import { calcularDistancia } from '../regras/distancia';
 
 const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
 
@@ -7,8 +8,10 @@ function Locais() {
   const [locais, setLocais] = useState([]);
   const [busca, setBusca] = useState('');
   const [carregando, setCarregando] = useState(true);
+  const [minhaPos, setMinhaPos] = useState(null); // {lat, lng} do doador
+  const [avisoGps, setAvisoGps] = useState('');
 
-  // Busca os locais no backend. Se vier um termo, filtra por cidade/estado.
+  // Busca os locais no backend.
   function buscarLocais(termo) {
     setCarregando(true);
     const url = termo
@@ -21,15 +24,44 @@ function Locais() {
       .catch(() => setCarregando(false));
   }
 
-  // Quando a pagina abre, carrega todos os locais.
   useEffect(() => {
     buscarLocais('');
   }, []);
 
+  // Pede a localizacao do doador ao navegador.
+  function usarMinhaLocalizacao() {
+    if (!navigator.geolocation) {
+      setAvisoGps('Seu navegador não suporta geolocalização.');
+      return;
+    }
+    setAvisoGps('Obtendo sua localização...');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setMinhaPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setAvisoGps('');
+      },
+      () => {
+        setAvisoGps('Não foi possível obter sua localização (permissão negada).');
+      }
+    );
+  }
+
+  // Se temos a posicao do doador, calcula a distancia de cada local e ordena.
+  let listaExibida = locais;
+  if (minhaPos) {
+    listaExibida = locais
+      .filter((l) => l.latitude && l.longitude)
+      .map((l) => ({
+        ...l,
+        distancia: calcularDistancia(minhaPos.lat, minhaPos.lng, Number(l.latitude), Number(l.longitude))
+      }))
+      .sort((a, b) => a.distancia - b.distancia);
+  }
+
   return (
     <div className="locais">
       <h1>Onde doar 🩸</h1>
-      <p className="locais-sub">Encontre um hemocentro perto de você. Busque pela cidade ou estado.</p>
+      <p className="locais-sub">Encontre um hemocentro perto de você. Busque pela cidade ou use sua localização.</p>
 
       <div className="locais-busca">
         <input
@@ -42,13 +74,16 @@ function Locais() {
         <button className="botao-principal" onClick={() => buscarLocais(busca)}>Buscar</button>
       </div>
 
+      <button className="botao-gps" onClick={usarMinhaLocalizacao}>📍 Usar minha localização</button>
+      {avisoGps && <p className="locais-info">{avisoGps}</p>}
+
       {carregando ? (
         <p className="locais-info">Carregando...</p>
-      ) : locais.length === 0 ? (
+      ) : listaExibida.length === 0 ? (
         <p className="locais-info">Nenhum local encontrado para essa busca.</p>
       ) : (
         <div className="locais-lista">
-          {locais.map((local) => (
+          {listaExibida.map((local) => (
             <div key={local.id} className="local-card">
               <div className="local-cabecalho">
                 <h3>{local.nome}</h3>
@@ -57,6 +92,9 @@ function Locais() {
               <p className="local-cidade">📍 {local.cidade}</p>
               {local.endereco && <p className="local-endereco">{local.endereco}</p>}
               {local.telefone && <p className="local-telefone">📞 {local.telefone}</p>}
+              {local.distancia !== undefined && (
+                <p className="local-distancia">🚗 a aproximadamente {local.distancia} km de você</p>
+              )}
             </div>
           ))}
         </div>
