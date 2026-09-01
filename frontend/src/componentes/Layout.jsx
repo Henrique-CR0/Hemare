@@ -14,9 +14,6 @@ function Layout() {
           <Link to="/triagem">Posso doar?</Link>
           <Link to="/login">Entrar</Link>
         </nav>
-          <Link to="/">Início</Link>
-          <Link to="/triagem">Posso doar?</Link>
-          <Link to="/login">Entrar</Link>
         </nav>
       </header>
 
