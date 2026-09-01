@@ -98,3 +98,18 @@
 .botao-gps { background: #fff; color: #c8102e; border: 1px solid #e8112d; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; margin-bottom: 20px; }
 .botao-gps:hover { background: #ffe9ec; }
 .local-distancia { font-size: 13px; color: #c8102e; font-weight: 600; margin-top: 6px; }
+.conteudo-pagina { max-width: 760px; margin: 0 auto; }
+.conteudo-pagina h1 { color: #c8102e; margin-bottom: 10px; }
+.conteudo-intro { color: #6b5054; font-size: 16px; line-height: 1.6; margin-bottom: 26px; }
+.conteudo-bloco { background: #fff; border-radius: 14px; padding: 22px 26px; margin-bottom: 18px; border: 1px solid #f0d4d9; }
+.conteudo-bloco h2 { font-size: 19px; color: #2b0d10; margin-bottom: 12px; }
+.conteudo-bloco ul { padding-left: 20px; }
+.conteudo-bloco li { margin: 8px 0; line-height: 1.5; color: #4a3034; }
+.conteudo-aviso { background: #fdf0f2; border-left: 4px solid #e8112d; padding: 14px 18px; border-radius: 8px; font-size: 13px; color: #8a3a44; line-height: 1.5; margin-top: 10px; }
+.mitos-lista { display: flex; flex-direction: column; gap: 14px; }
+.mito-card { background: #fff; border-radius: 14px; padding: 20px 24px; border: 1px solid #f0d4d9; }
+.mito-pergunta { font-style: italic; font-size: 16px; color: #2b0d10; margin-bottom: 10px; }
+.selo-verdade { display: inline-block; background: #eafaf1; color: #17663d; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 100px; }
+.selo-mito { display: inline-block; background: #fdeaec; color: #c8102e; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 100px; }
+.mito-texto { margin-top: 10px; color: #4a3034; line-height: 1.55; }
+.conteudo-secao { color: #e8112d; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 10px; border-bottom: 2px solid #f0d4d9; padding-bottom: 6px; }

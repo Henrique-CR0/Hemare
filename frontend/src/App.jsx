@@ -1,4 +1,7 @@
 // Hemare - Rotas do site: cada URL leva a uma pagina, todas dentro do Layout.
+import Direitos from './paginas/Direitos';
+import Orientacoes from './paginas/Orientacoes';
+import Mitos from './paginas/Mitos';
 import Locais from './paginas/Locais';
 import RotaProtegida from './componentes/RotaProtegida';
 import AreaDoador from './paginas/AreaDoador';
@@ -24,6 +27,9 @@ function App() {
           <Route path="cadastro" element={<Cadastro />} />
           <Route path="triagem" element={<Triagem />} />
           <Route path="locais" element={<Locais />} />
+          <Route path="orientacoes" element={<Orientacoes />} />
+          <Route path="mitos" element={<Mitos />} />
+          <Route path="direitos" element={<Direitos />} />
         </Route>
       </Routes>
     </BrowserRouter>

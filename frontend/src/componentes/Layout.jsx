@@ -11,6 +11,8 @@ function Layout() {
           <nav className="site-menu">
           <Link to="/">Início</Link>
           <Link to="/locais">Onde doar</Link>
+          <Link to="/orientacoes">Orientações</Link>
+          <Link to="/mitos">Mitos e verdades</Link>
           <Link to="/triagem">Posso doar?</Link>
           <Link to="/login">Entrar</Link>
         </nav>
