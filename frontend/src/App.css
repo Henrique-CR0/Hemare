@@ -113,3 +113,4 @@
 .selo-mito { display: inline-block; background: #fdeaec; color: #c8102e; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 100px; }
 .mito-texto { margin-top: 10px; color: #4a3034; line-height: 1.55; }
 .conteudo-secao { color: #e8112d; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 10px; border-bottom: 2px solid #f0d4d9; padding-bottom: 6px; }
+.selo-depende { display: inline-block; background: #fdf6e3; color: #7a5c00; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 100px; }
