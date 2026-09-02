@@ -108,9 +108,9 @@ select.hemare-input { cursor: pointer; }
 .mito-texto { margin-top: 10px; color: #4a3034; line-height: 1.55; }
 
 /* ===== Triagem (layout de site, em grade) ===== */
-.triagem-pagina { max-width: 1000px; margin: 0 auto; }
+.triagem-pagina { max-width: 1200px; margin: 0 auto; }
 .triagem-cabecalho { text-align: center; margin-bottom: 24px; }
-.triagem-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+.triagem-grade { display: flex; flex-direction: column; gap: 18px; }
 .triagem-grupo { background: #fff; border-radius: 12px; padding: 18px 20px; border: 1px solid #f0d4d9; }
 .triagem-grupo-titulo { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #c8102e; margin: 0 0 12px; }
 .triagem-pergunta { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f4e3e6; font-size: 14px; }
@@ -135,3 +135,24 @@ select.hemare-input { cursor: pointer; }
 .triagem-campo:last-child { border-bottom: none; }
 .triagem-campo .triagem-pergunta { border-bottom: none; }
 .triagem-aviso-campo { color: #c8102e; font-size: 12px; margin: 0 0 8px; padding-left: 2px; }
+/* ===== Auth (login/cadastro) refinado ===== */
+.auth-tela { display: flex; justify-content: center; align-items: flex-start; padding-top: 20px; }
+.auth-card { background: #fff; border-radius: 20px; padding: 40px 36px; width: 380px; max-width: 100%; box-shadow: 0 16px 44px rgba(200,16,46,.12); border: 1px solid #f0d4d9; text-align: center; }
+.auth-gota { font-size: 44px; margin-bottom: 8px; }
+.auth-titulo { color: #c8102e; font-size: 24px; margin-bottom: 6px; }
+.auth-sub { color: #8a6b6f; font-size: 14px; margin-bottom: 24px; }
+.auth-form { display: flex; flex-direction: column; gap: 12px; }
+.auth-input { padding: 13px 16px; border-radius: 10px; border: 1px solid #e6c4ca; background: #fff9fa; color: #2b0d10; font-size: 15px; }
+.auth-input:focus { outline: none; border-color: #e8112d; background: #fff; }
+.auth-botao { padding: 13px; border: none; border-radius: 10px; background: #e8112d; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 4px; }
+.auth-botao:hover { background: #c8102e; }
+.auth-msg { margin-top: 16px; padding: 11px 16px; background: #fff9fa; border: 1px solid #f0d4d9; border-radius: 10px; font-size: 14px; }
+.auth-troca { margin-top: 20px; color: #8a6b6f; font-size: 14px; }
+.auth-troca a { color: #e8112d; font-weight: 600; text-decoration: none; }
+.auth-troca a:hover { text-decoration: underline; }
+
+/* ===== Area do doador refinada ===== */
+.area-saudacao { display: flex; align-items: center; gap: 16px; justify-content: center; margin-bottom: 30px; }
+.area-avatar { width: 60px; height: 60px; border-radius: 50%; background: #ffe9ec; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+.area-saudacao h1 { font-size: 26px; color: #c8102e; margin: 0; text-align: left; }
+.area-card-ic { font-size: 34px; margin-bottom: 10px; }
