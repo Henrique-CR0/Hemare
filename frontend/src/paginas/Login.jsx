@@ -1,19 +1,15 @@
-// Hemare - Tela de login.
+// Hemare - Tela de login (refinada).
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
-// Endereco do backend (a porta 3000 do Codespace).
 const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
 
 function Login() {
   const navegar = useNavigate();
-  // Um estado para cada campo do formulario.
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  // Estado para mostrar mensagens (erro ou sucesso) para o usuario.
   const [mensagem, setMensagem] = useState('');
 
-  // Funcao chamada quando o usuario clica em "Entrar".
   async function fazerLogin() {
     setMensagem('Entrando...');
     try {
@@ -27,10 +23,8 @@ function Login() {
       if (resposta.ok) {
         localStorage.setItem('hemare_token', dados.token);
         localStorage.setItem('hemare_usuario', JSON.stringify(dados.usuario));
-        // Leva o doador para a area dele.
         navegar('/area-doador');
       } else {
-        // Deu erro: mostra a mensagem que o backend devolveu.
         setMensagem('❌ ' + dados.erro);
       }
     } catch (erro) {
@@ -39,29 +33,26 @@ function Login() {
   }
 
   return (
-    <div className="hemare-tela">
-      <h1 className="hemare-logo">🩸 Hemare</h1>
-      <p className="hemare-sub">Entre na sua conta</p>
+    <div className="auth-tela">
+      <div className="auth-card">
+        <div className="auth-gota">🩸</div>
+        <h1 className="auth-titulo">Entrar no Hemare</h1>
+        <p className="auth-sub">Bem-vindo(a) de volta! Acesse sua conta.</p>
 
-      <div className="hemare-form">
-        <input
-          className="hemare-input"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          className="hemare-input"
-          type="password"
-          placeholder="Senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
-        <button className="hemare-botao" onClick={fazerLogin}>Entrar</button>
+        <div className="auth-form">
+          <input className="auth-input" type="email" placeholder="Email"
+            value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input className="auth-input" type="password" placeholder="Senha"
+            value={senha} onChange={(e) => setSenha(e.target.value)} />
+          <button className="auth-botao" onClick={fazerLogin}>Entrar</button>
+        </div>
+
+        {mensagem && <div className="auth-msg">{mensagem}</div>}
+
+        <p className="auth-troca">
+          Não tem conta? <Link to="/cadastro">Cadastre-se</Link>
+        </p>
       </div>
-
-      {mensagem && <div className="hemare-status">{mensagem}</div>}
     </div>
   );
 }

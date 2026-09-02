@@ -1,4 +1,4 @@
-// Hemare - Tela de triagem: o doador responde e recebe uma orientacao (nao diagnostico).
+// Hemare - Tela de triagem: responde e recebe uma orientacao (nao diagnostico).
 import { useState } from 'react';
 import { avaliarTriagem } from '../regras/triagem';
 
@@ -25,17 +25,40 @@ const PERGUNTAS_ATENCAO = [
   { campo: 'usaMedicacaoContinua', texto: 'Você usa algum medicamento controlado ou de uso contínuo?' }
 ];
 
+// Limites ideais para doacao (baseados nos criterios oficiais).
+const IDADE_MIN = 16, IDADE_MAX = 69, PESO_MIN = 50;
+
 function Triagem() {
   const [respostas, setRespostas] = useState({});
   const [resultado, setResultado] = useState(null);
+  const [erro, setErro] = useState('');
 
   function responder(campo, valor) {
     setRespostas((anterior) => ({ ...anterior, [campo]: valor }));
   }
 
+  function responderNumero(campo, valorTexto, max) {
+    let n = Number(valorTexto.replace(/\D/g, ''));
+    if (n > max) n = max;
+    setRespostas((anterior) => ({ ...anterior, [campo]: n }));
+  }
+
+  // Avisos de "fora do ideal" (aparecem embaixo do campo enquanto digita).
+  const avisoIdade = respostas.idade && (respostas.idade < IDADE_MIN || respostas.idade > IDADE_MAX)
+    ? 'Idade para doação: ' + IDADE_MIN + ' a ' + IDADE_MAX + ' anos.'
+    : '';
+  const avisoPeso = respostas.peso && respostas.peso < PESO_MIN
+    ? 'Peso mínimo para doação: ' + PESO_MIN + ' kg.'
+    : '';
+
   function verResultado() {
-    const r = avaliarTriagem(respostas);
-    setResultado(r);
+    if (!respostas.idade || !respostas.peso) {
+      setResultado(null);
+      setErro('⚠️ Preencha pelo menos sua idade e seu peso para ver o resultado.');
+      return;
+    }
+    setErro('');
+    setResultado(avaliarTriagem(respostas));
   }
 
   function grupo(titulo, perguntas) {
@@ -60,32 +83,46 @@ function Triagem() {
   }
 
   return (
-    <div className="triagem-tela">
-      <h1 className="hemare-logo">🩸 Hemare</h1>
-      <p className="hemare-sub">Triagem — será que você pode doar hoje?</p>
+    <div className="triagem-pagina">
+      <div className="triagem-cabecalho">
+        <h1 className="hemare-logo">🩸 Hemare</h1>
+        <p className="hemare-sub">Triagem — será que você pode doar hoje?</p>
+      </div>
 
-      <div className="triagem-conteudo">
+      <div className="triagem-grade">
         <div className="triagem-grupo">
           <h3 className="triagem-grupo-titulo">Sobre você</h3>
-          <div className="triagem-pergunta">
-            <span>Sua idade</span>
-            <input className="triagem-num" type="text" inputMode="numeric" placeholder="anos"
-              value={respostas.idade || ''}
-              onChange={(e) => responder('idade', Number(e.target.value.replace(/\D/g, '')))} />
+
+          <div className="triagem-campo">
+            <div className="triagem-pergunta">
+              <span>Sua idade</span>
+              <input className="triagem-num" type="text" inputMode="numeric" placeholder="anos"
+                value={respostas.idade || ''}
+                onChange={(e) => responderNumero('idade', e.target.value, 120)} />
+            </div>
+            {avisoIdade && <p className="triagem-aviso-campo">{avisoIdade}</p>}
           </div>
-          <div className="triagem-pergunta">
-            <span>Seu peso (kg)</span>
-            <input className="triagem-num" type="text" inputMode="numeric" placeholder="kg"
-              value={respostas.peso || ''}
-              onChange={(e) => responder('peso', Number(e.target.value.replace(/\D/g, '')))} />
+
+          <div className="triagem-campo">
+            <div className="triagem-pergunta">
+              <span>Seu peso (kg)</span>
+              <input className="triagem-num" type="text" inputMode="numeric" placeholder="kg"
+                value={respostas.peso || ''}
+                onChange={(e) => responderNumero('peso', e.target.value, 300)} />
+            </div>
+            {avisoPeso && <p className="triagem-aviso-campo">{avisoPeso}</p>}
           </div>
         </div>
 
         {grupo('Situações recentes', PERGUNTAS_RECENTES)}
         {grupo('Saúde', PERGUNTAS_SAUDE)}
         {grupo('Condições a confirmar', PERGUNTAS_ATENCAO)}
+      </div>
 
-        <button className="hemare-botao" onClick={verResultado}>Ver resultado</button>
+      <div className="triagem-rodape">
+        <button className="hemare-botao triagem-botao" onClick={verResultado}>Ver resultado</button>
+
+        {erro && <div className="triagem-erro">{erro}</div>}
 
         {resultado && (
           <div className={'triagem-resultado nivel-' + resultado.nivel}>
