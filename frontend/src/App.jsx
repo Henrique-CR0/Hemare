@@ -1,5 +1,7 @@
 // Hemare - Rotas do site.
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import PainelHospital from './paginas/PainelHospital';
+import CadastroHospital from './paginas/CadastroHospital';
 import Layout from './componentes/Layout';
 import RotaProtegida from './componentes/RotaProtegida';
 import Inicio from './paginas/Inicio';
@@ -29,6 +31,8 @@ function App() {
           <Route path="direitos" element={<Direitos />} />
           <Route path="area-doador" element={<RotaProtegida><AreaDoador /></RotaProtegida>} />
           <Route path="completar-perfil" element={<RotaProtegida><CompletarPerfil /></RotaProtegida>} />
+          <Route path="cadastro-hospital" element={<CadastroHospital />} />
+          <Route path="painel-hospital" element={<RotaProtegida><PainelHospital /></RotaProtegida>} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -22,6 +22,10 @@ app.use('/doador', rotasDoador);
 const rotasLocais = require('./rotas/locais');
 app.use('/locais', rotasLocais);
 
+// Rotas do hospital.
+const rotasHospital = require('./rotas/hospital');
+app.use('/hospital', rotasHospital);
+
 // Rota de teste: quando alguem acessar a raiz, responde uma mensagem.
 app.get('/', (req, res) => {
     res.json({ mensagem: 'Ola, Hemare! O backend esta funcionando.' });

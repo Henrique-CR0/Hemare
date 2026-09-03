@@ -156,3 +156,26 @@ select.hemare-input { cursor: pointer; }
 .area-avatar { width: 60px; height: 60px; border-radius: 50%; background: #ffe9ec; display: flex; align-items: center; justify-content: center; font-size: 30px; }
 .area-saudacao h1 { font-size: 26px; color: #c8102e; margin: 0; text-align: left; }
 .area-card-ic { font-size: 34px; margin-bottom: 10px; }
+
+/* ===== Painel do hospital ===== */
+.painel { max-width: 800px; margin: 0 auto; }
+.painel h1 { color: #c8102e; margin-bottom: 6px; }
+.painel-sub { color: #8a6b6f; margin-bottom: 24px; }
+.painel-caixa { background: #fff; border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; border: 1px solid #f0d4d9; }
+.painel-caixa h2 { font-size: 18px; color: #2b0d10; margin-bottom: 16px; }
+.painel-form { display: flex; gap: 10px; flex-wrap: wrap; }
+.painel-form .hemare-input { flex: 1; min-width: 160px; }
+.painel-form .hemare-botao { padding: 12px 28px; }
+.painel-msg { margin-top: 14px; padding: 10px 14px; background: #fff9fa; border: 1px solid #f0d4d9; border-radius: 8px; font-size: 14px; }
+.painel-vazio { color: #8a6b6f; font-size: 14px; }
+.nec-lista { display: flex; flex-direction: column; gap: 10px; }
+.nec-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #fff9fa; border-radius: 10px; border: 1px solid #f0d4d9; }
+.nec-tipo { font-size: 20px; font-weight: 800; color: #c8102e; }
+.nec-urgente { background: #e8112d; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px; margin-left: 10px; }
+.nec-botao { background: #e8112d; color: #fff; border: none; padding: 9px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
+.nec-botao:hover { background: #c8102e; }
+.match-info { font-size: 14px; color: #4a3034; margin-bottom: 14px; }
+.match-lista { display: flex; flex-direction: column; gap: 10px; }
+.match-card { display: flex; align-items: center; gap: 16px; padding: 12px 16px; background: #fff9fa; border-radius: 10px; border-left: 4px solid #e8112d; }
+.match-tipo { font-size: 18px; font-weight: 800; color: #c8102e; min-width: 46px; text-align: center; }
+.match-card p { font-size: 13px; color: #8a6b6f; margin: 0; }
