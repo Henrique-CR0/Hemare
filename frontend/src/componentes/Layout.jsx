@@ -29,7 +29,7 @@ function Layout() {
               </div>
             )}
           </div>
-
+          <Link to="/painel-hospital">Para hospitais</Link>
           <Link to="/login" className="menu-entrar">Entrar</Link>
         </nav>
       </header>

@@ -179,3 +179,23 @@ select.hemare-input { cursor: pointer; }
 .match-card { display: flex; align-items: center; gap: 16px; padding: 12px 16px; background: #fff9fa; border-radius: 10px; border-left: 4px solid #e8112d; }
 .match-tipo { font-size: 18px; font-weight: 800; color: #c8102e; min-width: 46px; text-align: center; }
 .match-card p { font-size: 13px; color: #8a6b6f; margin: 0; }
+.auth-troca-hospital { margin-top: 8px; color: #8a6b6f; font-size: 13px; }
+.auth-troca-hospital a { color: #c8102e; font-weight: 600; text-decoration: none; }
+.auth-troca-hospital a:hover { text-decoration: underline; }
+/* ===== Validacoes de cadastro ===== */
+.campo-ok { border-color: #35c47a !important; background: #f2fbf6 !important; }
+.campo-erro { border-color: #e8112d !important; background: #fdf0f2 !important; }
+.campo-aviso { color: #c8102e; font-size: 12px; margin: -6px 0 0; text-align: left; }
+.senha-linha { display: flex; gap: 8px; }
+.senha-input { flex: 1; }
+.senha-olho { background: #fff9fa; border: 1px solid #e6c4ca; border-radius: 10px; width: 46px; cursor: pointer; font-size: 16px; }
+.forca-caixa { display: flex; align-items: center; gap: 10px; margin-top: -4px; }
+.forca-barra { height: 6px; border-radius: 100px; flex: 1; background: #eee; transition: all .2s; }
+.forca-1 { background: #e8112d; width: 33%; }
+.forca-2 { background: #e0b000; width: 66%; }
+.forca-3 { background: #35c47a; width: 100%; }
+.forca-texto { font-size: 12px; font-weight: 600; color: #6b5054; min-width: 44px; }
+.btn-sugerir { background: #fff; color: #c8102e; border: 1px dashed #e8112d; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600; }
+.btn-sugerir:hover { background: #ffe9ec; }
+.perfil-card { width: 440px; }
+.perfil-label { text-align: left; font-size: 13px; font-weight: 600; color: #6b5054; margin: 6px 0 -4px; }

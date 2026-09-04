@@ -14,6 +14,10 @@ router.post('/cadastro', async (req, res) => {
         return res.status(400).json({ erro: 'Preencha nome, email, senha e tipo.' });
     }
 
+        if (senha.length < 8) {
+        return res.status(400).json({ erro: 'A senha deve ter pelo menos 8 caracteres.' });
+    }
+
     try {
         const senhaHash = await bcrypt.hash(senha, 10);
 
