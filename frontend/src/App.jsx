@@ -1,4 +1,5 @@
 // Hemare - Rotas do site.
+import RecuperarSenha from './paginas/RecuperarSenha';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PainelHospital from './paginas/PainelHospital';
 import CadastroHospital from './paginas/CadastroHospital';
@@ -33,6 +34,7 @@ function App() {
           <Route path="completar-perfil" element={<RotaProtegida><CompletarPerfil /></RotaProtegida>} />
           <Route path="cadastro-hospital" element={<CadastroHospital />} />
           <Route path="painel-hospital" element={<RotaProtegida><PainelHospital /></RotaProtegida>} />
+          <Route path="recuperar-senha" element={<RecuperarSenha />} />
         </Route>
       </Routes>
     </BrowserRouter>

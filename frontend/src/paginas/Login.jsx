@@ -49,6 +49,9 @@ function Login() {
 
         {mensagem && <div className="auth-msg">{mensagem}</div>}
 
+        <p className="auth-troca">
+          <Link to="/recuperar-senha">Esqueceu a senha?</Link>
+        </p>
                 <p className="auth-troca">
           Não tem conta? <Link to="/cadastro">Cadastre-se</Link>
         </p>

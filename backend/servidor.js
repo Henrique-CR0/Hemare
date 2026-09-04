@@ -36,3 +36,7 @@ const PORTA = 3000;
 app.listen(PORTA, () => {
     console.log('Servidor Hemare rodando na porta ' + PORTA);
 });
+
+// Rotas de recuperacao de senha.
+const rotasRecuperacao = require('./rotas/recuperacao');
+app.use('/recuperacao', rotasRecuperacao);
