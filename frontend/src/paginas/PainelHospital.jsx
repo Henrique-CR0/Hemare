@@ -1,4 +1,4 @@
-// Hemare - Painel do hospital: publica necessidades e ve os doadores compativeis (match).
+// Hemare - Painel do hospital: publica necessidades, ve doadores compativeis (match) e status.
 import { useState, useEffect } from 'react';
 
 const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
@@ -9,7 +9,8 @@ function PainelHospital() {
   const [tipoSanguineo, setTipoSanguineo] = useState('');
   const [urgencia, setUrgencia] = useState('normal');
   const [mensagem, setMensagem] = useState('');
-  const [match, setMatch] = useState(null); // resultado do match
+  const [match, setMatch] = useState(null);
+  const [dadosHospital, setDadosHospital] = useState(null);
 
   const token = localStorage.getItem('hemare_token');
 
@@ -22,7 +23,16 @@ function PainelHospital() {
       .catch(() => {});
   }
 
-  useEffect(() => { carregarNecessidades(); }, []);
+  useEffect(() => {
+    carregarNecessidades();
+    // Busca os dados do hospital (nome e status de verificacao).
+    fetch(URL_BACKEND + '/hospital/meus-dados', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+      .then((r) => r.json())
+      .then((d) => setDadosHospital(d))
+      .catch(() => {});
+  }, []);
 
   async function publicar() {
     if (!tipoSanguineo) { setMensagem('❌ Escolha o tipo sanguíneo.'); return; }
@@ -46,7 +56,6 @@ function PainelHospital() {
     }
   }
 
-  // Busca os doadores compativeis de uma necessidade.
   async function verMatch(necessidade) {
     setMatch({ carregando: true, necessidade });
     try {
@@ -62,7 +71,17 @@ function PainelHospital() {
 
   return (
     <div className="painel">
-      <h1>🏥 Painel do Hospital</h1>
+      <div className="painel-cabecalho">
+        <h1>🏥 Painel do Hospital</h1>
+        {dadosHospital && (
+          <div className="painel-status">
+            <strong>{dadosHospital.nome}</strong>
+            {dadosHospital.aprovado
+              ? <span className="selo-verificado">✓ Verificado</span>
+              : <span className="selo-pendente">⏳ Verificação pendente</span>}
+          </div>
+        )}
+      </div>
       <p className="painel-sub">Publique uma necessidade de sangue e veja os doadores compatíveis.</p>
 
       {/* Publicar necessidade */}

@@ -114,4 +114,21 @@ router.get('/match/:necessidadeId', autenticar, async (req, res) => {
     }
 });
 
+// DADOS do hospital logado (nome, cidade, status de verificacao).
+router.get('/meus-dados', autenticar, async (req, res) => {
+    const usuarioId = req.usuario.id;
+    try {
+        const r = await pool.query(
+            `SELECT u.nome, h.cidade, h.estado, h.aprovado
+             FROM hospitais h JOIN usuarios u ON u.id = h.usuario_id
+             WHERE h.usuario_id = $1`,
+            [usuarioId]
+        );
+        if (r.rows.length === 0) return res.json(null);
+        res.json(r.rows[0]);
+    } catch (erro) {
+        res.status(500).json({ erro: erro.message });
+    }
+});
+
 module.exports = router;
