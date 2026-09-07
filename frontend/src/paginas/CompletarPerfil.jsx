@@ -1,13 +1,11 @@
-// Hemare - Completar perfil do doador: tipo sanguineo, genero, cidade, nome social e CPF.
+// Hemare - Completar perfil do doador: dados + telefone + escolha de privacidade.
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
-
 const TIPOS_COMUNS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 const RH_NULL = 'Rh nulo (sangue dourado)';
 
-// Valida CPF (algoritmo oficial dos digitos verificadores).
 function cpfValido(cpf) {
   cpf = cpf.replace(/\D/g, '');
   if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
@@ -20,13 +18,15 @@ function cpfValido(cpf) {
   let d2 = (soma * 10) % 11; if (d2 === 10) d2 = 0;
   return d2 === Number(cpf[10]);
 }
-
-// Aplica a mascara 000.000.000-00 enquanto digita.
 function mascaraCpf(v) {
   return v.replace(/\D/g, '').slice(0, 11)
-    .replace(/(\d{3})(\d)/, '$1.$2')
-    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2')
     .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+}
+function mascaraTel(v) {
+  return v.replace(/\D/g, '').slice(0, 11)
+    .replace(/(\d{2})(\d)/, '($1) $2')
+    .replace(/(\d{5})(\d{1,4})$/, '$1-$2');
 }
 
 function CompletarPerfil() {
@@ -36,24 +36,22 @@ function CompletarPerfil() {
   const [cidade, setCidade] = useState('');
   const [nomeSocial, setNomeSocial] = useState('');
   const [cpf, setCpf] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [visibilidade, setVisibilidade] = useState('anonimo');
   const [cpfTocado, setCpfTocado] = useState(false);
   const [mensagem, setMensagem] = useState('');
 
-  const cpfOk = cpf === '' || cpfValido(cpf); // vazio e permitido (opcional-ish)
   const mostrarCpfErro = cpfTocado && cpf !== '' && !cpfValido(cpf);
 
   async function salvarPerfil() {
     if (!tipoSanguineo || !sexo || !cidade) {
-      setMensagem('❌ Preencha tipo sanguíneo, gênero e cidade.');
-      return;
+      setMensagem('❌ Preencha tipo sanguíneo, gênero e cidade.'); return;
     }
-        if (!cpf) {
-      setMensagem('❌ Informe seu CPF.');
-      return;
+    if (!cpf || !cpfValido(cpf)) {
+      setMensagem('❌ Informe um CPF válido.'); return;
     }
-    if (!cpfValido(cpf)) {
-      setMensagem('❌ O CPF informado não é válido.');
-      return;
+    if (visibilidade === 'identificado' && !telefone) {
+      setMensagem('❌ Para aparecer aos hospitais, informe um telefone de contato.'); return;
     }
     setMensagem('Salvando...');
     try {
@@ -61,7 +59,7 @@ function CompletarPerfil() {
       const resposta = await fetch(URL_BACKEND + '/doador/perfil', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ tipoSanguineo, sexo, cidade, nomeSocial, cpf })
+        body: JSON.stringify({ tipoSanguineo, sexo, cidade, nomeSocial, cpf, telefone, visibilidade })
       });
       const dados = await resposta.json();
       if (resposta.ok) {
@@ -83,7 +81,6 @@ function CompletarPerfil() {
         <p className="auth-sub">Esses dados ajudam a te conectar a quem precisa.</p>
 
         <div className="auth-form">
-          {/* Tipo sanguineo */}
           <label className="perfil-label">Tipo sanguíneo *</label>
           <select className="auth-input" value={tipoSanguineo} onChange={(e) => setTipoSanguineo(e.target.value)}>
             <option value="">Selecione...</option>
@@ -92,11 +89,10 @@ function CompletarPerfil() {
           </select>
           {tipoSanguineo === RH_NULL && (
             <div className="hemare-destaque-ouro">
-              🌟 Sangue dourado! É o tipo mais raro do mundo. Nosso time dará atenção especial ao seu cadastro.
+              🌟 Sangue dourado! É o tipo mais raro do mundo. Nosso time dará atenção especial.
             </div>
           )}
 
-          {/* Genero */}
           <label className="perfil-label">Gênero *</label>
           <select className="auth-input" value={sexo} onChange={(e) => setSexo(e.target.value)}>
             <option value="">Selecione...</option>
@@ -104,25 +100,45 @@ function CompletarPerfil() {
             <option value="M">Masculino</option>
           </select>
 
-          {/* Cidade */}
           <label className="perfil-label">Cidade *</label>
           <input className="auth-input" type="text" placeholder="Sua cidade"
             value={cidade} onChange={(e) => setCidade(e.target.value)} />
 
-          {/* Nome social (opcional) */}
           <label className="perfil-label">Nome social (opcional)</label>
           <input className="auth-input" type="text" placeholder="Como você prefere ser chamado(a)"
             value={nomeSocial} onChange={(e) => setNomeSocial(e.target.value)} />
 
-          {/* CPF (opcional, com validacao) */}
           <label className="perfil-label">CPF *</label>
-          <input
-            className={'auth-input' + (mostrarCpfErro ? ' campo-erro' : '')}
+          <input className={'auth-input' + (mostrarCpfErro ? ' campo-erro' : '')}
             type="text" inputMode="numeric" placeholder="000.000.000-00"
-            value={cpf}
-            onChange={(e) => setCpf(mascaraCpf(e.target.value))}
+            value={cpf} onChange={(e) => setCpf(mascaraCpf(e.target.value))}
             onBlur={() => setCpfTocado(true)} />
-          {mostrarCpfErro && <p className="campo-aviso">CPF inválido confira os números.</p>}
+          {mostrarCpfErro && <p className="campo-aviso">CPF inválido — confira os números.</p>}
+
+          <label className="perfil-label">Telefone / WhatsApp</label>
+          <input className="auth-input" type="text" inputMode="numeric" placeholder="(00) 00000-0000"
+            value={telefone} onChange={(e) => setTelefone(mascaraTel(e.target.value))} />
+
+          {/* Escolha de privacidade */}
+          <label className="perfil-label">Privacidade *</label>
+          <div className="privacidade-opcoes">
+            <label className={'priv-opcao' + (visibilidade === 'anonimo' ? ' priv-ativa' : '')}>
+              <input type="radio" name="vis" checked={visibilidade === 'anonimo'}
+                onChange={() => setVisibilidade('anonimo')} />
+              <div>
+                <strong>🔒 Anônimo</strong>
+                <span>Você ajuda sem que hospitais vejam seu nome ou contato.</span>
+              </div>
+            </label>
+            <label className={'priv-opcao' + (visibilidade === 'identificado' ? ' priv-ativa' : '')}>
+              <input type="radio" name="vis" checked={visibilidade === 'identificado'}
+                onChange={() => setVisibilidade('identificado')} />
+              <div>
+                <strong>👋 Identificado</strong>
+                <span>Autorizo hospitais compatíveis a verem meu nome e contato para me convocar.</span>
+              </div>
+            </label>
+          </div>
 
           <button className="auth-botao" onClick={salvarPerfil}>Salvar perfil</button>
         </div>

@@ -7,7 +7,7 @@ const TIPOS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 function PainelHospital() {
   const [necessidades, setNecessidades] = useState([]);
   const [tipoSanguineo, setTipoSanguineo] = useState('');
-  const [urgencia, setUrgencia] = useState('normal');
+  const [urgencia, setUrgencia] = useState('alerta');
   const [mensagem, setMensagem] = useState('');
   const [match, setMatch] = useState(null);
   const [dadosHospital, setDadosHospital] = useState(null);
@@ -69,6 +69,16 @@ function PainelHospital() {
     }
   }
 
+  function rotuloUrgencia(u) {
+    const mapa = {
+      estavel: '🟢 Estável',
+      alerta: '🟡 Alerta',
+      critico: '🔴 Crítico',
+      emergencia: '⚫ Emergência'
+    };
+    return mapa[u] || u;
+  }
+
   return (
     <div className="painel">
       <div className="painel-cabecalho">
@@ -92,9 +102,11 @@ function PainelHospital() {
             <option value="">Tipo sanguíneo necessário...</option>
             {TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
-          <select className="hemare-input" value={urgencia} onChange={(e) => setUrgencia(e.target.value)}>
-            <option value="normal">Urgência normal</option>
-            <option value="urgente">Urgente</option>
+                    <select className="hemare-input" value={urgencia} onChange={(e) => setUrgencia(e.target.value)}>
+            <option value="estavel">🟢 Estável reposição de rotina</option>
+            <option value="alerta">🟡 Alerta estoque baixo</option>
+            <option value="critico">🔴 Crítico poucos dias de estoque</option>
+            <option value="emergencia">⚫ Emergência situação extrema</option>
           </select>
           <button className="hemare-botao" onClick={publicar}>Publicar</button>
         </div>
@@ -110,9 +122,9 @@ function PainelHospital() {
           <div className="nec-lista">
             {necessidades.map((n) => (
               <div key={n.id} className="nec-item">
-                <div>
+                  <div>
                   <span className="nec-tipo">{n.tipo_sanguineo}</span>
-                  {n.urgencia === 'urgente' && <span className="nec-urgente">URGENTE</span>}
+                  <span className={'selo-urg selo-' + n.urgencia}>{rotuloUrgencia(n.urgencia)}</span>
                 </div>
                 <button className="nec-botao" onClick={() => verMatch(n)}>Ver doadores compatíveis</button>
               </div>
@@ -135,13 +147,16 @@ function PainelHospital() {
               {match.doadores.length === 0 ? (
                 <p className="painel-vazio">Nenhum doador compatível cadastrado ainda.</p>
               ) : (
-                <div className="match-lista">
+                                <div className="match-lista">
                   {match.doadores.map((d, i) => (
-                    <div key={i} className="match-card">
+                    <div key={i} className={'match-card' + (d.identificado ? '' : ' match-anonimo')}>
                       <span className="match-tipo">{d.tipo_sanguineo}</span>
-                      <div>
+                      <div className="match-info-doador">
                         <strong>{d.nome}</strong>
                         <p>{d.cidade}</p>
+                        {d.identificado
+                          ? <p className="match-contato">📞 {d.telefone}</p>
+                          : <span className="match-selo-anon">🔒 Contato protegido</span>}
                       </div>
                     </div>
                   ))}

@@ -1,9 +1,25 @@
-// Hemare - Layout base do site: cabecalho (menu com dropdown) + conteudo + rodape.
+// Hemare - Layout base: cabecalho que muda se o usuario esta logado + conteudo + rodape.
 import { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 function Layout() {
   const [abertoAprenda, setAbertoAprenda] = useState(false);
+  const navegar = useNavigate();
+  const local = useLocation();
+
+  // Verifica se ha alguem logado (le o token/usuario guardado).
+  const token = localStorage.getItem('hemare_token');
+  const usuarioSalvo = localStorage.getItem('hemare_usuario');
+  const usuario = usuarioSalvo ? JSON.parse(usuarioSalvo) : null;
+
+  // Para onde vai a "Minha área": hospital vai pro painel, doador pra area dele.
+  const rotaArea = usuario && usuario.tipo === 'hospital' ? '/painel-hospital' : '/area-doador';
+
+  function sair() {
+    localStorage.removeItem('hemare_token');
+    localStorage.removeItem('hemare_usuario');
+    navegar('/');
+  }
 
   return (
     <div className="site">
@@ -29,8 +45,16 @@ function Layout() {
               </div>
             )}
           </div>
-          <Link to="/painel-hospital">Para hospitais</Link>
-          <Link to="/login" className="menu-entrar">Entrar</Link>
+
+          {/* Menu muda conforme o login */}
+          {token ? (
+            <>
+              <Link to={rotaArea}>Minha área</Link>
+              <button className="menu-sair" onClick={sair}>Sair</button>
+            </>
+          ) : (
+            <Link to="/login" className="menu-entrar">Entrar</Link>
+          )}
         </nav>
       </header>
 
@@ -39,7 +63,7 @@ function Layout() {
       </main>
 
       <footer className="site-rodape">
-        <p>Hemare — conectando quem doa a quem precisa 🩸</p>
+        <p>Hemare conectando quem doa a quem precisa 🩸</p>
         <p className="site-rodape-aviso">
           Projeto acadêmico. As informações são orientativas e não substituem a avaliação médica.
         </p>

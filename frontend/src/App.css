@@ -200,3 +200,26 @@ select.hemare-input { cursor: pointer; }
 .perfil-card { width: 440px; }
 .perfil-label { text-align: left; font-size: 13px; font-weight: 600; color: #6b5054; margin: 6px 0 -4px; }
 .aviso-spam { background: #fff8e6; border: 1px solid #f0d488; color: #8a6a1a; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; }
+/* Selos de urgencia (padrao dos hemocentros) */
+.selo-urg { font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 100px; margin-left: 10px; letter-spacing: .5px; }
+.selo-estavel { background: #eafaf1; color: #17663d; }
+.selo-alerta { background: #fdf6e3; color: #8a6a1a; }
+.selo-critico { background: #fdeaec; color: #c8102e; }
+.selo-emergencia { background: #c8102e; color: #fff; animation: pulsar 1.2s ease-in-out infinite; }
+@keyframes pulsar {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(200,16,46,.5); }
+  50% { transform: scale(1.06); box-shadow: 0 0 0 6px rgba(200,16,46,0); }
+}
+.menu-sair { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.5); padding: 7px 16px; border-radius: 100px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.menu-sair:hover { background: rgba(255,255,255,.25); }
+/* Escolha de privacidade */
+.privacidade-opcoes { display: flex; flex-direction: column; gap: 10px; }
+.priv-opcao { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid #e6c4ca; border-radius: 10px; cursor: pointer; text-align: left; }
+.priv-opcao.priv-ativa { border-color: #e8112d; background: #fff9fa; }
+.priv-opcao input { margin-top: 3px; }
+.priv-opcao strong { display: block; font-size: 14px; color: #2b0d10; }
+.priv-opcao span { font-size: 12px; color: #8a6b6f; line-height: 1.4; }
+.match-info-doador { flex: 1; }
+.match-contato { font-size: 13px; color: #17663d; font-weight: 600; margin-top: 4px; }
+.match-anonimo { opacity: 0.75; border-left-color: #b58e95; }
+.match-selo-anon { display: inline-block; font-size: 12px; color: #8a6b6f; background: #f4e3e6; padding: 2px 10px; border-radius: 100px; margin-top: 4px; }
