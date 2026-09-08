@@ -1,4 +1,6 @@
 // Hemare - Rotas do hospital (perfil, necessidades, match).
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
@@ -73,6 +75,47 @@ router.post('/necessidade', autenticar, async (req, res) => {
             'INSERT INTO necessidades (hospital_id, tipo_sanguineo, tipo_doacao, urgencia) VALUES ($1, $2, $3, $4)',
             [hospitalId, tipoSanguineo, tipoDoacao || 'sangue', urgencia || 'normal']
         );
+
+        // Se for urgente, notifica os doadores compativeis e identificados.
+        if (urgencia === 'critico' || urgencia === 'emergencia') {
+            const { doadoresCompativeis } = require('../regras/compatibilidade');
+            const tipos = doadoresCompativeis(tipoSanguineo);
+
+            if (tipos.length > 0) {
+                // Busca doadores compativeis, identificados, com email.
+                const rDoa = await pool.query(
+                    `SELECT u.nome, u.email
+                     FROM doadores d
+                     JOIN usuarios u ON u.id = d.usuario_id
+                     WHERE d.tipo_sanguineo = ANY($1) AND d.visibilidade = 'identificado'`,
+                    [tipos]
+                );
+
+                // Pega o nome do hospital para o email.
+                const rHospNome = await pool.query('SELECT nome FROM usuarios WHERE id = $1', [usuarioId]);
+                const nomeHospital = rHospNome.rows[0] ? rHospNome.rows[0].nome : 'Um hospital';
+
+                // Dispara um email para cada doador (sem travar a resposta).
+                for (const doa of rDoa.rows) {
+                    resend.emails.send({
+                        from: 'Hemare <onboarding@resend.dev>',
+                        to: doa.email,
+                        subject: '🚨 Precisa-se de sangue ' + tipoSanguineo + ' com urgência!',
+                        html: `
+                            <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+                                <h2 style="color: #c8102e;">🩸 Hemare — Chamado urgente</h2>
+                                <p>Olá, ${doa.nome}!</p>
+                                <p><strong>${nomeHospital}</strong> precisa de sangue do tipo
+                                <strong style="color:#c8102e;">${tipoSanguineo}</strong> com urgência.</p>
+                                <p>Seu tipo sanguíneo é compatível! Se você puder doar, sua ajuda pode salvar vidas hoje.</p>
+                                <p style="color:#666; font-size:13px;">Confirme sua aptidão e encontre onde doar no Hemare.</p>
+                            </div>
+                        `
+                    }).catch(() => {}); // silencioso: se um email falhar, nao quebra o resto
+                }
+            }
+        }
+
         res.status(201).json({ mensagem: 'Necessidade publicada!' });
     } catch (erro) {
         res.status(500).json({ erro: 'Erro ao publicar: ' + erro.message });
@@ -130,6 +173,67 @@ router.get('/match/:necessidadeId', autenticar, async (req, res) => {
         });
 
         res.json({ tipoReceptor, tiposCompativeis, doadores });
+    } catch (erro) {
+        res.status(500).json({ erro: erro.message });
+    }
+});
+
+// DEFINIR/ATUALIZAR o nivel de estoque de um tipo sanguineo (hospital logado).
+router.post('/estoque', autenticar, async (req, res) => {
+    const usuarioId = req.usuario.id;
+    const { tipoSanguineo, nivel } = req.body;
+
+    const niveisValidos = ['estavel', 'alerta', 'critico', 'emergencia'];
+    if (!tipoSanguineo || !niveisValidos.includes(nivel)) {
+        return res.status(400).json({ erro: 'Tipo sanguíneo e nível válidos são obrigatórios.' });
+    }
+
+    try {
+        const rHosp = await pool.query('SELECT id FROM hospitais WHERE usuario_id = $1', [usuarioId]);
+        if (rHosp.rows.length === 0) {
+            return res.status(400).json({ erro: 'Complete o perfil do hospital primeiro.' });
+        }
+        const hospitalId = rHosp.rows[0].id;
+
+        await pool.query(
+            `INSERT INTO estoque (hospital_id, tipo_sanguineo, nivel, atualizado_em)
+             VALUES ($1, $2, $3, NOW())
+             ON CONFLICT (hospital_id, tipo_sanguineo)
+             DO UPDATE SET nivel = $3, atualizado_em = NOW()`,
+            [hospitalId, tipoSanguineo, nivel]
+        );
+        res.json({ mensagem: 'Estoque atualizado!' });
+    } catch (erro) {
+        res.status(500).json({ erro: 'Erro ao atualizar estoque: ' + erro.message });
+    }
+});
+
+// LISTAR o estoque do hospital logado.
+router.get('/estoque', autenticar, async (req, res) => {
+    const usuarioId = req.usuario.id;
+    try {
+        const rHosp = await pool.query('SELECT id FROM hospitais WHERE usuario_id = $1', [usuarioId]);
+        if (rHosp.rows.length === 0) return res.json([]);
+        const hospitalId = rHosp.rows[0].id;
+
+        const r = await pool.query('SELECT tipo_sanguineo, nivel FROM estoque WHERE hospital_id = $1', [hospitalId]);
+        res.json(r.rows);
+    } catch (erro) {
+        res.status(500).json({ erro: erro.message });
+    }
+});
+
+// PUBLICO: lista o estoque de todos os hospitais (para o termometro publico).
+router.get('/estoque-publico', async (req, res) => {
+    try {
+        const r = await pool.query(
+            `SELECT u.nome AS hospital, h.cidade, h.estado, e.tipo_sanguineo, e.nivel, e.atualizado_em
+             FROM estoque e
+             JOIN hospitais h ON h.id = e.hospital_id
+             JOIN usuarios u ON u.id = h.usuario_id
+             ORDER BY u.nome, e.tipo_sanguineo`
+        );
+        res.json(r.rows);
     } catch (erro) {
         res.status(500).json({ erro: erro.message });
     }

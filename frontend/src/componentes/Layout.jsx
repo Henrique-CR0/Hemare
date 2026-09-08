@@ -30,6 +30,7 @@ function Layout() {
           <Link to="/">Início</Link>
           <Link to="/locais">Onde doar</Link>
           <Link to="/triagem">Posso doar?</Link>
+          <Link to="/estoque">Termômetro de estoque</Link>
 
           <div
             className="menu-drop"

@@ -1,8 +1,14 @@
-// Hemare - Painel do hospital: publica necessidades, ve doadores compativeis (match) e status.
+// Hemare - Painel do hospital: estoque, necessidades, match e status.
 import { useState, useEffect } from 'react';
 
 const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
 const TIPOS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
+const NIVEIS = [
+  { valor: 'estavel', rotulo: '🟢 Estável' },
+  { valor: 'alerta', rotulo: '🟡 Alerta' },
+  { valor: 'critico', rotulo: '🔴 Crítico' },
+  { valor: 'emergencia', rotulo: '⚫ Emergência' }
+];
 
 function PainelHospital() {
   const [necessidades, setNecessidades] = useState([]);
@@ -11,6 +17,7 @@ function PainelHospital() {
   const [mensagem, setMensagem] = useState('');
   const [match, setMatch] = useState(null);
   const [dadosHospital, setDadosHospital] = useState(null);
+  const [estoque, setEstoque] = useState({}); // { 'A+': 'critico', ... }
 
   const token = localStorage.getItem('hemare_token');
 
@@ -23,9 +30,22 @@ function PainelHospital() {
       .catch(() => {});
   }
 
+  function carregarEstoque() {
+    fetch(URL_BACKEND + '/hospital/estoque', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+      .then((r) => r.json())
+      .then((lista) => {
+        const mapa = {};
+        (Array.isArray(lista) ? lista : []).forEach((e) => { mapa[e.tipo_sanguineo] = e.nivel; });
+        setEstoque(mapa);
+      })
+      .catch(() => {});
+  }
+
   useEffect(() => {
     carregarNecessidades();
-    // Busca os dados do hospital (nome e status de verificacao).
+    carregarEstoque();
     fetch(URL_BACKEND + '/hospital/meus-dados', {
       headers: { 'Authorization': 'Bearer ' + token }
     })
@@ -33,6 +53,18 @@ function PainelHospital() {
       .then((d) => setDadosHospital(d))
       .catch(() => {});
   }, []);
+
+  // Define o nivel de um tipo sanguineo no estoque.
+  async function definirEstoque(tipo, nivel) {
+    setEstoque((atual) => ({ ...atual, [tipo]: nivel })); // atualiza na hora (visual)
+    try {
+      await fetch(URL_BACKEND + '/hospital/estoque', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ tipoSanguineo: tipo, nivel })
+      });
+    } catch (e) { /* silencioso */ }
+  }
 
   async function publicar() {
     if (!tipoSanguineo) { setMensagem('❌ Escolha o tipo sanguíneo.'); return; }
@@ -70,12 +102,7 @@ function PainelHospital() {
   }
 
   function rotuloUrgencia(u) {
-    const mapa = {
-      estavel: '🟢 Estável',
-      alerta: '🟡 Alerta',
-      critico: '🔴 Crítico',
-      emergencia: '⚫ Emergência'
-    };
+    const mapa = { estavel: '🟢 Estável', alerta: '🟡 Alerta', critico: '🔴 Crítico', emergencia: '⚫ Emergência' };
     return mapa[u] || u;
   }
 
@@ -92,7 +119,30 @@ function PainelHospital() {
           </div>
         )}
       </div>
-      <p className="painel-sub">Publique uma necessidade de sangue e veja os doadores compatíveis.</p>
+      <p className="painel-sub">Gerencie seu estoque, publique necessidades e encontre doadores.</p>
+
+      {/* TERMOMETRO DE ESTOQUE */}
+      <div className="painel-caixa">
+        <h2>🌡️ Termômetro de estoque</h2>
+        <p className="estoque-ajuda">Toque no nível de cada tipo sanguíneo para atualizar seu estoque.</p>
+        <div className="estoque-grade">
+          {TIPOS.map((tipo) => (
+            <div key={tipo} className="estoque-linha">
+              <span className={'estoque-tipo nivel-borda-' + (estoque[tipo] || 'estavel')}>{tipo}</span>
+              <div className="estoque-botoes">
+                {NIVEIS.map((n) => (
+                  <button
+                    key={n.valor}
+                    className={'estoque-btn' + (estoque[tipo] === n.valor ? ' est-ativo est-' + n.valor : '')}
+                    onClick={() => definirEstoque(tipo, n.valor)}>
+                    {n.rotulo}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Publicar necessidade */}
       <div className="painel-caixa">
@@ -102,11 +152,11 @@ function PainelHospital() {
             <option value="">Tipo sanguíneo necessário...</option>
             {TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
-                    <select className="hemare-input" value={urgencia} onChange={(e) => setUrgencia(e.target.value)}>
-            <option value="estavel">🟢 Estável reposição de rotina</option>
-            <option value="alerta">🟡 Alerta estoque baixo</option>
-            <option value="critico">🔴 Crítico poucos dias de estoque</option>
-            <option value="emergencia">⚫ Emergência situação extrema</option>
+          <select className="hemare-input" value={urgencia} onChange={(e) => setUrgencia(e.target.value)}>
+            <option value="estavel">🟢 Estável — reposição de rotina</option>
+            <option value="alerta">🟡 Alerta — estoque baixo</option>
+            <option value="critico">🔴 Crítico — poucos dias de estoque</option>
+            <option value="emergencia">⚫ Emergência — situação extrema</option>
           </select>
           <button className="hemare-botao" onClick={publicar}>Publicar</button>
         </div>
@@ -122,7 +172,7 @@ function PainelHospital() {
           <div className="nec-lista">
             {necessidades.map((n) => (
               <div key={n.id} className="nec-item">
-                  <div>
+                <div>
                   <span className="nec-tipo">{n.tipo_sanguineo}</span>
                   <span className={'selo-urg selo-' + n.urgencia}>{rotuloUrgencia(n.urgencia)}</span>
                 </div>
@@ -147,7 +197,7 @@ function PainelHospital() {
               {match.doadores.length === 0 ? (
                 <p className="painel-vazio">Nenhum doador compatível cadastrado ainda.</p>
               ) : (
-                                <div className="match-lista">
+                <div className="match-lista">
                   {match.doadores.map((d, i) => (
                     <div key={i} className={'match-card' + (d.identificado ? '' : ' match-anonimo')}>
                       <span className="match-tipo">{d.tipo_sanguineo}</span>

@@ -223,3 +223,36 @@ select.hemare-input { cursor: pointer; }
 .match-contato { font-size: 13px; color: #17663d; font-weight: 600; margin-top: 4px; }
 .match-anonimo { opacity: 0.75; border-left-color: #b58e95; }
 .match-selo-anon { display: inline-block; font-size: 12px; color: #8a6b6f; background: #f4e3e6; padding: 2px 10px; border-radius: 100px; margin-top: 4px; }
+/* Termometro de estoque */
+.estoque-ajuda { font-size: 13px; color: #8a6b6f; margin-bottom: 14px; }
+.estoque-grade { display: flex; flex-direction: column; gap: 8px; }
+.estoque-linha { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.estoque-tipo { font-size: 16px; font-weight: 800; color: #2b0d10; min-width: 44px; text-align: center; padding: 6px 0; border-radius: 8px; border: 2px solid #eee; }
+.nivel-borda-estavel { border-color: #35c47a; }
+.nivel-borda-alerta { border-color: #e0b000; }
+.nivel-borda-critico { border-color: #e8112d; }
+.nivel-borda-emergencia { border-color: #7a0a17; background: #fdeaec; }
+.estoque-botoes { display: flex; gap: 6px; flex-wrap: wrap; }
+.estoque-btn { padding: 6px 12px; border: 1px solid #e6c4ca; background: #fff; color: #6b5054; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.estoque-btn:hover { background: #fff9fa; }
+.est-ativo { color: #fff; font-weight: 700; border-color: transparent; }
+.est-estavel { background: #35c47a; }
+.est-alerta { background: #e0b000; }
+.est-critico { background: #e8112d; }
+.est-emergencia { background: #7a0a17; }
+/* Termometro publico */
+.estoque-pub { max-width: 820px; margin: 0 auto; }
+.estoque-pub h1 { color: #c8102e; text-align: center; margin-bottom: 8px; }
+.estoque-pub-sub { text-align: center; color: #6b5054; margin-bottom: 20px; line-height: 1.5; }
+.estoque-chamado { background: #fdeaec; border: 1px solid #e8112d; color: #a01020; padding: 14px 18px; border-radius: 12px; text-align: center; margin-bottom: 20px; font-size: 15px; }
+.estoque-cta { display: inline-block; margin-left: 10px; background: #e8112d; color: #fff; padding: 6px 16px; border-radius: 100px; text-decoration: none; font-weight: 600; font-size: 14px; }
+.estoque-pub-lista { display: flex; flex-direction: column; gap: 10px; }
+.estoque-pub-card { display: flex; align-items: center; gap: 16px; background: #fff; border-radius: 12px; padding: 14px 18px; border-left: 6px solid #ccc; }
+.nivel-fundo-estavel { border-left-color: #35c47a; }
+.nivel-fundo-alerta { border-left-color: #e0b000; }
+.nivel-fundo-critico { border-left-color: #e8112d; }
+.nivel-fundo-emergencia { border-left-color: #7a0a17; background: #fff5f5; }
+.epc-tipo { font-size: 22px; font-weight: 800; color: #c8102e; min-width: 50px; text-align: center; }
+.epc-info { flex: 1; }
+.epc-info p { font-size: 13px; color: #8a6b6f; margin: 2px 0 0; }
+.epc-nivel { font-size: 14px; font-weight: 700; }
