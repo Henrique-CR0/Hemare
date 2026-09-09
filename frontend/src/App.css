@@ -256,3 +256,6 @@ select.hemare-input { cursor: pointer; }
 .epc-info { flex: 1; }
 .epc-info p { font-size: 13px; color: #8a6b6f; margin: 2px 0 0; }
 .epc-nivel { font-size: 14px; font-weight: 700; }
+.btn-confirmar { background: #35c47a; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.btn-confirmar:hover { background: #2aa565; }
+.btn-confirmado { background: #d4f0e0; color: #17663d; border: none; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: default; }

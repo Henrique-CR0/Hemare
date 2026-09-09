@@ -1,4 +1,4 @@
-// Hemare - Painel do hospital: estoque, necessidades, match e status.
+// Hemare - Painel do hospital: estoque, necessidades, match, confirmacao de doacao e status.
 import { useState, useEffect } from 'react';
 
 const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
@@ -17,7 +17,8 @@ function PainelHospital() {
   const [mensagem, setMensagem] = useState('');
   const [match, setMatch] = useState(null);
   const [dadosHospital, setDadosHospital] = useState(null);
-  const [estoque, setEstoque] = useState({}); // { 'A+': 'critico', ... }
+  const [estoque, setEstoque] = useState({});
+  const [confirmados, setConfirmados] = useState([]);
 
   const token = localStorage.getItem('hemare_token');
 
@@ -54,9 +55,8 @@ function PainelHospital() {
       .catch(() => {});
   }, []);
 
-  // Define o nivel de um tipo sanguineo no estoque.
   async function definirEstoque(tipo, nivel) {
-    setEstoque((atual) => ({ ...atual, [tipo]: nivel })); // atualiza na hora (visual)
+    setEstoque((atual) => ({ ...atual, [tipo]: nivel }));
     try {
       await fetch(URL_BACKEND + '/hospital/estoque', {
         method: 'POST',
@@ -98,6 +98,23 @@ function PainelHospital() {
       setMatch({ carregando: false, necessidade, ...d });
     } catch (e) {
       setMatch(null);
+    }
+  }
+
+  async function confirmarDoacao(doadorId) {
+    try {
+      const r = await fetch(URL_BACKEND + '/hospital/confirmar-doacao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ doadorId })
+      });
+      const d = await r.json();
+      if (r.ok) {
+        setConfirmados((atual) => [...atual, doadorId]);
+      }
+      alert(r.ok ? d.mensagem : ('Erro: ' + d.erro));
+    } catch (e) {
+      alert('Erro ao confirmar doação.');
     }
   }
 
@@ -208,6 +225,13 @@ function PainelHospital() {
                           ? <p className="match-contato">📞 {d.telefone}</p>
                           : <span className="match-selo-anon">🔒 Contato protegido</span>}
                       </div>
+                      {d.identificado && d.doador_id && (
+                        confirmados.includes(d.doador_id)
+                          ? <button className="btn-confirmado" disabled>✓ Confirmado</button>
+                          : <button className="btn-confirmar" onClick={() => confirmarDoacao(d.doador_id)}>
+                              ✓ Confirmar doação
+                            </button>
+                      )}
                     </div>
                   ))}
                 </div>

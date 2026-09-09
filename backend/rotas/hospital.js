@@ -1,4 +1,4 @@
-// Hemare - Rotas do hospital (perfil, necessidades, match).
+// Hemare - Rotas do hospital (perfil, necessidades, match, estoque, doacoes).
 const { Resend } = require('resend');
 const resend = new Resend(process.env.RESEND_API_KEY);
 const express = require('express');
@@ -78,11 +78,8 @@ router.post('/necessidade', autenticar, async (req, res) => {
 
         // Se for urgente, notifica os doadores compativeis e identificados.
         if (urgencia === 'critico' || urgencia === 'emergencia') {
-            const { doadoresCompativeis } = require('../regras/compatibilidade');
             const tipos = doadoresCompativeis(tipoSanguineo);
-
             if (tipos.length > 0) {
-                // Busca doadores compativeis, identificados, com email.
                 const rDoa = await pool.query(
                     `SELECT u.nome, u.email
                      FROM doadores d
@@ -90,12 +87,9 @@ router.post('/necessidade', autenticar, async (req, res) => {
                      WHERE d.tipo_sanguineo = ANY($1) AND d.visibilidade = 'identificado'`,
                     [tipos]
                 );
-
-                // Pega o nome do hospital para o email.
                 const rHospNome = await pool.query('SELECT nome FROM usuarios WHERE id = $1', [usuarioId]);
                 const nomeHospital = rHospNome.rows[0] ? rHospNome.rows[0].nome : 'Um hospital';
 
-                // Dispara um email para cada doador (sem travar a resposta).
                 for (const doa of rDoa.rows) {
                     resend.emails.send({
                         from: 'Hemare <onboarding@resend.dev>',
@@ -111,7 +105,7 @@ router.post('/necessidade', autenticar, async (req, res) => {
                                 <p style="color:#666; font-size:13px;">Confirme sua aptidão e encontre onde doar no Hemare.</p>
                             </div>
                         `
-                    }).catch(() => {}); // silencioso: se um email falhar, nao quebra o resto
+                    }).catch(() => {});
                 }
             }
         }
@@ -140,7 +134,7 @@ router.get('/necessidades', autenticar, async (req, res) => {
     }
 });
 
-// MATCH: dado o id de uma necessidade, acha os doadores compativeis e aptos.
+// MATCH: dado o id de uma necessidade, acha os doadores compativeis.
 router.get('/match/:necessidadeId', autenticar, async (req, res) => {
     try {
         const rNec = await pool.query('SELECT * FROM necessidades WHERE id = $1', [req.params.necessidadeId]);
@@ -152,18 +146,18 @@ router.get('/match/:necessidadeId', autenticar, async (req, res) => {
             return res.json({ tipoReceptor, tiposCompativeis: [], doadores: [] });
         }
 
-        // Busca doadores compativeis (traz o telefone para decidir o que mostrar).
         const r = await pool.query(
-            `SELECT u.nome, d.tipo_sanguineo, d.cidade, d.visibilidade, d.telefone
+            `SELECT d.id, u.nome, d.tipo_sanguineo, d.cidade, d.visibilidade, d.telefone
              FROM doadores d JOIN usuarios u ON u.id = d.usuario_id
              WHERE d.tipo_sanguineo = ANY($1)`,
             [tiposCompativeis]
         );
 
-        // Minimizacao de dados (LGPD): contato so aparece se o doador consentiu (identificado).
+        // Minimizacao de dados (LGPD): id e contato so aparecem se o doador consentiu.
         const doadores = r.rows.map((doa) => {
             const identificado = doa.visibilidade === 'identificado';
             return {
+                doador_id: identificado ? doa.id : null,
                 nome: identificado ? doa.nome : 'Doador anônimo',
                 tipo_sanguineo: doa.tipo_sanguineo,
                 cidade: doa.cidade,
@@ -175,6 +169,53 @@ router.get('/match/:necessidadeId', autenticar, async (req, res) => {
         res.json({ tipoReceptor, tiposCompativeis, doadores });
     } catch (erro) {
         res.status(500).json({ erro: erro.message });
+    }
+});
+
+// CONFIRMAR DOACAO: o hospital registra que um doador doou hoje.
+router.post('/confirmar-doacao', autenticar, async (req, res) => {
+    const usuarioId = req.usuario.id;
+    const { doadorId } = req.body;
+
+    if (!doadorId) return res.status(400).json({ erro: 'Doador inválido.' });
+
+    const cliente = await pool.connect();
+    try {
+        const rHosp = await cliente.query('SELECT id FROM hospitais WHERE usuario_id = $1', [usuarioId]);
+        if (rHosp.rows.length === 0) {
+            return res.status(400).json({ erro: 'Complete o perfil do hospital primeiro.' });
+        }
+        const hospitalId = rHosp.rows[0].id;
+
+                // Trava: impede confirmar a mesma pessoa duas vezes no mesmo dia.
+        const jaDoou = await cliente.query(
+            'SELECT id FROM doacoes WHERE doador_id = $1 AND data_doacao = CURRENT_DATE',
+            [doadorId]
+        );
+        if (jaDoou.rows.length > 0) {
+            return res.status(400).json({ erro: 'Esta doação já foi confirmada hoje.' });
+        }
+
+        await cliente.query('BEGIN');
+
+        // 1) Registra a doacao.
+        await cliente.query(
+            'INSERT INTO doacoes (doador_id, hospital_id) VALUES ($1, $2)',
+            [doadorId, hospitalId]
+        );
+        // 2) Atualiza a ultima doacao e soma +1 no contador (para radar e gamificacao).
+        await cliente.query(
+            'UPDATE doadores SET ultima_doacao = CURRENT_DATE, total_doacoes = COALESCE(total_doacoes,0) + 1 WHERE id = $1',
+            [doadorId]
+        );
+
+        await cliente.query('COMMIT');
+        res.json({ mensagem: 'Doação confirmada! Obrigado por registrar. 🩸' });
+    } catch (erro) {
+        await cliente.query('ROLLBACK');
+        res.status(500).json({ erro: 'Erro ao confirmar: ' + erro.message });
+    } finally {
+        cliente.release();
     }
 });
 

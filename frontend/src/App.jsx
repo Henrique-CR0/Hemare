@@ -1,4 +1,5 @@
 // Hemare - Rotas do site.
+import VLibras from '@djpfs/react-vlibras';
 import Estoque from './paginas/Estoque';
 import RecuperarSenha from './paginas/RecuperarSenha';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -21,6 +22,7 @@ import './App.css';
 function App() {
   return (
     <BrowserRouter>
+          <VLibras forceOnload={true} />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Inicio />} />
