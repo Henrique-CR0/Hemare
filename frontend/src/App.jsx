@@ -1,4 +1,5 @@
 // Hemare - Rotas do site.
+import Radar from './paginas/Radar';
 import VLibras from '@djpfs/react-vlibras';
 import Estoque from './paginas/Estoque';
 import RecuperarSenha from './paginas/RecuperarSenha';
@@ -39,6 +40,7 @@ function App() {
           <Route path="painel-hospital" element={<RotaProtegida><PainelHospital /></RotaProtegida>} />
           <Route path="recuperar-senha" element={<RecuperarSenha />} />
           <Route path="estoque" element={<Estoque />} />
+          <Route path="radar" element={<RotaProtegida><Radar /></RotaProtegida>} />
         </Route>
       </Routes>
     </BrowserRouter>

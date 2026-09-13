@@ -302,3 +302,19 @@ select.hemare-input { cursor: pointer; }
 .link-pular:focus {
   left: 0;
 }
+/* Radar preditivo */
+.link-radar { display: inline-block; margin-bottom: 20px; color: #c8102e; font-weight: 600; text-decoration: none; }
+.link-radar:hover { text-decoration: underline; }
+.radar-lista { display: flex; flex-direction: column; gap: 16px; }
+.radar-card { background: #fff; border-radius: 14px; padding: 20px 24px; border: 1px solid #f0d4d9; }
+.radar-tipo { font-size: 22px; font-weight: 800; color: #c8102e; margin-bottom: 12px; }
+.radar-barras { display: flex; flex-direction: column; gap: 8px; }
+.radar-linha { display: grid; grid-template-columns: 130px 1fr 30px; align-items: center; gap: 10px; }
+.radar-rotulo { font-size: 13px; color: #6b5054; }
+.radar-barra-fundo { background: #f4e3e6; border-radius: 100px; height: 10px; overflow: hidden; }
+.radar-barra { height: 100%; border-radius: 100px; transition: width .3s; }
+.radar-agora { background: #35c47a; }
+.radar-7d { background: #e0b000; }
+.radar-30d { background: #8fa8d0; }
+.radar-numero { font-size: 13px; font-weight: 700; color: #2b0d10; text-align: right; }
+.radar-alerta { display: inline-block; margin-top: 10px; background: #fdeaec; color: #c8102e; font-size: 12px; padding: 4px 12px; border-radius: 100px; }

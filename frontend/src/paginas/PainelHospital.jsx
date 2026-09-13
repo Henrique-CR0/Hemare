@@ -1,5 +1,6 @@
-// Hemare - Painel do hospital: estoque, necessidades, match, confirmacao de doacao e status.
+// Hemare - Painel do hospital: estoque, necessidades, match, confirmacao de doacao, radar e status.
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
 const TIPOS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
@@ -137,6 +138,8 @@ function PainelHospital() {
         )}
       </div>
       <p className="painel-sub">Gerencie seu estoque, publique necessidades e encontre doadores.</p>
+
+      <Link to="/radar" className="link-radar">🔮 Ver radar preditivo de aptidão →</Link>
 
       {/* TERMOMETRO DE ESTOQUE */}
       <div className="painel-caixa">

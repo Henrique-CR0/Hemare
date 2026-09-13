@@ -40,3 +40,7 @@ app.listen(PORTA, () => {
 // Rotas de recuperacao de senha.
 const rotasRecuperacao = require('./rotas/recuperacao');
 app.use('/recuperacao', rotasRecuperacao);
+
+// Rotas do radar preditivo.
+const rotasRadar = require('./rotas/radar');
+app.use('/radar', rotasRadar);
