@@ -259,3 +259,30 @@ select.hemare-input { cursor: pointer; }
 .btn-confirmar { background: #35c47a; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap; }
 .btn-confirmar:hover { background: #2aa565; }
 .btn-confirmado { background: #d4f0e0; color: #17663d; border: none; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: default; }
+/* Botao de acessibilidade */
+.btn-acessibilidade { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.4); padding: 6px 12px; border-radius: 100px; font-size: 13px; cursor: pointer; }
+.btn-acessibilidade:hover { background: rgba(255,255,255,.28); }
+
+/* ===== MODO ALTO CONTRASTE (padrao eMAG: fundo preto, texto branco, links amarelos) ===== */
+.alto-contraste, .alto-contraste .site-conteudo { background: #000 !important; color: #fff !important; }
+.alto-contraste .site-topo, .alto-contraste .site-rodape { background: #000 !important; border-bottom: 2px solid #fff; }
+.alto-contraste .site-logo, .alto-contraste .site-menu > a, .alto-contraste .site-menu > a:hover,
+.alto-contraste .menu-drop-titulo { color: #fff !important; }
+.alto-contraste a, .alto-contraste .hemare-link, .alto-contraste .auth-troca a { color: #ffff00 !important; }
+.alto-contraste .painel-caixa, .alto-contraste .auth-card, .alto-contraste .conteudo-bloco,
+.alto-contraste .mito-card, .alto-contraste .triagem-grupo, .alto-contraste .local-card,
+.alto-contraste .lcard, .alto-contraste .area-card, .alto-contraste .estoque-pub-card {
+  background: #000 !important; color: #fff !important; border: 1px solid #fff !important;
+}
+.alto-contraste h1, .alto-contraste h2, .alto-contraste h3, .alto-contraste strong,
+.alto-contraste p, .alto-contraste span, .alto-contraste label, .alto-contraste li {
+  color: #fff !important;
+}
+.alto-contraste input, .alto-contraste select {
+  background: #000 !important; color: #fff !important; border: 1px solid #fff !important;
+}
+.alto-contraste .hemare-botao, .alto-contraste .auth-botao, .alto-contraste .botao-principal,
+.alto-contraste .nec-botao, .alto-contraste .btn-confirmar {
+  background: #ffff00 !important; color: #000 !important; border: 2px solid #fff !important;
+}
+.alto-contraste .landing-hero { background: #000 !important; }
