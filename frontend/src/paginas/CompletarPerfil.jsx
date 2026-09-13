@@ -1,4 +1,4 @@
-// Hemare - Completar perfil do doador: dados + telefone + escolha de privacidade.
+// Hemare - Completar perfil do doador: dados + telefone + escolha de privacidade + Enter funcionando.
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -80,7 +80,7 @@ function CompletarPerfil() {
         <h1 className="auth-titulo">Complete seu perfil</h1>
         <p className="auth-sub">Esses dados ajudam a te conectar a quem precisa.</p>
 
-        <div className="auth-form">
+        <form className="auth-form" onSubmit={(e) => { e.preventDefault(); salvarPerfil(); }}>
           <label className="perfil-label">Tipo sanguíneo *</label>
           <select className="auth-input" value={tipoSanguineo} onChange={(e) => setTipoSanguineo(e.target.value)}>
             <option value="">Selecione...</option>
@@ -119,7 +119,6 @@ function CompletarPerfil() {
           <input className="auth-input" type="text" inputMode="numeric" placeholder="(00) 00000-0000"
             value={telefone} onChange={(e) => setTelefone(mascaraTel(e.target.value))} />
 
-          {/* Escolha de privacidade */}
           <label className="perfil-label">Privacidade *</label>
           <div className="privacidade-opcoes">
             <label className={'priv-opcao' + (visibilidade === 'anonimo' ? ' priv-ativa' : '')}>
@@ -140,8 +139,8 @@ function CompletarPerfil() {
             </label>
           </div>
 
-          <button className="auth-botao" onClick={salvarPerfil}>Salvar perfil</button>
-        </div>
+          <button type="submit" className="auth-botao">Salvar perfil</button>
+        </form>
 
         {mensagem && <div className="auth-msg">{mensagem}</div>}
       </div>

@@ -1,11 +1,10 @@
-// Hemare - Cadastro de hospital: CNPJ, CNES, endereco completo (com busca por CEP).
+// Hemare - Cadastro de hospital: CNPJ, CNES, endereco completo (com busca por CEP) + Enter funcionando.
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
 const ESTADOS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
 
-// Valida CNPJ (algoritmo oficial dos digitos verificadores).
 function cnpjValido(cnpj) {
   cnpj = cnpj.replace(/\D/g, '');
   if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
@@ -48,7 +47,6 @@ function CadastroHospital() {
   const [estado, setEstado] = useState('');
   const [mensagem, setMensagem] = useState('');
 
-  // Busca o endereco pelo CEP (ViaCEP) quando sai do campo.
   async function buscarCep() {
     const so = cep.replace(/\D/g, '');
     if (so.length !== 8) return;
@@ -114,7 +112,7 @@ function CadastroHospital() {
         <h1 className="auth-titulo">Cadastrar hospital</h1>
         <p className="auth-sub">Cadastre sua instituição e encontre doadores.</p>
 
-        <div className="auth-form">
+        <form className="auth-form" onSubmit={(e) => { e.preventDefault(); cadastrar(); }}>
           <label className="perfil-label">Nome do hospital *</label>
           <input className="auth-input" type="text" placeholder="Nome da instituição"
             value={nome} onChange={(e) => setNome(e.target.value)} />
@@ -165,8 +163,8 @@ function CadastroHospital() {
             {ESTADOS.map((uf) => <option key={uf} value={uf}>{uf}</option>)}
           </select>
 
-          <button className="auth-botao" onClick={cadastrar}>Cadastrar hospital</button>
-        </div>
+          <button type="submit" className="auth-botao">Cadastrar hospital</button>
+        </form>
 
         {mensagem && <div className="auth-msg">{mensagem}</div>}
 
