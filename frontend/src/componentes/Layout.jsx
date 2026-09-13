@@ -1,46 +1,62 @@
-// Hemare - Layout base: cabecalho com acessibilidade (contraste, fonte) + menu + conteudo + rodape.
-import { useState, useEffect } from 'react';
+// Hemare - Layout base: cabecalho com acessibilidade completa (Libras, contraste, fonte, atalhos) + menu + conteudo + rodape.
+import { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 
 function Layout() {
   const [abertoAprenda, setAbertoAprenda] = useState(false);
   const navegar = useNavigate();
+  const refConteudo = useRef(null);
+  const refMenu = useRef(null);
 
-  // Login: verifica se ha alguem logado.
   const token = localStorage.getItem('hemare_token');
   const usuarioSalvo = localStorage.getItem('hemare_usuario');
   const usuario = usuarioSalvo ? JSON.parse(usuarioSalvo) : null;
   const rotaArea = usuario && usuario.tipo === 'hospital' ? '/painel-hospital' : '/area-doador';
 
-  // Acessibilidade: alto contraste.
   const [altoContraste, setAltoContraste] = useState(
     localStorage.getItem('hemare_contraste') === 'sim'
   );
-
-  // Acessibilidade: escala da fonte (90% a 130%).
   const [escalaFonte, setEscalaFonte] = useState(
     Number(localStorage.getItem('hemare_fonte')) || 100
   );
 
-  // Aplica a fonte salva assim que a pagina carrega.
+  function alternarContraste() {
+    setAltoContraste((atual) => {
+      const novo = !atual;
+      localStorage.setItem('hemare_contraste', novo ? 'sim' : 'nao');
+      return novo;
+    });
+  }
+
+  function ajustarFonte(delta) {
+    setEscalaFonte((atual) => {
+      let nova = atual + delta;
+      if (nova < 90) nova = 90;
+      if (nova > 130) nova = 130;
+      localStorage.setItem('hemare_fonte', nova);
+      document.body.style.zoom = nova + '%';
+      return nova;
+    });
+  }
+
+  // Aplica a fonte salva ao carregar a pagina.
   useEffect(() => {
     document.body.style.zoom = escalaFonte + '%';
   }, []);
 
-  function alternarContraste() {
-    const novo = !altoContraste;
-    setAltoContraste(novo);
-    localStorage.setItem('hemare_contraste', novo ? 'sim' : 'nao');
-  }
-
-  function ajustarFonte(delta) {
-    let nova = escalaFonte + delta;
-    if (nova < 90) nova = 90;
-    if (nova > 130) nova = 130;
-    setEscalaFonte(nova);
-    localStorage.setItem('hemare_fonte', nova);
-    document.body.style.zoom = nova + '%';
-  }
+  // Atalhos de teclado no padrao do governo (ALT + numero).
+  useEffect(() => {
+    function aoTeclar(e) {
+      if (!e.altKey) return;
+      if (e.key === '1') { e.preventDefault(); refConteudo.current?.focus(); }
+      if (e.key === '2') { e.preventDefault(); refMenu.current?.focus(); }
+      if (e.key === '5') { e.preventDefault(); alternarContraste(); }
+      if (e.key === '6') { e.preventDefault(); ajustarFonte(-10); }
+      if (e.key === '7') { e.preventDefault(); ajustarFonte(10); }
+    }
+    window.addEventListener('keydown', aoTeclar);
+    return () => window.removeEventListener('keydown', aoTeclar);
+  }, []);
 
   function sair() {
     localStorage.removeItem('hemare_token');
@@ -50,12 +66,15 @@ function Layout() {
 
   return (
     <div className={'site' + (altoContraste ? ' alto-contraste' : '')}>
+      {/* Links de pular, visiveis so ao navegar por teclado (padrao eMAG) */}
+      <a href="#conteudo-principal" className="link-pular">Ir para o conteúdo [ALT+1]</a>
+
       <header className="site-topo">
         <Link to="/" className="site-logo">🩸 Hemare</Link>
 
-        <nav className="site-menu">
-          <button className="btn-acessibilidade" onClick={() => ajustarFonte(-10)} title="Diminuir fonte">A−</button>
-          <button className="btn-acessibilidade" onClick={() => ajustarFonte(10)} title="Aumentar fonte">A+</button>
+        <nav className="site-menu" ref={refMenu} tabIndex={-1}>
+          <button className="btn-acessibilidade" onClick={() => ajustarFonte(-10)} title="Diminuir fonte (ALT+6)">A−</button>
+          <button className="btn-acessibilidade" onClick={() => ajustarFonte(10)} title="Aumentar fonte (ALT+7)">A+</button>
           <button className="btn-acessibilidade" onClick={alternarContraste} title="Alto contraste (ALT+5)">🌗 Contraste</button>
 
           <Link to="/">Início</Link>
@@ -89,7 +108,7 @@ function Layout() {
         </nav>
       </header>
 
-      <main className="site-conteudo">
+      <main className="site-conteudo" id="conteudo-principal" ref={refConteudo} tabIndex={-1}>
         <Outlet />
       </main>
 

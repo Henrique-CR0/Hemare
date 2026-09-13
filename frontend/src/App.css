@@ -286,3 +286,19 @@ select.hemare-input { cursor: pointer; }
   background: #ffff00 !important; color: #000 !important; border: 2px solid #fff !important;
 }
 .alto-contraste .landing-hero { background: #000 !important; }
+/* Link "pular para o conteudo" - so aparece ao navegar por teclado (Tab) */
+.link-pular {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: #000;
+  color: #fff;
+  padding: 12px 20px;
+  z-index: 999;
+  border-radius: 0 0 8px 0;
+  text-decoration: none;
+  font-weight: 600;
+}
+.link-pular:focus {
+  left: 0;
+}

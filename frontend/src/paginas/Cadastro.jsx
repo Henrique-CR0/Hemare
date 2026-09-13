@@ -1,4 +1,4 @@
-// Hemare - Cadastro do doador: nome sem numeros, validacao de email e forca de senha.
+// Hemare - Cadastro do doador: nome sem numeros, validacao de email, forca de senha, e Enter funcionando.
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -28,7 +28,6 @@ function Cadastro() {
   const mostrarEmailErro = emailTocado && email && !emailValido;
   const mostrarEmailOk = emailTocado && email && emailValido;
 
-  // Bloqueia numeros no nome: so deixa letras, espacos, acentos, hifen e apostrofo.
   function digitarNome(valor) {
     if (/[0-9]/.test(valor)) {
       setAvisoNome('O nome não pode conter números.');
@@ -79,13 +78,11 @@ function Cadastro() {
         <h1 className="auth-titulo">Criar sua conta</h1>
         <p className="auth-sub">Junte-se ao Hemare e ajude a salvar vidas.</p>
 
-        <div className="auth-form">
-          {/* Nome sem numeros */}
+        <form className="auth-form" onSubmit={(e) => { e.preventDefault(); cadastrar(); }}>
           <input className="auth-input" type="text" placeholder="Nome completo"
             value={nome} onChange={(e) => digitarNome(e.target.value)} />
           {avisoNome && <p className="campo-aviso">{avisoNome}</p>}
 
-          {/* Email */}
           <input
             className={'auth-input' + (mostrarEmailOk ? ' campo-ok' : '') + (mostrarEmailErro ? ' campo-erro' : '')}
             type="email" placeholder="Email"
@@ -94,7 +91,6 @@ function Cadastro() {
             onBlur={() => setEmailTocado(true)} />
           {mostrarEmailErro && <p className="campo-aviso">Email inválido — verifique o "@" e o ponto.</p>}
 
-          {/* Senha */}
           <div className="senha-linha">
             <input className="auth-input senha-input" type={mostrarSenha ? 'text' : 'password'}
               placeholder="Senha (mín. 8 caracteres)"
@@ -111,8 +107,8 @@ function Cadastro() {
             </div>
           )}
 
-          <button className="auth-botao" onClick={cadastrar}>Cadastrar</button>
-        </div>
+          <button type="submit" className="auth-botao">Cadastrar</button>
+        </form>
 
         {mensagem && <div className="auth-msg">{mensagem}</div>}
 

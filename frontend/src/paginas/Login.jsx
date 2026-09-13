@@ -39,14 +39,13 @@ function Login() {
         <h1 className="auth-titulo">Entrar no Hemare</h1>
         <p className="auth-sub">Bem-vindo(a) de volta! Acesse sua conta.</p>
 
-        <div className="auth-form">
+          <form className="auth-form" onSubmit={(e) => { e.preventDefault(); fazerLogin(); }}>
           <input className="auth-input" type="email" placeholder="Email"
             value={email} onChange={(e) => setEmail(e.target.value)} />
           <input className="auth-input" type="password" placeholder="Senha"
             value={senha} onChange={(e) => setSenha(e.target.value)} />
-          <button className="auth-botao" onClick={fazerLogin}>Entrar</button>
-        </div>
-
+          <button type="submit" className="auth-botao">Entrar</button>
+        </form>
         {mensagem && <div className="auth-msg">{mensagem}</div>}
 
         <p className="auth-troca">
