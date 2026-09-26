@@ -1,10 +1,11 @@
-// Hemare - Rotas do hospital (perfil, necessidades, match, estoque, doacoes).
+// Hemare - Rotas do hospital (perfil, necessidades, match, estoque, doacoes, cadeia de confianca).
 const { Resend } = require('resend');
 const resend = new Resend(process.env.RESEND_API_KEY);
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
 const { doadoresCompativeis } = require('../regras/compatibilidade');
+const { calcularHash, GENESIS } = require('../regras/cadeia');
 
 const router = express.Router();
 
@@ -76,7 +77,6 @@ router.post('/necessidade', autenticar, async (req, res) => {
             [hospitalId, tipoSanguineo, tipoDoacao || 'sangue', urgencia || 'normal']
         );
 
-        // Se for urgente, notifica os doadores compativeis e identificados.
         if (urgencia === 'critico' || urgencia === 'emergencia') {
             const tipos = doadoresCompativeis(tipoSanguineo);
             if (tipos.length > 0) {
@@ -153,7 +153,6 @@ router.get('/match/:necessidadeId', autenticar, async (req, res) => {
             [tiposCompativeis]
         );
 
-        // Minimizacao de dados (LGPD): id e contato so aparecem se o doador consentiu.
         const doadores = r.rows.map((doa) => {
             const identificado = doa.visibilidade === 'identificado';
             return {
@@ -172,7 +171,7 @@ router.get('/match/:necessidadeId', autenticar, async (req, res) => {
     }
 });
 
-// CONFIRMAR DOACAO: o hospital registra que um doador doou hoje.
+// CONFIRMAR DOACAO: registra a doacao com hash encadeado (cadeia de confianca / auditabilidade).
 router.post('/confirmar-doacao', autenticar, async (req, res) => {
     const usuarioId = req.usuario.id;
     const { doadorId } = req.body;
@@ -187,7 +186,6 @@ router.post('/confirmar-doacao', autenticar, async (req, res) => {
         }
         const hospitalId = rHosp.rows[0].id;
 
-                // Trava: impede confirmar a mesma pessoa duas vezes no mesmo dia.
         const jaDoou = await cliente.query(
             'SELECT id FROM doacoes WHERE doador_id = $1 AND data_doacao = CURRENT_DATE',
             [doadorId]
@@ -198,24 +196,60 @@ router.post('/confirmar-doacao', autenticar, async (req, res) => {
 
         await cliente.query('BEGIN');
 
-        // 1) Registra a doacao.
+        // Pega o hash do ULTIMO registro de toda a cadeia (nao so deste doador - a cadeia e global).
+        const rUltimo = await cliente.query('SELECT hash FROM doacoes ORDER BY id DESC LIMIT 1');
+        const hashAnterior = rUltimo.rows.length > 0 ? rUltimo.rows[0].hash : GENESIS;
+
+        // Calcula o novo hash, ligado ao anterior (o "elo da corrente").
+        const dataHoje = new Date().toISOString().slice(0, 10);
+        const novoHash = calcularHash(hashAnterior, doadorId, hospitalId, dataHoje);
+
         await cliente.query(
-            'INSERT INTO doacoes (doador_id, hospital_id) VALUES ($1, $2)',
-            [doadorId, hospitalId]
+            'INSERT INTO doacoes (doador_id, hospital_id, hash, hash_anterior) VALUES ($1, $2, $3, $4)',
+            [doadorId, hospitalId, novoHash, hashAnterior]
         );
-        // 2) Atualiza a ultima doacao e soma +1 no contador (para radar e gamificacao).
         await cliente.query(
             'UPDATE doadores SET ultima_doacao = CURRENT_DATE, total_doacoes = COALESCE(total_doacoes,0) + 1 WHERE id = $1',
             [doadorId]
         );
 
         await cliente.query('COMMIT');
-        res.json({ mensagem: 'Doação confirmada! Obrigado por registrar. 🩸' });
+        res.json({ mensagem: 'Doação confirmada e registrada com selo de auditoria! 🩸🔗', hash: novoHash });
     } catch (erro) {
         await cliente.query('ROLLBACK');
         res.status(500).json({ erro: 'Erro ao confirmar: ' + erro.message });
     } finally {
         cliente.release();
+    }
+});
+
+// PUBLICO: verifica a integridade de toda a cadeia de doacoes (auditoria).
+router.get('/cadeia/verificar', async (req, res) => {
+    try {
+        const r = await pool.query('SELECT id, doador_id, hospital_id, data_doacao, hash, hash_anterior FROM doacoes ORDER BY id ASC');
+        let hashEsperado = GENESIS;
+        let integra = true;
+        const detalhes = [];
+
+        for (const doacao of r.rows) {
+            const dataFormatada = new Date(doacao.data_doacao).toISOString().slice(0, 10);
+            const recalculado = calcularHash(hashEsperado, doacao.doador_id, doacao.hospital_id, dataFormatada);
+            const bate = recalculado === doacao.hash;
+            if (!bate) integra = false;
+            detalhes.push({ id: doacao.id, valido: bate });
+            hashEsperado = doacao.hash;
+        }
+
+        res.json({
+            totalRegistros: r.rows.length,
+            cadeiaIntegra: integra,
+            mensagem: integra
+                ? 'Todos os registros de doação estão íntegros e não foram adulterados.'
+                : 'Atenção: foi detectada inconsistência em um ou mais registros.',
+            detalhes
+        });
+    } catch (erro) {
+        res.status(500).json({ erro: erro.message });
     }
 });
 
