@@ -38,6 +38,10 @@ app.use('/radar', rotasRadar);
 const rotasClima = require('./rotas/clima');
 app.use('/clima', rotasClima);
 
+// Rotas do administrador (verificacao de hospitais).
+const rotasAdmin = require('./rotas/admin');
+app.use('/admin', rotasAdmin);
+
 // Rota de teste: quando alguem acessar a raiz, responde uma mensagem.
 app.get('/', (req, res) => {
     res.json({ mensagem: 'Ola, Hemare! O backend esta funcionando.' });

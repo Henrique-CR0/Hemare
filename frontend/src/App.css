@@ -163,6 +163,57 @@ select.hemare-input { cursor: pointer; }
 .painel { max-width: 800px; margin: 0 auto; }
 .painel h1 { color: #c8102e; margin-bottom: 6px; }
 .painel-sub { color: #8a6b6f; margin-bottom: 24px; }
+
+/* Status de verificacao do hospital */
+.painel-cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.painel-status { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.selo-verificado, .selo-pendente, .selo-recusado { display: inline-block; padding: 4px 12px; border-radius: 100px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.selo-verificado { background: #e6f6ed; color: #17663d; }
+.selo-pendente { background: #fff4d6; color: #7a5200; }
+.selo-recusado { background: #fde2e5; color: #9b0d22; }
+.verif-aviso { background: #fff8e8; border: 1px solid #f5c26b; border-radius: 14px; padding: 20px 22px; margin: 18px 0 20px; }
+.verif-aviso h2 { font-size: 18px; color: #7a3d00; margin: 0 0 8px; }
+.verif-aviso p { color: #5b4a3a; line-height: 1.55; margin: 0 0 8px; }
+.verif-recusado { background: #fff1f2; border-color: #f3b8c1; }
+.verif-recusado h2 { color: #9b0d22; }
+.verif-bloqueios { font-size: 14px; }
+
+/* ===== Painel do administrador (verificacao de hospitais) ===== */
+.adm-filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.adm-filtro { background: #fff; border: 1px solid #e6c4ca; color: #6b5054; padding: 8px 16px; border-radius: 100px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.adm-filtro:hover { background: #ffe9ec; }
+.adm-filtro-ativo { background: #c8102e; border-color: #c8102e; color: #fff; }
+.adm-filtro-ativo:hover { background: #a80d26; }
+.adm-aviso { background: #e6f6ed; color: #17663d; border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; }
+.adm-lista { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.adm-card { background: #fff; border: 1px solid #f0d4d9; border-radius: 14px; padding: 20px 22px; }
+.adm-card-topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.adm-card h3 { margin: 0; font-size: 18px; color: #2b0d10; overflow-wrap: break-word; }
+.adm-email { margin: 4px 0 0; font-size: 13px; color: #8a6b6f; overflow-wrap: anywhere; }
+.adm-dados { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 20px; margin: 16px 0 0; }
+.adm-dados dt { font-size: 12px; color: #8a6b6f; text-transform: uppercase; letter-spacing: .04em; }
+.adm-dados dd { margin: 2px 0 0; color: #2b0d10; font-size: 15px; overflow-wrap: break-word; }
+.adm-consulta { display: inline-block; margin-left: 8px; font-size: 13px; color: #c8102e; font-weight: 600; }
+.adm-motivo { margin: 14px 0 0; background: #fff1f2; border-radius: 10px; padding: 10px 14px; font-size: 14px; color: #6b1422; }
+.adm-recusa { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+.adm-recusa label { font-size: 14px; color: #6b5054; }
+.adm-recusa textarea { resize: vertical; font-family: inherit; }
+.adm-acoes { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+.adm-btn { border: none; padding: 10px 18px; border-radius: 100px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.adm-btn:disabled { opacity: .6; cursor: wait; }
+.adm-btn-aprovar { background: #1f8f4e; color: #fff; }
+.adm-btn-aprovar:hover { background: #17733e; }
+.adm-btn-recusar { background: #c8102e; color: #fff; }
+.adm-btn-recusar:hover { background: #a80d26; }
+.adm-btn-neutro { background: #fff; color: #6b5054; border: 1px solid #e6c4ca; }
+.adm-btn-neutro:hover { background: #ffe9ec; }
+.adm-erro { margin: 10px 0 0; color: #9b0d22; font-size: 14px; }
+.alto-contraste .adm-card, .alto-contraste .verif-aviso, .alto-contraste .adm-filtro, .alto-contraste .adm-motivo,
+.alto-contraste .selo-verificado, .alto-contraste .selo-pendente, .alto-contraste .selo-recusado {
+  background: #000 !important; color: #fff !important; border: 1px solid #fff !important;
+}
+.alto-contraste .adm-filtro-ativo, .alto-contraste .adm-btn { background: #ffff00 !important; color: #000 !important; border: 2px solid #fff !important; }
+.alto-contraste .adm-dados dd, .alto-contraste .adm-dados dt { color: #fff !important; }
 .painel-caixa { background: #fff; border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; border: 1px solid #f0d4d9; }
 .painel-caixa h2 { font-size: 18px; color: #2b0d10; margin-bottom: 16px; }
 .painel-form { display: flex; gap: 10px; flex-wrap: wrap; }

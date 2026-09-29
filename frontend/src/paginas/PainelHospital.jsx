@@ -119,6 +119,10 @@ function PainelHospital() {
     }
   }
 
+  // Enquanto nao for aprovado, as acoes sobre doadores ficam escondidas (o backend tambem bloqueia).
+  const status = dadosHospital ? dadosHospital.statusVerificacao : null;
+  const liberado = !dadosHospital || status === 'aprovado';
+
   function rotuloUrgencia(u) {
     const mapa = { estavel: '🟢 Estável', alerta: '🟡 Alerta', critico: '🔴 Crítico', emergencia: '⚫ Emergência' };
     return mapa[u] || u;
@@ -131,15 +135,41 @@ function PainelHospital() {
         {dadosHospital && (
           <div className="painel-status">
             <strong>{dadosHospital.nome}</strong>
-            {dadosHospital.aprovado
-              ? <span className="selo-verificado">✓ Verificado</span>
-              : <span className="selo-pendente">⏳ Verificação pendente</span>}
+            {status === 'aprovado' && <span className="selo-verificado">✓ Verificado</span>}
+            {status === 'pendente' && <span className="selo-pendente">⏳ Verificação pendente</span>}
+            {status === 'recusado' && <span className="selo-recusado">✕ Cadastro recusado</span>}
           </div>
         )}
       </div>
       <p className="painel-sub">Gerencie seu estoque, publique necessidades e encontre doadores.</p>
 
       <Link to="/radar" className="link-radar">🔮 Ver radar preditivo de aptidão →</Link>
+
+      {dadosHospital && !liberado && (
+        <div className={'verif-aviso' + (status === 'recusado' ? ' verif-recusado' : '')} role="status">
+          {status === 'recusado' ? (
+            <>
+              <h2>✕ O cadastro do hospital não foi aprovado</h2>
+              <p><strong>Motivo:</strong> {dadosHospital.motivo_recusa}</p>
+              <p>Quando os dados forem corrigidos, o cadastro volta para a fila de verificação.</p>
+            </>
+          ) : (
+            <>
+              <h2>⏳ Seu hospital está em verificação</h2>
+              <p>
+                Um administrador do Hemare vai conferir o CNPJ e o CNES informados. Você recebe um email assim que
+                o cadastro for aprovado.
+              </p>
+            </>
+          )}
+          <p className="verif-bloqueios">
+            Até lá, por segurança dos doadores, ficam bloqueados: publicar necessidades e alertas, atualizar o
+            estoque público, ver doadores compatíveis e confirmar doações.
+          </p>
+        </div>
+      )}
+
+      {liberado && (<>
 
       {/* TERMOMETRO DE ESTOQUE */}
       <div className="painel-caixa">
@@ -243,6 +273,7 @@ function PainelHospital() {
           )}
         </div>
       )}
+      </>)}
     </div>
   );
 }

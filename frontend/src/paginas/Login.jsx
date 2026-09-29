@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 import { URL_BACKEND } from '../config';
+import { rotaInicial } from '../regras/rotaInicial';
 
 function Login() {
   const navegar = useNavigate();
@@ -23,7 +24,7 @@ function Login() {
       if (resposta.ok) {
         localStorage.setItem('hemare_token', dados.token);
         localStorage.setItem('hemare_usuario', JSON.stringify(dados.usuario));
-        navegar('/area-doador');
+        navegar(rotaInicial(dados.usuario));
       } else {
         setMensagem('❌ ' + dados.erro);
       }

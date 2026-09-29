@@ -4,6 +4,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
+const { exigirHospitalAprovado } = require('../middleware/exigirPapel');
+const { statusVerificacao } = require('../regras/verificacao');
 const { doadoresCompativeis } = require('../regras/compatibilidade');
 const { calcularHash, GENESIS } = require('../regras/cadeia');
 
@@ -18,18 +20,29 @@ router.post('/perfil', autenticar, async (req, res) => {
         return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
     }
 
+    if (req.usuario.tipo !== 'hospital') {
+        return res.status(403).json({ erro: 'Apenas contas de hospital podem ter perfil de hospital.' });
+    }
+
     try {
-        const existe = await pool.query('SELECT id FROM hospitais WHERE usuario_id = $1', [usuarioId]);
+        const existe = await pool.query('SELECT id, cnpj, cnes, aprovado FROM hospitais WHERE usuario_id = $1', [usuarioId]);
         if (existe.rows.length > 0) {
+            // Se o CNPJ ou o CNES mudar, o hospital volta para verificacao.
+            // Reenviar os dados depois de uma recusa tambem volta para "pendente" (motivo apagado).
+            const atual = existe.rows[0];
+            const mudouIdentidade = atual.cnpj !== cnpj || atual.cnes !== cnes;
+            const continuaAprovado = atual.aprovado === true && !mudouIdentidade;
             await pool.query(
                 `UPDATE hospitais SET cnpj=$1, cnes=$2, cep=$3, endereco=$4, numero=$5, bairro=$6,
-                 complemento=$7, cidade=$8, estado=$9 WHERE usuario_id=$10`,
-                [cnpj, cnes, cep, endereco, numero, bairro, complemento || null, cidade, estado, usuarioId]
+                 complemento=$7, cidade=$8, estado=$9, aprovado=$10, motivo_recusa=NULL
+                 WHERE usuario_id=$11`,
+                [cnpj, cnes, cep, endereco, numero, bairro, complemento || null, cidade, estado, continuaAprovado, usuarioId]
             );
         } else {
+            // Todo hospital novo comeca PENDENTE: um administrador precisa aprovar.
             await pool.query(
-                `INSERT INTO hospitais (usuario_id, cnpj, cnes, cep, endereco, numero, bairro, complemento, cidade, estado)
-                 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+                `INSERT INTO hospitais (usuario_id, cnpj, cnes, cep, endereco, numero, bairro, complemento, cidade, estado, aprovado)
+                 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,false)`,
                 [usuarioId, cnpj, cnes, cep, endereco, numero, bairro, complemento || null, cidade, estado]
             );
         }
@@ -44,20 +57,20 @@ router.get('/meus-dados', autenticar, async (req, res) => {
     const usuarioId = req.usuario.id;
     try {
         const r = await pool.query(
-            `SELECT u.nome, h.cidade, h.estado, h.aprovado
+            `SELECT u.nome, h.cidade, h.estado, h.aprovado, h.motivo_recusa
              FROM hospitais h JOIN usuarios u ON u.id = h.usuario_id
              WHERE h.usuario_id = $1`,
             [usuarioId]
         );
         if (r.rows.length === 0) return res.json(null);
-        res.json(r.rows[0]);
+        res.json({ ...r.rows[0], statusVerificacao: statusVerificacao(r.rows[0]) });
     } catch (erro) {
         res.status(500).json({ erro: erro.message });
     }
 });
 
 // PUBLICAR uma necessidade (o hospital pede um tipo sanguineo).
-router.post('/necessidade', autenticar, async (req, res) => {
+router.post('/necessidade', autenticar, exigirHospitalAprovado, async (req, res) => {
     const usuarioId = req.usuario.id;
     const { tipoSanguineo, tipoDoacao, urgencia } = req.body;
 
@@ -66,11 +79,7 @@ router.post('/necessidade', autenticar, async (req, res) => {
     }
 
     try {
-        const rHosp = await pool.query('SELECT id FROM hospitais WHERE usuario_id = $1', [usuarioId]);
-        if (rHosp.rows.length === 0) {
-            return res.status(400).json({ erro: 'Complete o perfil do hospital primeiro.' });
-        }
-        const hospitalId = rHosp.rows[0].id;
+        const hospitalId = req.hospital.id;
 
         await pool.query(
             'INSERT INTO necessidades (hospital_id, tipo_sanguineo, tipo_doacao, urgencia) VALUES ($1, $2, $3, $4)',
@@ -135,9 +144,13 @@ router.get('/necessidades', autenticar, async (req, res) => {
 });
 
 // MATCH: dado o id de uma necessidade, acha os doadores compativeis.
-router.get('/match/:necessidadeId', autenticar, async (req, res) => {
+// So o hospital aprovado DONO da necessidade ve os doadores (e o contato de quem consentiu).
+router.get('/match/:necessidadeId', autenticar, exigirHospitalAprovado, async (req, res) => {
     try {
-        const rNec = await pool.query('SELECT * FROM necessidades WHERE id = $1', [req.params.necessidadeId]);
+        const rNec = await pool.query(
+            'SELECT * FROM necessidades WHERE id = $1 AND hospital_id = $2',
+            [req.params.necessidadeId, req.hospital.id]
+        );
         if (rNec.rows.length === 0) return res.status(404).json({ erro: 'Necessidade nao encontrada.' });
         const tipoReceptor = rNec.rows[0].tipo_sanguineo;
 
@@ -172,19 +185,14 @@ router.get('/match/:necessidadeId', autenticar, async (req, res) => {
 });
 
 // CONFIRMAR DOACAO: registra a doacao com hash encadeado (cadeia de confianca / auditabilidade).
-router.post('/confirmar-doacao', autenticar, async (req, res) => {
-    const usuarioId = req.usuario.id;
+router.post('/confirmar-doacao', autenticar, exigirHospitalAprovado, async (req, res) => {
     const { doadorId } = req.body;
 
     if (!doadorId) return res.status(400).json({ erro: 'Doador inválido.' });
 
     const cliente = await pool.connect();
     try {
-        const rHosp = await cliente.query('SELECT id FROM hospitais WHERE usuario_id = $1', [usuarioId]);
-        if (rHosp.rows.length === 0) {
-            return res.status(400).json({ erro: 'Complete o perfil do hospital primeiro.' });
-        }
-        const hospitalId = rHosp.rows[0].id;
+        const hospitalId = req.hospital.id;
 
         const jaDoou = await cliente.query(
             'SELECT id FROM doacoes WHERE doador_id = $1 AND data_doacao = CURRENT_DATE',
@@ -254,8 +262,7 @@ router.get('/cadeia/verificar', async (req, res) => {
 });
 
 // DEFINIR/ATUALIZAR o nivel de estoque de um tipo sanguineo (hospital logado).
-router.post('/estoque', autenticar, async (req, res) => {
-    const usuarioId = req.usuario.id;
+router.post('/estoque', autenticar, exigirHospitalAprovado, async (req, res) => {
     const { tipoSanguineo, nivel } = req.body;
 
     const niveisValidos = ['estavel', 'alerta', 'critico', 'emergencia'];
@@ -264,11 +271,7 @@ router.post('/estoque', autenticar, async (req, res) => {
     }
 
     try {
-        const rHosp = await pool.query('SELECT id FROM hospitais WHERE usuario_id = $1', [usuarioId]);
-        if (rHosp.rows.length === 0) {
-            return res.status(400).json({ erro: 'Complete o perfil do hospital primeiro.' });
-        }
-        const hospitalId = rHosp.rows[0].id;
+        const hospitalId = req.hospital.id;
 
         await pool.query(
             `INSERT INTO estoque (hospital_id, tipo_sanguineo, nivel, atualizado_em)
@@ -306,6 +309,7 @@ router.get('/estoque-publico', async (req, res) => {
              FROM estoque e
              JOIN hospitais h ON h.id = e.hospital_id
              JOIN usuarios u ON u.id = h.usuario_id
+             WHERE h.aprovado = true
              ORDER BY u.nome, e.tipo_sanguineo`
         );
         res.json(r.rows);
