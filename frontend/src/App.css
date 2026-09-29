@@ -371,6 +371,16 @@ select.hemare-input { cursor: pointer; }
 .conq-barra { height: 100%; background: linear-gradient(90deg, #e8112d, #c8102e); border-radius: 100px; transition: width .4s; }
 .conq-proxima { margin: 16px 0 0; padding: 10px 14px; border-radius: 10px; background: #fff6e5; color: #7a5200; font-size: 14px; }
 .conq-proxima-apto { background: #e6f6ed; color: #17663d; }
+.conq-proxima > p { margin: 0; }
+.lembrete { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.lembrete-btn { background: #fff; color: #7a5200; border: 1px solid #e0b25a; padding: 8px 14px; border-radius: 100px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.lembrete-btn:hover { background: #fff8e8; }
+.lembrete-btn:disabled { opacity: .6; cursor: wait; }
+.lembrete-ativo { background: #17663d; color: #fff; border-color: #17663d; }
+.lembrete-ativo:hover { background: #12532f; }
+.lembrete-ajuda { font-size: 12px; opacity: .85; }
+.lembrete-aviso { margin: 8px 0 0 !important; font-size: 13px; font-weight: 600; }
+.alto-contraste .lembrete-btn { background: #ffff00 !important; color: #000 !important; border: 2px solid #fff !important; }
 .conq-subtitulo { font-size: 16px; color: #2b0d10; margin: 22px 0 12px; }
 .conq-emblemas { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
 .conq-emblema { border: 1px dashed #e6c4ca; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 4px; opacity: .55; filter: grayscale(1); }

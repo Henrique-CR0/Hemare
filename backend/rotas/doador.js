@@ -42,22 +42,21 @@ router.post('/perfil', autenticar, async (req, res) => {
 // CONQUISTAS: nivel, emblemas e quando o doador logado pode doar de novo (gamificacao).
 router.get('/conquistas', autenticar, async (req, res) => {
     try {
-        const r = await pool.query(
-            `SELECT d.id, d.tipo_sanguineo, d.sexo, d.visibilidade, d.ultima_doacao,
-                    COALESCE(d.total_doacoes, 0) AS total_doacoes,
-                    (SELECT COUNT(*) FROM doacoes x
-                      WHERE x.doador_id = d.id AND x.data_doacao >= CURRENT_DATE - INTERVAL '12 months') AS doacoes_ultimo_ano
-               FROM doadores d WHERE d.usuario_id = $1`,
-            [req.usuario.id]
-        );
+        // SELECT * para funcionar mesmo antes de rodar db/ajustar-lembretes.js (quer_lembrete pode nao existir ainda).
+        const r = await pool.query('SELECT * FROM doadores WHERE usuario_id = $1', [req.usuario.id]);
 
         if (r.rows.length === 0) {
             return res.status(404).json({ erro: 'Complete seu perfil para ver suas conquistas.' });
         }
 
         const doa = r.rows[0];
+        const rAno = await pool.query(
+            "SELECT COUNT(*) AS total FROM doacoes WHERE doador_id = $1 AND data_doacao >= CURRENT_DATE - INTERVAL '12 months'",
+            [doa.id]
+        );
+        doa.doacoes_ultimo_ano = rAno.rows[0].total;
         const conquistas = calcularConquistas({
-            totalDoacoes: doa.total_doacoes,
+            totalDoacoes: Number(doa.total_doacoes) || 0,
             doacoesUltimoAno: Number(doa.doacoes_ultimo_ano),
             tipoSanguineo: doa.tipo_sanguineo,
             visibilidade: doa.visibilidade
@@ -68,9 +67,33 @@ router.get('/conquistas', autenticar, async (req, res) => {
             ? verificarElegibilidade(doa.ultima_doacao, doa.sexo)
             : null;
 
-        res.json({ ...conquistas, elegibilidade });
+        res.json({ ...conquistas, elegibilidade, querLembrete: doa.quer_lembrete === true });
     } catch (erro) {
         res.status(500).json({ erro: 'Erro ao buscar conquistas: ' + erro.message });
+    }
+});
+
+// LEMBRETE DE RETORNO: o doador liga ou desliga o email "voce ja pode doar de novo" (opt-in).
+router.post('/lembrete', autenticar, async (req, res) => {
+    if (typeof req.body.ativo !== 'boolean') {
+        return res.status(400).json({ erro: 'Informe se o lembrete fica ativo (true ou false).' });
+    }
+    try {
+        const r = await pool.query(
+            'UPDATE doadores SET quer_lembrete = $1 WHERE usuario_id = $2 RETURNING quer_lembrete',
+            [req.body.ativo, req.usuario.id]
+        );
+        if (r.rows.length === 0) {
+            return res.status(404).json({ erro: 'Complete seu perfil primeiro.' });
+        }
+        res.json({
+            querLembrete: r.rows[0].quer_lembrete,
+            mensagem: req.body.ativo
+                ? '🔔 Combinado! Vamos te avisar por email quando você puder doar de novo.'
+                : 'Lembrete desligado. Você pode ligar de novo quando quiser.'
+        });
+    } catch (erro) {
+        res.status(500).json({ erro: 'Erro ao salvar o lembrete: ' + erro.message });
     }
 });
 
