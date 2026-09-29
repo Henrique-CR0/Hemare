@@ -1,6 +1,7 @@
 // Hemare - Painel do administrador: verificacao de hospitais (aprovar / recusar com motivo).
 import { useState, useEffect, useCallback } from 'react';
 import { URL_BACKEND } from '../config';
+import NoticiasAdmin from '../componentes/NoticiasAdmin';
 
 const FILTROS = [
   { valor: 'pendente', rotulo: '⏳ Pendentes' },
@@ -174,6 +175,8 @@ function PainelAdmin() {
           {hospitais.map((h) => <CartaoHospital key={h.id} h={h} aoDecidir={decidir} />)}
         </ul>
       )}
+
+      <NoticiasAdmin />
     </div>
   );
 }

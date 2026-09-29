@@ -50,6 +50,10 @@ app.use('/apadrinhamento', rotasApadrinhamento);
 const rotasCampanha = require('./rotas/campanha');
 app.use('/campanha', rotasCampanha);
 
+// Canal de noticias por estado (avisos curados + sinais dos hospitais do Hemare).
+const rotasNoticias = require('./rotas/noticias');
+app.use('/noticias', rotasNoticias);
+
 // Rota de teste: quando alguem acessar a raiz, responde uma mensagem.
 app.get('/', (req, res) => {
     res.json({ mensagem: 'Ola, Hemare! O backend esta funcionando.' });

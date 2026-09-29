@@ -111,6 +111,7 @@ function Layout() {
           <Link to="/locais">Onde doar</Link>
           <Link to="/triagem">Posso doar?</Link>
           <Link to="/estoque">Termômetro de estoque</Link>
+          <Link to="/noticias">Notícias</Link>
           <Link to="/clima">Previsão do sangue</Link>
           <Link to="/apadrinhar">Apadrinhe</Link>
 
