@@ -4,6 +4,7 @@ import Radar from './paginas/Radar';
 import VLibras from './componentes/VLibras';
 import Estoque from './paginas/Estoque';
 import Placar from './paginas/Placar';
+import PainelAdmin from './paginas/PainelAdmin';
 import RecuperarSenha from './paginas/RecuperarSenha';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PainelHospital from './paginas/PainelHospital';
@@ -43,6 +44,7 @@ function App() {
           <Route path="recuperar-senha" element={<RecuperarSenha />} />
           <Route path="estoque" element={<Estoque />} />
           <Route path="placar" element={<Placar />} />
+          <Route path="admin" element={<RotaProtegida><PainelAdmin /></RotaProtegida>} />
           <Route path="radar" element={<RotaProtegida><Radar /></RotaProtegida>} />
           <Route path="clima" element={<Clima />} />
         </Route>

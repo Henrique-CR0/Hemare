@@ -29,7 +29,8 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 - 📚 Conteúdo educativo — guia completo da doação, 16 mitos e verdades e os direitos do doador (folga na CLT, etc.)
 
 ### Para o hospital / hemocentro
-- 🏥 Cadastro completo — CNPJ e CNES validados, endereço com busca automática por CEP, selo de verificação
+- 🏥 Cadastro completo — CNPJ e CNES validados, endereço com busca automática por CEP
+- 🛡️ **Verificação por administrador** — todo hospital novo começa pendente; um administrador confere CNPJ e CNES e aprova ou recusa (com motivo enviado por email). Só hospitais aprovados veem contatos de doadores, confirmam doações, disparam alertas e aparecem no termômetro público
 - 📢 Publicação de **necessidades** de sangue por tipo e nível de urgência
 - 🎯 **Match automático** — a regra de compatibilidade sanguínea encontra os doadores certos, respeitando a privacidade de cada um
 - 🌡️ **Termômetro de estoque** — o hospital classifica seu estoque por tipo (estável/alerta/crítico/emergência); uma página **pública** exibe onde há falta de sangue no momento
@@ -48,7 +49,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 ## 🧠 Destaques técnicos
 
 - **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
-- **Segurança em camadas** — bcrypt para senhas, JWT com middleware no backend e guarda de rota no frontend, tokens de recuperação de senha com expiração e uso único
+- **Segurança em camadas** — bcrypt para senhas, JWT com middleware no backend e guarda de rota no frontend, tokens de recuperação de senha com expiração e uso único, permissões por papel (doador, hospital aprovado, administrador) conferidas no backend
 - **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram
 - **Arquitetura cliente-servidor** — o frontend nunca acessa o banco diretamente; toda a lógica passa por uma API REST
 - **Email transacional real** (recuperação de senha e alertas de emergência) via Resend
@@ -70,8 +71,8 @@ Hemare/
 │ ├── servidor.js # servidor Express e rotas
 │ ├── banco.js # conexão com o PostgreSQL
 │ ├── regras/ # lógica de negócio (compatibilidade, elegibilidade, triagem, distância)
-│ ├── rotas/ # endpoints (auth, doador, hospital, locais, recuperação, radar)
-│ ├── middleware/ # autenticação (JWT)
+│ ├── rotas/ # endpoints (auth, doador, hospital, admin, locais, recuperação, radar)
+│ ├── middleware/ # autenticação (JWT) e permissões por papel
 │ └── db/ # scripts de criação e povoamento das tabelas
 └── frontend/
 └── src/
@@ -99,6 +100,8 @@ node db/criar-locais.js        # tabela de locais + popular-locais.js
 node db/criar-recuperacao.js   # tabela de recuperação de senha
 node db/criar-estoque.js       # tabela de estoque
 node db/criar-doacoes.js       # tabela de doações confirmadas
+node db/ajustar-verificacao.js # verificação de hospitais (novos começam pendentes)
+node db/tornar-admin.js seu@email.com  # torna uma conta já cadastrada administrador
 node servidor.js               # inicia a API (porta 3000)
 ```
 
@@ -130,7 +133,7 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Radar preditivo de aptidão
 - [x] Acessibilidade completa (VLibras, alto contraste, fonte, atalhos)
 - [x] Gamificação — emblemas e níveis por número de doações confirmadas
-- [ ] Verificação de hospitais por administrador
+- [x] Verificação de hospitais por administrador
 - [ ] Apadrinhamento de pacientes com necessidade recorrente de doação
 
 ---

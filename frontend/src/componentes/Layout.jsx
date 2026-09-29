@@ -1,6 +1,7 @@
 // Hemare - Layout base: cabecalho com acessibilidade completa (Libras, contraste, fonte, atalhos) + menu + conteudo + rodape.
 import { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { rotaInicial } from '../regras/rotaInicial';
 
 // No celular um toque tambem dispara "mouse em cima"; o hover so vale com mouse de verdade
 // (e so no menu largo: no menu "☰" o "Aprenda" abre so no clique).
@@ -20,7 +21,7 @@ function Layout() {
   const token = localStorage.getItem('hemare_token');
   const usuarioSalvo = localStorage.getItem('hemare_usuario');
   const usuario = usuarioSalvo ? JSON.parse(usuarioSalvo) : null;
-  const rotaArea = usuario && usuario.tipo === 'hospital' ? '/painel-hospital' : '/area-doador';
+  const rotaArea = rotaInicial(usuario);
 
   const [altoContraste, setAltoContraste] = useState(
     localStorage.getItem('hemare_contraste') === 'sim'

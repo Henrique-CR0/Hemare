@@ -3,6 +3,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../banco');
+const { TIPOS_CADASTRO } = require('../regras/verificacao');
 
 const router = express.Router();
 
@@ -12,6 +13,11 @@ router.post('/cadastro', async (req, res) => {
 
     if (!nome || !email || !senha || !tipo) {
         return res.status(400).json({ erro: 'Preencha nome, email, senha e tipo.' });
+    }
+
+    // Pelo site so se cria conta de doador ou hospital (admin nunca).
+    if (!TIPOS_CADASTRO.includes(tipo)) {
+        return res.status(400).json({ erro: 'Tipo de conta invalido.' });
     }
 
         if (senha.length < 8) {
