@@ -1,6 +1,6 @@
 // Hemare - Cadastro do doador: nome sem numeros, validacao de email, forca de senha, e Enter funcionando.
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 
 import { URL_BACKEND } from '../config';
 
@@ -14,6 +14,9 @@ function forcaSenha(senha) {
 
 function Cadastro() {
   const navegar = useNavigate();
+  // Vem de um convite de amigo: /cadastro?ref=CODIGO (o servidor confere se o codigo existe).
+  const [params] = useSearchParams();
+  const codigoConvite = params.get('ref') || '';
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -57,7 +60,7 @@ function Cadastro() {
       const resposta = await fetch(URL_BACKEND + '/auth/cadastro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, email, senha, tipo: 'doador' })
+        body: JSON.stringify({ nome, email, senha, tipo: 'doador', codigoIndicacao: codigoConvite || undefined })
       });
       const dados = await resposta.json();
       if (resposta.ok) {
@@ -77,6 +80,7 @@ function Cadastro() {
         <div className="auth-gota">🩸</div>
         <h1 className="auth-titulo">Criar sua conta</h1>
         <p className="auth-sub">Junte-se ao Hemare e ajude a salvar vidas.</p>
+        {codigoConvite && <p className="auth-convite">💛 Você foi convidado(a) por um amigo. Que bom ter você aqui!</p>}
 
         <form className="auth-form" onSubmit={(e) => { e.preventDefault(); cadastrar(); }}>
           <input className="auth-input" type="text" placeholder="Nome completo"
