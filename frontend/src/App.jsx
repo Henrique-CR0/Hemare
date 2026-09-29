@@ -1,7 +1,7 @@
 // Hemare - Rotas do site.
 import Clima from './paginas/Clima';
 import Radar from './paginas/Radar';
-import VLibras from '@djpfs/react-vlibras';
+import VLibras from './componentes/VLibras';
 import Estoque from './paginas/Estoque';
 import Placar from './paginas/Placar';
 import RecuperarSenha from './paginas/RecuperarSenha';
@@ -25,7 +25,7 @@ import './App.css';
 function App() {
   return (
     <BrowserRouter>
-          <VLibras forceOnload={true} />
+      <VLibras />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Inicio />} />
