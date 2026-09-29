@@ -72,4 +72,40 @@ function calcularConquistas(dados) {
     };
 }
 
-module.exports = { calcularConquistas, NIVEIS, VIDAS_POR_DOACAO };
+// ===== Placar das cidades (publico) =====
+// So aparecem cidades com pelo menos 3 doadores: com menos, daria para
+// adivinhar quem e quem (LGPD). Os totais gerais contam todas as cidades.
+const MINIMO_DOADORES_PLACAR = 3;
+const TAMANHO_PLACAR = 10;
+
+// linhas: [{ cidade, doadores, doacoes }] (uma por cidade, vindas do banco)
+function montarPlacar(linhas) {
+    const lista = (linhas || []).map((l) => ({
+        cidade: l.cidade,
+        doadores: Number(l.doadores) || 0,
+        doacoes: Number(l.doacoes) || 0
+    }));
+
+    const totalDoacoes = lista.reduce((soma, l) => soma + l.doacoes, 0);
+
+    const cidades = lista
+        .filter((l) => l.doadores >= MINIMO_DOADORES_PLACAR && l.doacoes > 0)
+        .sort((a, b) => b.doacoes - a.doacoes || b.doadores - a.doadores || a.cidade.localeCompare(b.cidade))
+        .slice(0, TAMANHO_PLACAR)
+        .map((l, i) => ({
+            posicao: i + 1,
+            cidade: l.cidade,
+            doadores: l.doadores,
+            doacoes: l.doacoes,
+            vidasSalvas: l.doacoes * VIDAS_POR_DOACAO
+        }));
+
+    return {
+        totalDoacoes,
+        totalVidas: totalDoacoes * VIDAS_POR_DOACAO,
+        totalDoadores: lista.reduce((soma, l) => soma + l.doadores, 0),
+        cidades
+    };
+}
+
+module.exports = { calcularConquistas, montarPlacar, NIVEIS, VIDAS_POR_DOACAO, MINIMO_DOADORES_PLACAR };

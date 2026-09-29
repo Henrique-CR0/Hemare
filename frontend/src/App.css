@@ -327,6 +327,69 @@ select.hemare-input { cursor: pointer; }
   .conq { padding: 18px; }
   .conq-numeros { width: 100%; justify-content: space-around; }
 }
+
+/* Aviso de emblema novo */
+.conq-novo { display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, #fff4d6, #ffe9ec); border: 1px solid #f5c26b; border-radius: 12px; padding: 12px 16px; margin-bottom: 18px; animation: conq-surgir .5s ease-out; }
+.conq-novo-ic { font-size: 30px; }
+.conq-novo strong { display: block; color: #7a3d00; }
+.conq-novo span { font-size: 14px; color: #6b5054; }
+.conq-recem { animation: conq-brilho 1.2s ease-in-out 3; }
+@keyframes conq-surgir { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@keyframes conq-brilho { 0%, 100% { box-shadow: 0 0 0 0 rgba(232,17,45,0); } 50% { box-shadow: 0 0 0 6px rgba(232,17,45,.18); } }
+@media (prefers-reduced-motion: reduce) { .conq-novo, .conq-recem { animation: none; } }
+
+/* Compartilhar conquista */
+.conq-compartilhar { margin-top: 22px; padding-top: 18px; border-top: 1px solid #f6e3e6; }
+.conq-compartilhar > p { margin: 0 0 10px; font-size: 14px; color: #6b5054; }
+.conq-botoes { display: flex; gap: 10px; flex-wrap: wrap; }
+.conq-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: 100px; border: none; background: #e8112d; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; }
+.conq-btn:hover { background: #c8102e; }
+.conq-btn-whats { background: #1f8f4e; }
+.conq-btn-whats:hover { background: #17733e; }
+.conq-btn-vazado { background: #fff; color: #c8102e; border: 1px solid #e8112d; }
+.conq-btn-vazado:hover { background: #ffe9ec; }
+.conq-copia { margin: 10px 0 0; font-size: 13px; color: #17663d; }
+
+/* ===== PLACAR DAS CIDADES (publico) ===== */
+.placar { max-width: 760px; margin: 0 auto; }
+.placar h1 { text-align: center; color: #c8102e; margin-bottom: 8px; }
+.placar-sub { text-align: center; color: #8a6b6f; margin-bottom: 26px; }
+.placar-vazio { text-align: center; color: #8a6b6f; padding: 20px; }
+.placar-totais { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 26px; }
+.placar-totais div { background: #fff; border: 1px solid #f0d4d9; border-radius: 14px; padding: 18px 12px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.placar-totais strong { font-size: 30px; color: #c8102e; }
+.placar-totais span { font-size: 13px; color: #6b5054; }
+.placar-lista { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.placar-item { display: flex; align-items: center; gap: 14px; background: #fff; border: 1px solid #f0d4d9; border-radius: 12px; padding: 14px 18px; }
+.placar-podio { border-color: #f3b8c1; box-shadow: 0 6px 18px rgba(200,16,46,.08); }
+.placar-pos { font-size: 22px; font-weight: 700; color: #8a6b6f; min-width: 40px; text-align: center; }
+.placar-cidade { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.placar-cidade strong { font-size: 17px; color: #2b0d10; overflow-wrap: break-word; }
+.placar-cidade span, .placar-num span { font-size: 13px; color: #6b5054; }
+.placar-num { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+.placar-num strong { font-size: 22px; color: #c8102e; }
+.placar-nota { font-size: 13px; color: #8a6b6f; text-align: center; margin: 22px 0 0; }
+.placar-cta { display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+.cta-placar { background: #e8112d; color: #fff; padding: 12px 26px; border-radius: 100px; font-weight: 700; text-decoration: none; }
+.cta-placar:hover { background: #c8102e; }
+.cta-placar-vazado { background: #fff; color: #c8102e; border: 1px solid #e8112d; }
+.cta-placar-vazado:hover { background: #ffe9ec; }
+@media (max-width: 560px) {
+  .placar-totais { grid-template-columns: 1fr; }
+  .placar-item { padding: 12px 14px; gap: 10px; }
+  .placar-cidade strong { font-size: 15px; }
+  .placar-num strong { font-size: 19px; }
+  .placar-num span { font-size: 12px; }
+}
+
+/* Alto contraste: novos elementos da gamificacao */
+.alto-contraste .conq-novo, .alto-contraste .placar-totais div, .alto-contraste .placar-item {
+  background: #000 !important; border: 1px solid #fff !important;
+}
+.alto-contraste .conq-btn, .alto-contraste .cta-placar {
+  background: #ffff00 !important; color: #000 !important; border: 2px solid #fff !important;
+}
+.alto-contraste .conq-compartilhar { border-top-color: #fff; }
 /* Link "pular para o conteudo" - so aparece ao navegar por teclado (Tab) */
 .link-pular {
   position: absolute;

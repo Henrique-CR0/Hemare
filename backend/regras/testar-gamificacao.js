@@ -1,5 +1,5 @@
 // Teste rapido da regra de gamificacao (niveis e emblemas).
-const { calcularConquistas } = require('./gamificacao');
+const { calcularConquistas, montarPlacar } = require('./gamificacao');
 
 function verificar(descricao, obtido, esperado) {
     const ok = JSON.stringify(obtido) === JSON.stringify(esperado);
@@ -51,3 +51,25 @@ verificar('Rh nulo: emblema dourado', emblemasConquistados(dourado), ['dourado']
 // Valores ausentes ou invalidos nao quebram.
 const vazio = calcularConquistas({ totalDoacoes: null });
 verificar('total nulo vira 0', vazio.totalDoacoes, 0);
+
+console.log('--- Testes do placar das cidades ---');
+
+const placar = montarPlacar([
+    { cidade: 'Recife', doadores: 5, doacoes: 12 },
+    { cidade: 'Olinda', doadores: 3, doacoes: 12 },
+    { cidade: 'Caruaru', doadores: 2, doacoes: 30 },   // menos de 3 doadores: fica fora (privacidade)
+    { cidade: 'Paulista', doadores: 4, doacoes: 0 },    // sem doacoes: fica fora
+    { cidade: 'Jaboatao', doadores: '6', doacoes: '20' } // numeros como texto (vem assim do Postgres)
+]);
+verificar('Placar: ordem por doacoes (empate: mais doadores)',
+    placar.cidades.map((c) => c.cidade), ['Jaboatao', 'Recife', 'Olinda']);
+verificar('Placar: posicoes', placar.cidades.map((c) => c.posicao), [1, 2, 3]);
+verificar('Placar: vidas da 1a cidade', placar.cidades[0].vidasSalvas, 80);
+verificar('Placar: total de doacoes conta todas as cidades', placar.totalDoacoes, 74);
+verificar('Placar: total de vidas', placar.totalVidas, 296);
+verificar('Placar: total de doadores', placar.totalDoadores, 20);
+
+const muitas = montarPlacar(Array.from({ length: 15 }, (_, i) => ({ cidade: 'Cidade ' + i, doadores: 3, doacoes: i + 1 })));
+verificar('Placar: no maximo 10 cidades', muitas.cidades.length, 10);
+
+verificar('Placar vazio', montarPlacar([]), { totalDoacoes: 0, totalVidas: 0, totalDoadores: 0, cidades: [] });

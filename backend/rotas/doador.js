@@ -1,8 +1,8 @@
-// Hemare - Rotas do doador (completar/atualizar perfil e conquistas).
+// Hemare - Rotas do doador (completar/atualizar perfil, conquistas e placar publico).
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
-const { calcularConquistas } = require('../regras/gamificacao');
+const { calcularConquistas, montarPlacar } = require('../regras/gamificacao');
 const { verificarElegibilidade } = require('../regras/elegibilidade');
 
 const router = express.Router();
@@ -71,6 +71,24 @@ router.get('/conquistas', autenticar, async (req, res) => {
         res.json({ ...conquistas, elegibilidade });
     } catch (erro) {
         res.status(500).json({ erro: 'Erro ao buscar conquistas: ' + erro.message });
+    }
+});
+
+// PUBLICO: placar das cidades que mais doam (so numeros agregados, sem dados pessoais).
+router.get('/placar', async (req, res) => {
+    try {
+        // Agrupa ignorando maiusculas e espacos ("Recife" e "recife " sao a mesma cidade).
+        const r = await pool.query(
+            `SELECT MIN(TRIM(cidade)) AS cidade,
+                    COUNT(*) AS doadores,
+                    COALESCE(SUM(total_doacoes), 0) AS doacoes
+               FROM doadores
+              WHERE cidade IS NOT NULL AND TRIM(cidade) <> ''
+              GROUP BY LOWER(TRIM(cidade))`
+        );
+        res.json(montarPlacar(r.rows));
+    } catch (erro) {
+        res.status(500).json({ erro: 'Erro ao montar o placar: ' + erro.message });
     }
 });
 

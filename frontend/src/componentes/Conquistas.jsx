@@ -3,23 +3,79 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { URL_BACKEND } from '../config';
 
+// Compara os emblemas de agora com os da ultima visita (guardados no navegador)
+// e devolve os que sao novos. Na primeira visita so guarda, sem comemorar.
+function descobrirEmblemasNovos(emblemas) {
+  try {
+    const usuario = JSON.parse(localStorage.getItem('hemare_usuario') || 'null');
+    const chave = 'hemare_emblemas_vistos_' + (usuario ? usuario.id : 'anon');
+    const ganhos = emblemas.filter((e) => e.conquistado).map((e) => e.id);
+    const salvo = localStorage.getItem(chave);
+    localStorage.setItem(chave, JSON.stringify(ganhos));
+    if (salvo === null) return [];
+    const vistos = JSON.parse(salvo);
+    return emblemas.filter((e) => e.conquistado && !vistos.includes(e.id));
+  } catch {
+    return [];
+  }
+}
+
+// Texto para divulgar nas redes e trazer mais doadores.
+function textoCompartilhar(dados) {
+  const site = window.location.origin;
+  if (dados.totalDoacoes === 0) {
+    return 'Estou me preparando para doar sangue pela primeira vez! 🩸 Uma doação pode salvar até 4 vidas. '
+      + 'Veja se você pode doar também: ' + site;
+  }
+  const vezes = dados.totalDoacoes === 1 ? 'vez' : 'vezes';
+  return 'Já doei sangue ' + dados.totalDoacoes + ' ' + vezes + ' e posso ter ajudado a salvar até '
+    + dados.vidasSalvas + ' vidas! 🩸 Sou ' + dados.nivel.icone + ' "' + dados.nivel.nome + '" no Hemare. '
+    + 'Doe sangue você também: ' + site;
+}
+
 function Conquistas() {
   const [dados, setDados] = useState(null);
   const [situacao, setSituacao] = useState('carregando'); // carregando | ok | sem-perfil | erro
+  const [novos, setNovos] = useState([]);
+  const [avisoCopia, setAvisoCopia] = useState('');
 
   useEffect(() => {
+    // Se o componente sair da tela antes da resposta, ela e ignorada
+    // (senao os emblemas seriam marcados como vistos sem o aviso aparecer).
+    let ativo = true;
     const token = localStorage.getItem('hemare_token');
     fetch(URL_BACKEND + '/doador/conquistas', {
       headers: { 'Authorization': 'Bearer ' + token }
     })
       .then(async (r) => {
+        if (!ativo) return;
         if (r.status === 404) return setSituacao('sem-perfil');
         if (!r.ok) return setSituacao('erro');
-        setDados(await r.json());
+        const resposta = await r.json();
+        if (!ativo) return;
+        setNovos(descobrirEmblemasNovos(resposta.emblemas));
+        setDados(resposta);
         setSituacao('ok');
       })
-      .catch(() => setSituacao('erro'));
+      .catch(() => ativo && setSituacao('erro'));
+    return () => { ativo = false; };
   }, []);
+
+  async function compartilhar() {
+    const texto = textoCompartilhar(dados);
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'Hemare', text: texto });
+        return;
+      }
+      await navigator.clipboard.writeText(texto);
+      setAvisoCopia('Texto copiado! Cole onde quiser compartilhar.');
+    } catch (erro) {
+      // Cancelar o compartilhamento nao e erro.
+      if (erro && erro.name === 'AbortError') return;
+      setAvisoCopia('Não foi possível copiar. Use o botão do WhatsApp.');
+    }
+  }
 
   if (situacao === 'carregando') {
     return <p className="conq-aviso">Carregando suas conquistas...</p>;
@@ -43,6 +99,16 @@ function Conquistas() {
   return (
     <section className="conq" aria-labelledby="conq-titulo">
       <h2 id="conq-titulo" className="conq-titulo">Minhas conquistas</h2>
+
+      {novos.length > 0 && (
+        <div className="conq-novo" role="status">
+          <span className="conq-novo-ic" aria-hidden="true">🎉</span>
+          <div>
+            <strong>{novos.length === 1 ? 'Novo emblema conquistado!' : novos.length + ' novos emblemas conquistados!'}</strong>
+            <span>{novos.map((e) => e.icone + ' ' + e.nome).join(' · ')}</span>
+          </div>
+        </div>
+      )}
 
       <div className="conq-topo">
         <div className="conq-nivel">
@@ -84,7 +150,8 @@ function Conquistas() {
       <h3 className="conq-subtitulo">Emblemas ({conquistados} de {emblemas.length})</h3>
       <ul className="conq-emblemas">
         {emblemas.map((e) => (
-          <li key={e.id} className={'conq-emblema' + (e.conquistado ? ' conq-ganho' : '')}>
+          <li key={e.id} className={'conq-emblema' + (e.conquistado ? ' conq-ganho' : '')
+            + (novos.some((n) => n.id === e.id) ? ' conq-recem' : '')}>
             <span className="conq-emblema-ic" aria-hidden="true">{e.icone}</span>
             <strong>{e.nome}</strong>
             <span className="conq-emblema-desc">{e.descricao}</span>
@@ -92,6 +159,19 @@ function Conquistas() {
           </li>
         ))}
       </ul>
+
+      <div className="conq-compartilhar">
+        <p>Inspire mais gente a doar: compartilhe sua conquista.</p>
+        <div className="conq-botoes">
+          <button type="button" className="conq-btn" onClick={compartilhar}>📤 Compartilhar</button>
+          <a className="conq-btn conq-btn-whats" target="_blank" rel="noopener noreferrer"
+             href={'https://wa.me/?text=' + encodeURIComponent(textoCompartilhar(dados))}>
+            💬 WhatsApp
+          </a>
+          <Link to="/placar" className="conq-btn conq-btn-vazado">🏙️ Placar das cidades</Link>
+        </div>
+        {avisoCopia && <p className="conq-copia" role="status">{avisoCopia}</p>}
+      </div>
     </section>
   );
 }
