@@ -4,8 +4,27 @@ const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
 const { calcularConquistas, montarPlacar } = require('../regras/gamificacao');
 const { verificarElegibilidade } = require('../regras/elegibilidade');
+const { gerarCodigo } = require('../regras/indicacao');
 
 const router = express.Router();
+
+// Amigos convidados por este usuario que ja tem pelo menos uma doacao confirmada.
+// Devolve 0 se as colunas de indicacao ainda nao existem (db/ajustar-indicacao.js nao rodou).
+async function contarAmigosQueDoaram(usuarioId) {
+    try {
+        const r = await pool.query(
+            `SELECT COUNT(DISTINCT dr.id) AS total
+               FROM usuarios u
+               JOIN doadores dr ON dr.usuario_id = u.id
+               JOIN doacoes dc ON dc.doador_id = dr.id
+              WHERE u.indicado_por = $1`,
+            [usuarioId]
+        );
+        return Number(r.rows[0].total) || 0;
+    } catch (erro) {
+        return 0;
+    }
+}
 
 // COMPLETAR PERFIL: salva os dados do doador logado.
 router.post('/perfil', autenticar, async (req, res) => {
@@ -59,7 +78,8 @@ router.get('/conquistas', autenticar, async (req, res) => {
             totalDoacoes: Number(doa.total_doacoes) || 0,
             doacoesUltimoAno: Number(doa.doacoes_ultimo_ano),
             tipoSanguineo: doa.tipo_sanguineo,
-            visibilidade: doa.visibilidade
+            visibilidade: doa.visibilidade,
+            amigosQueDoaram: await contarAmigosQueDoaram(req.usuario.id)
         });
 
         // Quando pode doar de novo (so se o sexo estiver informado como M/F).
@@ -70,6 +90,50 @@ router.get('/conquistas', autenticar, async (req, res) => {
         res.json({ ...conquistas, elegibilidade, querLembrete: doa.quer_lembrete === true });
     } catch (erro) {
         res.status(500).json({ erro: 'Erro ao buscar conquistas: ' + erro.message });
+    }
+});
+
+// TRAGA UM AMIGO: codigo de convite do doador (criado na primeira vez) e quantos amigos vieram.
+// So devolve numeros: nunca o nome de quem foi convidado.
+router.get('/indicacao', autenticar, async (req, res) => {
+    if (req.usuario.tipo !== 'doador') {
+        return res.status(403).json({ erro: 'O convite de amigos e para contas de doador.' });
+    }
+    try {
+        const r = await pool.query('SELECT codigo_indicacao FROM usuarios WHERE id = $1', [req.usuario.id]);
+        if (r.rows.length === 0) {
+            return res.status(404).json({ erro: 'Conta nao encontrada.' });
+        }
+
+        let codigo = r.rows[0].codigo_indicacao;
+        // Sorteia ate achar um codigo livre (colisao e raridade: o indice unico recusa repetidos).
+        for (let tentativa = 0; !codigo && tentativa < 5; tentativa++) {
+            try {
+                const u = await pool.query(
+                    'UPDATE usuarios SET codigo_indicacao = $1 WHERE id = $2 AND codigo_indicacao IS NULL RETURNING codigo_indicacao',
+                    [gerarCodigo(), req.usuario.id]
+                );
+                codigo = u.rows.length > 0 ? u.rows[0].codigo_indicacao : null;
+            } catch (erro) {
+                if (erro.code !== '23505') throw erro;
+            }
+        }
+        if (!codigo) {
+            const outraLeitura = await pool.query('SELECT codigo_indicacao FROM usuarios WHERE id = $1', [req.usuario.id]);
+            codigo = outraLeitura.rows[0].codigo_indicacao;
+        }
+        if (!codigo) {
+            return res.status(500).json({ erro: 'Nao consegui gerar seu codigo agora. Tente de novo.' });
+        }
+
+        const cadastrados = await pool.query('SELECT COUNT(*) AS total FROM usuarios WHERE indicado_por = $1', [req.usuario.id]);
+        res.json({
+            codigo: codigo,
+            amigosCadastrados: Number(cadastrados.rows[0].total) || 0,
+            amigosQueDoaram: await contarAmigosQueDoaram(req.usuario.id)
+        });
+    } catch (erro) {
+        res.status(500).json({ erro: 'Erro ao buscar seu convite: ' + erro.message });
     }
 });
 

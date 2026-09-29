@@ -1,6 +1,7 @@
 // Hemare - Area do doador (refinada).
 import { Link, useNavigate } from 'react-router-dom';
 import Conquistas from '../componentes/Conquistas';
+import Indicacao from '../componentes/Indicacao';
 
 function AreaDoador() {
   const navegar = useNavigate();
@@ -25,6 +26,7 @@ function AreaDoador() {
       </div>
 
       <Conquistas />
+      <Indicacao />
 
       <div className="area-cards">
         <Link to="/completar-perfil" className="area-card">

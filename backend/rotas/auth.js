@@ -4,12 +4,25 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../banco');
 const { TIPOS_CADASTRO } = require('../regras/verificacao');
+const { normalizarCodigo } = require('../regras/indicacao');
 
 const router = express.Router();
 
+// Devolve o id de quem tem esse codigo de convite, ou null (codigo ruim ou coluna ainda nao criada).
+async function buscarQuemConvidou(texto) {
+    const codigo = normalizarCodigo(texto);
+    if (!codigo) return null;
+    try {
+        const r = await pool.query('SELECT id FROM usuarios WHERE codigo_indicacao = $1', [codigo]);
+        return r.rows.length > 0 ? r.rows[0].id : null;
+    } catch (erro) {
+        return null;
+    }
+}
+
 // CADASTRO: cria apenas a conta (usuario). O perfil de doador e preenchido depois do login.
 router.post('/cadastro', async (req, res) => {
-    const { nome, email, senha, tipo } = req.body;
+    const { nome, email, senha, tipo, codigoIndicacao } = req.body;
 
     if (!nome || !email || !senha || !tipo) {
         return res.status(400).json({ erro: 'Preencha nome, email, senha e tipo.' });
@@ -27,10 +40,19 @@ router.post('/cadastro', async (req, res) => {
     try {
         const senhaHash = await bcrypt.hash(senha, 10);
 
-        const resultado = await pool.query(
-            'INSERT INTO usuarios (nome, email, senha_hash, tipo) VALUES ($1, $2, $3, $4) RETURNING id, nome, email, tipo',
-            [nome, email, senhaHash, tipo]
-        );
+        // "Traga um amigo": se veio um codigo de convite valido, guarda quem convidou.
+        // Codigo invalido ou desconhecido nunca impede o cadastro (so e ignorado).
+        const indicadoPor = tipo === 'doador' ? await buscarQuemConvidou(codigoIndicacao) : null;
+
+        const resultado = indicadoPor
+            ? await pool.query(
+                'INSERT INTO usuarios (nome, email, senha_hash, tipo, indicado_por) VALUES ($1, $2, $3, $4, $5) RETURNING id, nome, email, tipo',
+                [nome, email, senhaHash, tipo, indicadoPor]
+            )
+            : await pool.query(
+                'INSERT INTO usuarios (nome, email, senha_hash, tipo) VALUES ($1, $2, $3, $4) RETURNING id, nome, email, tipo',
+                [nome, email, senhaHash, tipo]
+            );
 
         res.status(201).json({ mensagem: 'Usuario cadastrado!', usuario: resultado.rows[0] });
     } catch (erro) {

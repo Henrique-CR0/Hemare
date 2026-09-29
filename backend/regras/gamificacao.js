@@ -28,17 +28,22 @@ const EMBLEMAS = [
     { id: 'universal',    icone: '🌍', nome: 'Doador universal',  descricao: 'Tipo O-: seu sangue serve para todos.',
       condicao: (d) => d.tipoSanguineo === 'O-' },
     { id: 'dourado',      icone: '🌟', nome: 'Sangue dourado',    descricao: 'Rh nulo: um dos sangues mais raros do mundo.',
-      condicao: (d) => typeof d.tipoSanguineo === 'string' && d.tipoSanguineo.startsWith('Rh nulo') }
+      condicao: (d) => typeof d.tipoSanguineo === 'string' && d.tipoSanguineo.startsWith('Rh nulo') },
+    { id: 'recrutador',   icone: '🤝', nome: 'Recrutador',        descricao: 'Um amigo que você convidou fez a primeira doação.',
+      condicao: (d) => d.amigosQueDoaram >= 1 },
+    { id: 'multiplicador', icone: '📈', nome: 'Multiplicador',    descricao: 'Três amigos que você convidou já doaram.',
+      condicao: (d) => d.amigosQueDoaram >= 3 }
 ];
 
-// dados: { totalDoacoes, doacoesUltimoAno, tipoSanguineo, visibilidade }
+// dados: { totalDoacoes, doacoesUltimoAno, tipoSanguineo, visibilidade, amigosQueDoaram }
 function calcularConquistas(dados) {
     const total = Math.max(0, Number(dados.totalDoacoes) || 0);
     const doador = {
         totalDoacoes: total,
         doacoesUltimoAno: Math.max(0, Number(dados.doacoesUltimoAno) || 0),
         tipoSanguineo: dados.tipoSanguineo || null,
-        visibilidade: dados.visibilidade || 'anonimo'
+        visibilidade: dados.visibilidade || 'anonimo',
+        amigosQueDoaram: Math.max(0, Number(dados.amigosQueDoaram) || 0)
     };
 
     // Nivel atual = o ultimo nivel cujo minimo foi alcancado.
