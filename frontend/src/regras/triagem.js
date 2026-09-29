@@ -13,12 +13,20 @@ function avaliarTriagem(r) {
     if (r.usaDrogasInjetaveis) { impedimentos.push('Você marcou uso de drogas injetáveis.'); }
     if (r.hepatiteAposOnzeAnos) { impedimentos.push('Você marcou hepatite após os 11 anos de idade.'); }
 
-    // --- Requisitos basicos (viram atencao se nao cumpridos) ---
+    // --- Limites oficiais de peso e idade ---
+    // Fora deles a pessoa NAO pode doar (impedimento), nao e so um ponto de atencao.
     if (r.peso !== undefined && r.peso > 0 && r.peso < 50) {
-        atencoes.push('Seu peso está abaixo de 50 kg, que é o mínimo para doar.');
+        impedimentos.push('Seu peso está abaixo de 50 kg, que é o mínimo para doar.');
     }
     if (r.idade !== undefined && r.idade > 0 && (r.idade < 16 || r.idade > 69)) {
-        atencoes.push('A idade para doar é de 16 a 69 anos.');
+        impedimentos.push('A idade para doar é de 16 a 69 anos.');
+    }
+    // Dentro da faixa, mas com condicoes (viram atencao).
+    if (r.idade >= 16 && r.idade <= 17) {
+        atencoes.push('Menores de 18 anos precisam do consentimento formal dos pais ou responsáveis.');
+    }
+    if (r.idade >= 60 && r.idade <= 69) {
+        atencoes.push('A partir dos 60 anos, só pode doar quem já doou sangue antes dos 60.');
     }
     if (r.dormiuBem === false) {
         atencoes.push('É importante ter dormido bem antes de doar.');

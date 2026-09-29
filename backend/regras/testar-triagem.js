@@ -52,3 +52,26 @@ verificar('Usa medicacao continua',
 verificar('Prioridade do vermelho (tatuagem + HIV)',
     avaliarTriagem({ idade: 30, peso: 70, tatuagemRecente: true, temHIV: true }),
     'vermelho');
+
+// 10) Limites exatos (onde erros de "<" e "<=" costumam aparecer)
+verificar('Exatamente 50 kg: pode',
+    avaliarTriagem({ idade: 30, peso: 50 }),
+    'verde');
+verificar('Exatamente 16 anos: autorizacao',
+    avaliarTriagem({ idade: 16, peso: 70 }),
+    'amarelo');
+verificar('18 anos: pode',
+    avaliarTriagem({ idade: 18, peso: 70 }),
+    'verde');
+verificar('59 anos: pode',
+    avaliarTriagem({ idade: 59, peso: 70 }),
+    'verde');
+verificar('60 anos: so quem ja doou antes',
+    avaliarTriagem({ idade: 60, peso: 70 }),
+    'amarelo');
+verificar('69 anos: ultimo ano permitido',
+    avaliarTriagem({ idade: 69, peso: 70 }),
+    'amarelo');
+verificar('70 anos: fora da faixa',
+    avaliarTriagem({ idade: 70, peso: 70 }),
+    'vermelho');
