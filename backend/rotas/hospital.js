@@ -7,6 +7,8 @@ const autenticar = require('../middleware/autenticar');
 const { exigirHospitalAprovado } = require('../middleware/exigirPapel');
 const { statusVerificacao } = require('../regras/verificacao');
 const { doadoresCompativeis } = require('../regras/compatibilidade');
+const { selecionarDoadoresParaAlerta, descreverAlerta, DIAS_ENTRE_ALERTAS } = require('../regras/alerta');
+const { escaparHtml } = require('../regras/html');
 const { calcularHash, GENESIS } = require('../regras/cadeia');
 
 const router = express.Router();
@@ -86,40 +88,58 @@ router.post('/necessidade', autenticar, exigirHospitalAprovado, async (req, res)
             [hospitalId, tipoSanguineo, tipoDoacao || 'sangue', urgencia || 'normal']
         );
 
+        // ALERTA INTELIGENTE: so chama quem e compativel, identificado, apto hoje,
+        // da mesma cidade e sem alerta recente (regra em regras/alerta.js).
+        let alerta = null;
         if (urgencia === 'critico' || urgencia === 'emergencia') {
             const tipos = doadoresCompativeis(tipoSanguineo);
-            if (tipos.length > 0) {
-                const rDoa = await pool.query(
-                    `SELECT u.nome, u.email
-                     FROM doadores d
-                     JOIN usuarios u ON u.id = d.usuario_id
-                     WHERE d.tipo_sanguineo = ANY($1) AND d.visibilidade = 'identificado'`,
-                    [tipos]
-                );
-                const rHospNome = await pool.query('SELECT nome FROM usuarios WHERE id = $1', [usuarioId]);
-                const nomeHospital = rHospNome.rows[0] ? rHospNome.rows[0].nome : 'Um hospital';
+            const rDoa = await pool.query(
+                `SELECT d.id, u.nome, u.email, d.tipo_sanguineo, d.sexo, d.cidade, d.visibilidade,
+                        d.ultima_doacao, d.ultimo_alerta
+                   FROM doadores d JOIN usuarios u ON u.id = d.usuario_id
+                  WHERE d.tipo_sanguineo = ANY($1)`,
+                [tipos]
+            );
+            const cidade = req.hospital.cidade;
+            const { convocados, resumo } = selecionarDoadoresParaAlerta(rDoa.rows, { tiposCompativeis: tipos, cidadeHospital: cidade });
 
-                for (const doa of rDoa.rows) {
+            if (convocados.length > 0) {
+                // Marca a data do alerta, para o mesmo doador nao ser chamado de novo em poucos dias.
+                const ids = convocados.map((d) => d.id);
+                const marcadores = ids.map((_, i) => '$' + (i + 1)).join(', ');
+                await pool.query('UPDATE doadores SET ultimo_alerta = CURRENT_DATE WHERE id IN (' + marcadores + ')', ids);
+
+                const rHospNome = await pool.query('SELECT nome FROM usuarios WHERE id = $1', [usuarioId]);
+                const nomeHospital = escaparHtml(rHospNome.rows[0] ? rHospNome.rows[0].nome : 'Um hospital');
+                const tipo = escaparHtml(tipoSanguineo);
+
+                for (const doa of convocados) {
                     resend.emails.send({
                         from: 'Hemare <onboarding@resend.dev>',
                         to: doa.email,
-                        subject: '🚨 Precisa-se de sangue ' + tipoSanguineo + ' com urgência!',
+                        subject: '🚨 Precisa-se de sangue ' + tipoSanguineo + ' com urgência em ' + cidade + '!',
                         html: `
                             <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
                                 <h2 style="color: #c8102e;">🩸 Hemare — Chamado urgente</h2>
-                                <p>Olá, ${doa.nome}!</p>
-                                <p><strong>${nomeHospital}</strong> precisa de sangue do tipo
-                                <strong style="color:#c8102e;">${tipoSanguineo}</strong> com urgência.</p>
-                                <p>Seu tipo sanguíneo é compatível! Se você puder doar, sua ajuda pode salvar vidas hoje.</p>
-                                <p style="color:#666; font-size:13px;">Confirme sua aptidão e encontre onde doar no Hemare.</p>
+                                <p>Olá, ${escaparHtml(doa.nome)}!</p>
+                                <p><strong>${nomeHospital}</strong>, em ${escaparHtml(cidade)}, precisa de sangue do tipo
+                                <strong style="color:#c8102e;">${tipo}</strong> com urgência.</p>
+                                <p>Você foi chamado(a) porque seu tipo é compatível, você mora na mesma cidade e,
+                                pelo intervalo desde a sua última doação, <strong>já pode doar</strong>.</p>
+                                <p style="color:#666; font-size:13px;">Confirme sua aptidão na triagem do Hemare antes de ir.
+                                Para não te incomodar, você recebe no máximo um chamado a cada ${DIAS_ENTRE_ALERTAS} dias.</p>
                             </div>
                         `
                     }).catch(() => {});
                 }
             }
+            alerta = { ...resumo, mensagem: descreverAlerta(resumo, cidade) };
         }
 
-        res.status(201).json({ mensagem: 'Necessidade publicada!' });
+        res.status(201).json({
+            mensagem: 'Necessidade publicada!' + (alerta ? ' ' + alerta.mensagem : ''),
+            alerta
+        });
     } catch (erro) {
         res.status(500).json({ erro: 'Erro ao publicar: ' + erro.message });
     }

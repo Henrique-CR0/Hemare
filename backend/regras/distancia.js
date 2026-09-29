@@ -23,4 +23,4 @@ function calcularDistancia(lat1, lng1, lat2, lng2) {
     return Math.round(distancia); // km inteiros
 }
 
-export { calcularDistancia };
+module.exports = { calcularDistancia };

@@ -210,6 +210,13 @@ function PainelHospital() {
           </select>
           <button className="hemare-botao" onClick={publicar}>Publicar</button>
         </div>
+        {(urgencia === 'critico' || urgencia === 'emergencia') && (
+          <p className="alerta-dica">
+            🚨 Ao publicar, um alerta por email vai para os doadores <strong>compatíveis</strong>, que aceitaram ser
+            contatados, estão <strong>aptos a doar hoje</strong> e moram em <strong>{dadosHospital?.cidade || 'sua cidade'}</strong>.
+            Cada doador recebe no máximo um alerta a cada 3 dias.
+          </p>
+        )}
         {mensagem && <div className="painel-msg">{mensagem}</div>}
       </div>
 

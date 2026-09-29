@@ -177,6 +177,8 @@ select.hemare-input { cursor: pointer; }
 .verif-recusado { background: #fff1f2; border-color: #f3b8c1; }
 .verif-recusado h2 { color: #9b0d22; }
 .verif-bloqueios { font-size: 14px; }
+.alerta-dica { margin: 12px 0 0; padding: 10px 14px; border-radius: 10px; background: #fff4d6; color: #5b4a3a; font-size: 14px; line-height: 1.5; }
+.alto-contraste .alerta-dica { background: #000 !important; border: 1px solid #fff; }
 
 /* ===== Painel do administrador (verificacao de hospitais) ===== */
 .adm-filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }

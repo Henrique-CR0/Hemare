@@ -6,6 +6,7 @@ const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
 const { exigirAdmin } = require('../middleware/exigirPapel');
 const { statusVerificacao, validarMotivoRecusa } = require('../regras/verificacao');
+const { escaparHtml } = require('../regras/html');
 
 const router = express.Router();
 
@@ -42,13 +43,6 @@ router.get('/hospitais', async (req, res) => {
         res.status(500).json({ erro: erro.message });
     }
 });
-
-// Evita que um nome como "<script>" vire HTML dentro do email.
-function escaparHtml(texto) {
-    return String(texto).replace(/[&<>"']/g, (c) => (
-        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
-    ));
-}
 
 // Avisa o hospital por email (se falhar, nao impede a verificacao).
 function avisarHospital(email, nomeOriginal, aprovado, motivoOriginal) {
