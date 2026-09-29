@@ -2,9 +2,11 @@
 
 /* ===== Layout do site ===== */
 .site { min-height: 100vh; display: flex; flex-direction: column; background: #fff5f5; color: #2b0d10; font-family: 'Segoe UI', system-ui, sans-serif; }
-.site-topo { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; background: #c8102e; }
+.site-topo { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 20px; padding: 16px 32px; background: #c8102e; }
 .site-logo { font-size: 22px; font-weight: bold; color: #fff; text-decoration: none; }
-.site-menu { display: flex; gap: 22px; align-items: center; }
+.acess-barra { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+.site-menu { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
+.menu-botao { display: none; background: #fff; color: #c8102e; border: none; padding: 8px 16px; border-radius: 100px; font-size: 15px; font-weight: 700; cursor: pointer; }
 .site-menu > a { color: #ffd9df; text-decoration: none; font-size: 15px; font-weight: 500; }
 .site-menu > a:hover { color: #fff; }
 .site-conteudo { flex: 1; padding: 40px 32px; }
@@ -13,7 +15,7 @@
 
 /* Menu suspenso "Aprenda" */
 .menu-drop { position: relative; cursor: pointer; }
-.menu-drop-titulo { color: #ffd9df; font-size: 15px; font-weight: 500; }
+.menu-drop-titulo { color: #ffd9df; font-size: 15px; font-weight: 500; background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; }
 .menu-drop:hover .menu-drop-titulo { color: #fff; }
 .menu-drop-lista { position: absolute; top: 100%; left: 0; background: #fff; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.18); padding: 8px; min-width: 190px; display: flex; flex-direction: column; gap: 2px; z-index: 50; }
 .menu-drop-lista a { color: #2b0d10 !important; padding: 10px 14px; border-radius: 7px; font-size: 14px; text-decoration: none; }
@@ -268,6 +270,8 @@ select.hemare-input { cursor: pointer; }
 .alto-contraste .site-topo, .alto-contraste .site-rodape { background: #000 !important; border-bottom: 2px solid #fff; }
 .alto-contraste .site-logo, .alto-contraste .site-menu > a, .alto-contraste .site-menu > a:hover,
 .alto-contraste .menu-drop-titulo { color: #fff !important; }
+.alto-contraste .menu-drop-lista { background: #000 !important; border: 1px solid #fff; }
+.alto-contraste .menu-botao { background: #ffff00 !important; color: #000 !important; border: 2px solid #fff !important; }
 .alto-contraste a, .alto-contraste .hemare-link, .alto-contraste .auth-troca a { color: #ffff00 !important; }
 .alto-contraste .painel-caixa, .alto-contraste .auth-card, .alto-contraste .conteudo-bloco,
 .alto-contraste .mito-card, .alto-contraste .triagem-grupo, .alto-contraste .local-card,
@@ -437,3 +441,29 @@ select.hemare-input { cursor: pointer; }
 .clima-nublado { background: linear-gradient(135deg, #e0b000, #c99900); }
 .clima-chuva { background: linear-gradient(135deg, #e8112d, #c8102e); }
 .clima-tempestade { background: linear-gradient(135deg, #7a0a17, #4a0610); }
+
+/* ===== TELAS MENORES (fica no fim do arquivo para valer sobre as regras acima) ===== */
+/* Cabecalho: o menu vira um botao "☰ Menu" */
+@media (max-width: 1100px) {
+  .menu-botao { display: inline-flex; }
+  .site-menu { display: none; width: 100%; flex-direction: column; align-items: stretch; gap: 0; padding-top: 6px; border-top: 1px solid rgba(255,255,255,.25); }
+  .site-menu-aberto { display: flex; }
+  .site-menu > a, .menu-drop-titulo { display: block; width: 100%; text-align: left; padding: 12px 4px; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,.12); }
+  .menu-drop-lista { position: static; box-shadow: none; background: rgba(255,255,255,.1); border-radius: 8px; margin: 4px 0 8px; }
+  .menu-drop-lista a { color: #fff !important; font-size: 15px; }
+  .menu-drop-lista a:hover { background: rgba(255,255,255,.15); color: #fff !important; }
+  .site-menu > .menu-entrar, .site-menu > .menu-sair { align-self: flex-start; width: auto; margin-top: 12px; border-bottom: none; padding: 8px 18px; }
+}
+@media (max-width: 760px) {
+  .landing-cards { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .site-topo { padding: 12px 16px; }
+  .site-logo { font-size: 20px; }
+  .menu-botao { order: 2; }
+  .acess-barra { order: 3; width: 100%; margin-left: 0; }
+  .site-menu { order: 4; }
+  .site-conteudo { padding: 28px 16px; }
+  .landing-hero { margin: -28px -16px 0; }
+  .landing-hero h1 { font-size: 36px; }
+}
