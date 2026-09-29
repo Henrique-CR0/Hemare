@@ -545,3 +545,29 @@ select.hemare-input { cursor: pointer; }
   background: #000 !important; color: #fff !important; border: 1px solid #fff !important;
 }
 .alto-contraste .amigo-titulo, .alto-contraste .amigo-sub, .alto-contraste .amigo-numeros strong, .alto-contraste .amigo-numeros span { color: #fff !important; }
+
+/* ===== APADRINHAMENTO ===== */
+.apad { max-width: 860px; margin: 0 auto; text-align: left; }
+.apad h1 { color: #c8102e; }
+.apad-sub { color: #6b5054; }
+.apad-privacidade { background: #fff6e5; color: #7a5200; border-radius: 10px; padding: 10px 14px; font-size: 14px; }
+.apad-vazio { color: #8a6b6f; margin: 24px 0; }
+.apad-lista { list-style: none; padding: 0; margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.apad-caso { background: #fff; border: 1px solid #f0d4d9; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.apad-topo { display: flex; align-items: center; gap: 12px; }
+.apad-tipo { min-width: 52px; height: 52px; border-radius: 50%; background: #ffe9ec; color: #c8102e; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.apad-topo strong { display: block; color: #2b0d10; }
+.apad-local { display: block; font-size: 13px; color: #6b5054; }
+.apad-detalhe, .apad-meta { margin: 0; font-size: 14px; color: #6b5054; }
+.apad-ja { margin: 0; color: #1f8f4e; font-size: 14px; }
+.apad-login { margin: 0; font-size: 14px; color: #6b5054; }
+.apad-acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+.apad-acoes .conq-btn:disabled { opacity: .5; cursor: not-allowed; }
+.apad-form { flex-direction: column; align-items: stretch; }
+.apad-freq { display: flex; align-items: center; gap: 8px; font-size: 14px; flex-wrap: wrap; }
+.apad-freq input { width: 90px; }
+.apad-autoriza { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; }
+.alto-contraste .apad-caso, .alto-contraste .apad-privacidade { background: #000 !important; color: #fff !important; border: 1px solid #fff !important; }
+.alto-contraste .apad h1, .alto-contraste .apad-sub, .alto-contraste .apad-topo strong, .alto-contraste .apad-local,
+.alto-contraste .apad-detalhe, .alto-contraste .apad-meta, .alto-contraste .apad-login, .alto-contraste .apad-ja { color: #fff !important; }
+.alto-contraste .apad-tipo { background: #000 !important; color: #ffff00 !important; border: 1px solid #ffff00; }

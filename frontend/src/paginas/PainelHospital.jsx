@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { URL_BACKEND } from '../config';
+import CasosApadrinhamento from '../componentes/CasosApadrinhamento';
 const TIPOS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 const NIVEIS = [
   { valor: 'estavel', rotulo: '🟢 Estável' },
@@ -280,6 +281,8 @@ function PainelHospital() {
           )}
         </div>
       )}
+
+      <CasosApadrinhamento />
       </>)}
     </div>
   );

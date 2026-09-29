@@ -32,10 +32,12 @@ const EMBLEMAS = [
     { id: 'recrutador',   icone: '🤝', nome: 'Recrutador',        descricao: 'Um amigo que você convidou fez a primeira doação.',
       condicao: (d) => d.amigosQueDoaram >= 1 },
     { id: 'multiplicador', icone: '📈', nome: 'Multiplicador',    descricao: 'Três amigos que você convidou já doaram.',
-      condicao: (d) => d.amigosQueDoaram >= 3 }
+      condicao: (d) => d.amigosQueDoaram >= 3 },
+    { id: 'padrinho',     icone: '💝', nome: 'Padrinho',          descricao: 'Apadrinhou um paciente que precisa de transfusões regulares.',
+      condicao: (d) => d.afilhados >= 1 }
 ];
 
-// dados: { totalDoacoes, doacoesUltimoAno, tipoSanguineo, visibilidade, amigosQueDoaram }
+// dados: { totalDoacoes, doacoesUltimoAno, tipoSanguineo, visibilidade, amigosQueDoaram, afilhados }
 function calcularConquistas(dados) {
     const total = Math.max(0, Number(dados.totalDoacoes) || 0);
     const doador = {
@@ -43,7 +45,8 @@ function calcularConquistas(dados) {
         doacoesUltimoAno: Math.max(0, Number(dados.doacoesUltimoAno) || 0),
         tipoSanguineo: dados.tipoSanguineo || null,
         visibilidade: dados.visibilidade || 'anonimo',
-        amigosQueDoaram: Math.max(0, Number(dados.amigosQueDoaram) || 0)
+        amigosQueDoaram: Math.max(0, Number(dados.amigosQueDoaram) || 0),
+        afilhados: Math.max(0, Number(dados.afilhados) || 0)
     };
 
     // Nivel atual = o ultimo nivel cujo minimo foi alcancado.

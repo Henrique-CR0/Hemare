@@ -78,4 +78,4 @@ function descreverAlerta(resumo, cidade) {
         + '. A necessidade fica publicada e visível no painel.';
 }
 
-module.exports = { selecionarDoadoresParaAlerta, descreverAlerta, normalizarCidade, DIAS_ENTRE_ALERTAS };
+module.exports = { selecionarDoadoresParaAlerta, descreverAlerta, normalizarCidade, paraDia, diasEntre, DIAS_ENTRE_ALERTAS };
