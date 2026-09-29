@@ -15,6 +15,7 @@ function Direitos() {
           <li>Para <strong>servidores públicos e militares</strong>, o direito vem da Lei nº 1.075/1950 (dispensa do ponto no dia da doação).</li>
           <li><strong>Atenção:</strong> a folga só vale se a doação for <strong>efetivada</strong>. Se você foi mas não estava apto, não gera o direito.</li>
           <li>Para garantir, apresente ao RH o <strong>comprovante</strong> com data e horário da doação.</li>
+          <li>Se a doação foi confirmada pelo hospital no Hemare, você também encontra na sua área um <strong>comprovante verificável com QR code</strong>, que o RH pode conferir na hora.</li>
         </ul>
       </div>
 

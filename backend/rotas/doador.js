@@ -1,4 +1,4 @@
-// Hemare - Rotas do doador (completar/atualizar perfil, conquistas e placar publico).
+// Hemare - Rotas do doador (perfil, conquistas, doacoes, lembrete e placar publico).
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
@@ -70,6 +70,25 @@ router.get('/conquistas', autenticar, async (req, res) => {
         res.json({ ...conquistas, elegibilidade, querLembrete: doa.quer_lembrete === true });
     } catch (erro) {
         res.status(500).json({ erro: 'Erro ao buscar conquistas: ' + erro.message });
+    }
+});
+
+// MINHAS DOACOES: lista as doacoes confirmadas do doador logado, com o codigo do comprovante.
+router.get('/doacoes', autenticar, async (req, res) => {
+    try {
+        const r = await pool.query(
+            `SELECT dc.id, dc.data_doacao, dc.hash, uh.nome AS hospital, h.cidade, h.estado
+               FROM doacoes dc
+               JOIN doadores d ON d.id = dc.doador_id
+               JOIN hospitais h ON h.id = dc.hospital_id
+               JOIN usuarios uh ON uh.id = h.usuario_id
+              WHERE d.usuario_id = $1
+              ORDER BY dc.data_doacao DESC, dc.id DESC`,
+            [req.usuario.id]
+        );
+        res.json(r.rows);
+    } catch (erro) {
+        res.status(500).json({ erro: 'Erro ao buscar doações: ' + erro.message });
     }
 });
 
