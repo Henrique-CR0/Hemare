@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Conquistas from '../componentes/Conquistas';
 import Indicacao from '../componentes/Indicacao';
 import MeusAfilhados from '../componentes/MeusAfilhados';
+import MinhasPromessas from '../componentes/MinhasPromessas';
 
 function AreaDoador() {
   const navegar = useNavigate();
@@ -27,6 +28,7 @@ function AreaDoador() {
       </div>
 
       <Conquistas />
+      <MinhasPromessas />
       <MeusAfilhados />
       <Indicacao />
 

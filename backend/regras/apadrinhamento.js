@@ -34,15 +34,10 @@ function sugerirMeta(frequenciaDias) {
     return Math.min(META_MAXIMA, Math.max(2, meta));
 }
 
-// Confere o que o hospital preencheu. Devolve { erro } ou { caso } ja limpo.
-function validarCaso(corpo) {
-    const c = corpo || {};
-
-    if (c.autorizacao !== true) {
-        return { erro: 'Confirme que o paciente ou o responsável autorizou divulgar este pedido.' };
-    }
-
-    const apelido = typeof c.apelido === 'string' ? c.apelido.trim().replace(/\s+/g, ' ') : '';
+// Confere o apelido publico de um paciente (vale para apadrinhamento e campanhas de reposicao).
+// Devolve { erro } ou { apelido } ja limpo.
+function validarApelido(texto) {
+    const apelido = typeof texto === 'string' ? texto.trim().replace(/\s+/g, ' ') : '';
     if (apelido.length < 2 || apelido.length > 30) {
         return { erro: 'Dê um apelido de 2 a 30 caracteres (nunca o nome verdadeiro).' };
     }
@@ -53,6 +48,20 @@ function validarCaso(corpo) {
     if ((apelido.match(/[0-9]/g) || []).length > 3) {
         return { erro: 'O apelido não pode ter documentos ou telefones. Use algo como "Paciente Aurora".' };
     }
+    return { apelido };
+}
+
+// Confere o que o hospital preencheu. Devolve { erro } ou { caso } ja limpo.
+function validarCaso(corpo) {
+    const c = corpo || {};
+
+    if (c.autorizacao !== true) {
+        return { erro: 'Confirme que o paciente ou o responsável autorizou divulgar este pedido.' };
+    }
+
+    const conferido = validarApelido(c.apelido);
+    if (conferido.erro) return { erro: conferido.erro };
+    const apelido = conferido.apelido;
 
     if (doadoresCompativeis(c.tipoSanguineo).length === 0) {
         return { erro: 'Escolha o tipo sanguíneo do paciente (O-, O+, A-, A+, B-, B+, AB- ou AB+).' };
@@ -139,6 +148,6 @@ function descreverChamada(resumo) {
 
 module.exports = {
     CONDICOES, FREQUENCIA_MINIMA, FREQUENCIA_MAXIMA, META_MAXIMA, MAX_AFILHADOS, DIAS_ENTRE_CHAMADAS,
-    sugerirMeta, validarCaso, podeApadrinhar, situacaoMeta, podeChamarAgora,
+    sugerirMeta, validarApelido, validarCaso, podeApadrinhar, situacaoMeta, podeChamarAgora,
     selecionarPadrinhosParaChamada, descreverChamada
 };

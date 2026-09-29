@@ -41,6 +41,20 @@ async function contarAfilhados(doadorId) {
     }
 }
 
+// Doacoes deste doador que foram confirmadas dentro de uma campanha de reposicao.
+// Devolve 0 se as tabelas ainda nao existem (db/criar-campanhas.js nao rodou).
+async function contarDoacoesEmCampanha(doadorId) {
+    try {
+        const r = await pool.query(
+            'SELECT COUNT(*) AS total FROM promessas_campanha WHERE doador_id = $1 AND doacao_id IS NOT NULL',
+            [doadorId]
+        );
+        return Number(r.rows[0].total) || 0;
+    } catch (erro) {
+        return 0;
+    }
+}
+
 // COMPLETAR PERFIL: salva os dados do doador logado.
 router.post('/perfil', autenticar, async (req, res) => {
     const usuarioId = req.usuario.id;
@@ -95,7 +109,8 @@ router.get('/conquistas', autenticar, async (req, res) => {
             tipoSanguineo: doa.tipo_sanguineo,
             visibilidade: doa.visibilidade,
             amigosQueDoaram: await contarAmigosQueDoaram(req.usuario.id),
-            afilhados: await contarAfilhados(doa.id)
+            afilhados: await contarAfilhados(doa.id),
+            doacoesEmCampanha: await contarDoacoesEmCampanha(doa.id)
         });
 
         // Quando pode doar de novo (so se o sexo estiver informado como M/F).

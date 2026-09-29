@@ -571,3 +571,27 @@ select.hemare-input { cursor: pointer; }
 .alto-contraste .apad h1, .alto-contraste .apad-sub, .alto-contraste .apad-topo strong, .alto-contraste .apad-local,
 .alto-contraste .apad-detalhe, .alto-contraste .apad-meta, .alto-contraste .apad-login, .alto-contraste .apad-ja { color: #fff !important; }
 .alto-contraste .apad-tipo { background: #000 !important; color: #ffff00 !important; border: 1px solid #ffff00; }
+
+/* ===== CAMPANHA DE REPOSICAO ===== */
+.camp { max-width: 720px; margin: 0 auto; text-align: left; }
+.camp h1 { color: #c8102e; margin: 4px 0 8px; }
+.camp h2 { font-size: 18px; color: #2b0d10; margin: 0 0 10px; }
+.camp-selo { display: inline-block; background: #ffe9ec; color: #c8102e; border-radius: 100px; padding: 4px 12px; font-size: 13px; font-weight: 700; margin: 0; }
+.camp-sub { color: #6b5054; }
+.camp-vazio { color: #8a6b6f; margin: 24px 0; }
+.camp-progresso { background: #fff; border: 1px solid #f0d4d9; border-radius: 14px; padding: 20px; margin: 20px 0; }
+.camp-numeros { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 16px; }
+.camp-numeros div { display: flex; flex-direction: column; }
+.camp-numeros strong { font-size: 28px; color: #c8102e; }
+.camp-numeros span { font-size: 13px; color: #6b5054; max-width: 150px; }
+.camp-acao { background: #fff; border: 1px solid #f0d4d9; border-radius: 14px; padding: 20px; margin-bottom: 20px; }
+.camp-form { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.camp-form label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.camp-privacidade { font-size: 13px; color: #6b5054; margin: 14px 0 0; }
+.camp-promessas { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.camp-promessas li { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 14px; background: #fff8f9; border-radius: 10px; padding: 8px 12px; }
+.alto-contraste .camp-progresso, .alto-contraste .camp-acao, .alto-contraste .camp-promessas li, .alto-contraste .camp-selo {
+  background: #000 !important; color: #fff !important; border: 1px solid #fff !important;
+}
+.alto-contraste .camp h1, .alto-contraste .camp h2, .alto-contraste .camp-sub, .alto-contraste .camp-numeros strong,
+.alto-contraste .camp-numeros span, .alto-contraste .camp-privacidade, .alto-contraste .camp-vazio { color: #fff !important; }

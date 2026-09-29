@@ -46,6 +46,10 @@ app.use('/admin', rotasAdmin);
 const rotasApadrinhamento = require('./rotas/apadrinhamento');
 app.use('/apadrinhamento', rotasApadrinhamento);
 
+// Rotas das campanhas de reposicao ("Quem doa por mim").
+const rotasCampanha = require('./rotas/campanha');
+app.use('/campanha', rotasCampanha);
+
 // Rota de teste: quando alguem acessar a raiz, responde uma mensagem.
 app.get('/', (req, res) => {
     res.json({ mensagem: 'Ola, Hemare! O backend esta funcionando.' });

@@ -10,6 +10,7 @@ const { doadoresCompativeis } = require('../regras/compatibilidade');
 const { selecionarDoadoresParaAlerta, descreverAlerta, DIAS_ENTRE_ALERTAS } = require('../regras/alerta');
 const { escaparHtml } = require('../regras/html');
 const { calcularHash, GENESIS } = require('../regras/cadeia');
+const { registrarDoacao } = require('../servicos/registrarDoacao');
 
 const router = express.Router();
 
@@ -210,44 +211,12 @@ router.post('/confirmar-doacao', autenticar, exigirHospitalAprovado, async (req,
 
     if (!doadorId) return res.status(400).json({ erro: 'Doador inválido.' });
 
-    const cliente = await pool.connect();
     try {
-        const hospitalId = req.hospital.id;
-
-        const jaDoou = await cliente.query(
-            'SELECT id FROM doacoes WHERE doador_id = $1 AND data_doacao = CURRENT_DATE',
-            [doadorId]
-        );
-        if (jaDoou.rows.length > 0) {
-            return res.status(400).json({ erro: 'Esta doação já foi confirmada hoje.' });
-        }
-
-        await cliente.query('BEGIN');
-
-        // Pega o hash do ULTIMO registro de toda a cadeia (nao so deste doador - a cadeia e global).
-        const rUltimo = await cliente.query('SELECT hash FROM doacoes ORDER BY id DESC LIMIT 1');
-        const hashAnterior = rUltimo.rows.length > 0 ? rUltimo.rows[0].hash : GENESIS;
-
-        // Calcula o novo hash, ligado ao anterior (o "elo da corrente").
-        const dataHoje = new Date().toISOString().slice(0, 10);
-        const novoHash = calcularHash(hashAnterior, doadorId, hospitalId, dataHoje);
-
-        await cliente.query(
-            'INSERT INTO doacoes (doador_id, hospital_id, hash, hash_anterior) VALUES ($1, $2, $3, $4)',
-            [doadorId, hospitalId, novoHash, hashAnterior]
-        );
-        await cliente.query(
-            'UPDATE doadores SET ultima_doacao = CURRENT_DATE, total_doacoes = COALESCE(total_doacoes,0) + 1 WHERE id = $1',
-            [doadorId]
-        );
-
-        await cliente.query('COMMIT');
-        res.json({ mensagem: 'Doação confirmada e registrada com selo de auditoria! 🩸🔗', hash: novoHash });
+        const resultado = await registrarDoacao(req.hospital.id, doadorId);
+        if (resultado.erro) return res.status(resultado.status).json({ erro: resultado.erro });
+        res.json({ mensagem: 'Doação confirmada e registrada com selo de auditoria! 🩸🔗', hash: resultado.hash });
     } catch (erro) {
-        await cliente.query('ROLLBACK');
         res.status(500).json({ erro: 'Erro ao confirmar: ' + erro.message });
-    } finally {
-        cliente.release();
     }
 });
 
