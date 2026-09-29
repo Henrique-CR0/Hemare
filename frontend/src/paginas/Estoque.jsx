@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
+import { URL_BACKEND } from '../config';
 
 const ROTULO = { estavel: '🟢 Estável', alerta: '🟡 Alerta', critico: '🔴 Crítico', emergencia: '⚫ Emergência' };
 const PESO = { emergencia: 0, critico: 1, alerta: 2, estavel: 3 }; // pra ordenar: mais urgente primeiro

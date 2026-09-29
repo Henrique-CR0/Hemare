@@ -107,6 +107,11 @@ npm install
 npm run dev                    # inicia o site (porta 5173)
 ```
 
+**Endereço do backend:** o frontend descobre sozinho onde está a API (arquivo `frontend/src/config.js`):
+- rodando no computador → `http://localhost:3000`
+- no GitHub Codespaces → o mesmo endereço do site, trocando a porta `5173` por `3000` (deixe a porta 3000 como **Public** na aba *Ports*)
+- para usar outro endereço, crie `frontend/.env.local` com `VITE_API_URL=https://seu-backend`
+
 ---
 
 ## 🗺️ Roadmap

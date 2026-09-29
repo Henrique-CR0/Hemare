@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { calcularDistancia } from '../regras/distancia';
 import MapaLocais from '../componentes/MapaLocais';
 
-const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
+import { URL_BACKEND } from '../config';
 
 function Locais() {
   const [locais, setLocais] = useState([]);
