@@ -38,6 +38,28 @@ function Conquistas() {
   const [situacao, setSituacao] = useState('carregando'); // carregando | ok | sem-perfil | erro
   const [novos, setNovos] = useState([]);
   const [avisoCopia, setAvisoCopia] = useState('');
+  const [querLembrete, setQuerLembrete] = useState(false);
+  const [salvandoLembrete, setSalvandoLembrete] = useState(false);
+  const [avisoLembrete, setAvisoLembrete] = useState('');
+
+  // Liga/desliga o email "voce ja pode doar de novo" (opt-in).
+  async function alternarLembrete() {
+    setSalvandoLembrete(true);
+    setAvisoLembrete('');
+    try {
+      const r = await fetch(URL_BACKEND + '/doador/lembrete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('hemare_token') },
+        body: JSON.stringify({ ativo: !querLembrete })
+      });
+      const d = await r.json();
+      if (r.ok) setQuerLembrete(d.querLembrete);
+      setAvisoLembrete(r.ok ? d.mensagem : '❌ ' + d.erro);
+    } catch {
+      setAvisoLembrete('❌ Não consegui falar com o servidor.');
+    }
+    setSalvandoLembrete(false);
+  }
 
   useEffect(() => {
     // Se o componente sair da tela antes da resposta, ela e ignorada
@@ -54,6 +76,7 @@ function Conquistas() {
         const resposta = await r.json();
         if (!ativo) return;
         setNovos(descobrirEmblemasNovos(resposta.emblemas));
+        setQuerLembrete(resposta.querLembrete === true);
         setDados(resposta);
         setSituacao('ok');
       })
@@ -140,11 +163,25 @@ function Conquistas() {
       )}
 
       {elegibilidade && (
-        <p className={'conq-proxima' + (elegibilidade.apto ? ' conq-proxima-apto' : '')}>
-          {elegibilidade.apto
-            ? '✅ Pelo intervalo entre doações, você já pode doar de novo.'
-            : '⏳ Você poderá doar de novo em ' + elegibilidade.diasRestantes + ' dias.'}
-        </p>
+        <div className={'conq-proxima' + (elegibilidade.apto ? ' conq-proxima-apto' : '')}>
+          <p>
+            {elegibilidade.apto
+              ? '✅ Pelo intervalo entre doações, você já pode doar de novo.'
+              : '⏳ Você poderá doar de novo em ' + elegibilidade.diasRestantes + ' dias.'}
+          </p>
+          <div className="lembrete">
+            <button type="button" className={'lembrete-btn' + (querLembrete ? ' lembrete-ativo' : '')}
+                    aria-pressed={querLembrete} disabled={salvandoLembrete} onClick={alternarLembrete}>
+              {querLembrete ? '🔔 Lembrete ligado' : '🔕 Me avise por email quando eu puder doar'}
+            </button>
+            <span className="lembrete-ajuda">
+              {querLembrete
+                ? 'Você recebe um email quando o intervalo acabar. Clique para desligar.'
+                : 'Um único email por doação, só se você pedir.'}
+            </span>
+          </div>
+          {avisoLembrete && <p className="lembrete-aviso" role="status">{avisoLembrete}</p>}
+        </div>
       )}
 
       <h3 className="conq-subtitulo">Emblemas ({conquistados} de {emblemas.length})</h3>

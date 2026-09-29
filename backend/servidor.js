@@ -52,3 +52,7 @@ const PORTA = process.env.PORT || 3000;
 app.listen(PORTA, () => {
     console.log('Servidor Hemare rodando na porta ' + PORTA);
 });
+
+// Tarefa automatica: lembrete "voce ja pode doar de novo" (ao ligar e a cada 12h).
+const { agendarLembretes } = require('./tarefas/lembretes');
+agendarLembretes();

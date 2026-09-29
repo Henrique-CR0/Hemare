@@ -25,6 +25,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 - 🩺 **Triagem de aptidão** — questionário que orienta se a pessoa pode doar, em 3 níveis, com limites oficiais de idade e peso e alertas em tempo real
 - 🗺️ **Onde doar** — hemocentros de todo o Brasil em mapa interativo, com busca por cidade e ordenação por proximidade (geolocalização)
 - 🏅 **Conquistas** — níveis, emblemas e contador de vidas salvas a cada doação confirmada, com aviso de quando poderá doar de novo, comemoração de emblema novo e botão para compartilhar (WhatsApp e redes)
+- 🔔 **Lembrete de retorno** — quem pedir recebe um email quando o intervalo entre doações acaba (um por ciclo, opt-in), para voltar a doar
 - 🏙️ **Placar das cidades** — página pública com as cidades que mais doam, só com números agregados (cidades com menos de 3 doadores não aparecem, por privacidade)
 - 📚 Conteúdo educativo — guia completo da doação, 16 mitos e verdades e os direitos do doador (folga na CLT, etc.)
 
@@ -48,7 +49,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 
 ## 🧠 Destaques técnicos
 
-- **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação, alerta inteligente e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
+- **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação, alerta inteligente, lembrete de retorno e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
 - **Segurança em camadas** — bcrypt para senhas, JWT com middleware no backend e guarda de rota no frontend, tokens de recuperação de senha com expiração e uso único, permissões por papel (doador, hospital aprovado, administrador) conferidas no backend
 - **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram
 - **Arquitetura cliente-servidor** — o frontend nunca acessa o banco diretamente; toda a lógica passa por uma API REST
@@ -102,6 +103,7 @@ node db/criar-estoque.js       # tabela de estoque
 node db/criar-doacoes.js       # tabela de doações confirmadas
 node db/ajustar-verificacao.js # verificação de hospitais (novos começam pendentes)
 node db/ajustar-alertas.js     # data do último alerta de cada doador (alerta inteligente)
+node db/ajustar-lembretes.js   # lembrete de retorno (opt-in do doador)
 node db/tornar-admin.js seu@email.com  # torna uma conta já cadastrada administrador
 node servidor.js               # inicia a API (porta 3000)
 ```
