@@ -156,7 +156,6 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Alerta de emergência inteligente (só quem pode ajudar) e lembrete de retorno
 - [x] Comprovante de doação verificável com QR code
 - [ ] Programa "Traga um amigo" (link de indicação e emblema de recrutador)
-- [ ] Agendamento de doação
 - [ ] Apadrinhamento de pacientes com necessidade recorrente de doação
 
 ---
