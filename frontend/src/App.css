@@ -286,6 +286,47 @@ select.hemare-input { cursor: pointer; }
   background: #ffff00 !important; color: #000 !important; border: 2px solid #fff !important;
 }
 .alto-contraste .landing-hero { background: #000 !important; }
+.alto-contraste .conq, .alto-contraste .conq-emblema, .alto-contraste .conq-proxima {
+  background: #000 !important; border: 1px solid #fff !important;
+}
+.alto-contraste .conq-nivel-num, .alto-contraste .conq-nivel-nome { color: #fff !important; }
+.alto-contraste .conq-barra-fundo { background: #000 !important; border: 1px solid #fff; }
+.alto-contraste .conq-barra { background: #ffff00 !important; }
+.alto-contraste .conq-emblema { opacity: 1 !important; }
+.alto-contraste .conq-ganho { border: 2px solid #ffff00 !important; }
+
+/* ===== CONQUISTAS DO DOADOR (gamificacao) ===== */
+.conq { background: #fff; border: 1px solid #f0d4d9; border-radius: 14px; padding: 24px; margin-bottom: 30px; text-align: left; }
+.conq-titulo { font-size: 20px; color: #c8102e; margin: 0 0 16px; }
+.conq-aviso { color: #8a6b6f; margin-bottom: 30px; }
+.conq-topo { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.conq-nivel { display: flex; align-items: center; gap: 12px; }
+.conq-nivel-ic { font-size: 40px; width: 64px; height: 64px; border-radius: 50%; background: #ffe9ec; display: flex; align-items: center; justify-content: center; }
+.conq-nivel-num { font-size: 13px; color: #8a6b6f; text-transform: uppercase; letter-spacing: .05em; }
+.conq-nivel-nome { font-size: 20px; font-weight: 700; color: #2b0d10; }
+.conq-numeros { display: flex; gap: 24px; }
+.conq-numeros div { display: flex; flex-direction: column; align-items: center; max-width: 130px; text-align: center; }
+.conq-numeros strong { font-size: 26px; color: #c8102e; }
+.conq-numeros span { font-size: 12px; color: #6b5054; }
+.conq-progresso { margin-top: 18px; font-size: 14px; color: #6b5054; }
+.conq-progresso p { margin: 8px 0 0; }
+.conq-barra-fundo { height: 10px; background: #f6e3e6; border-radius: 100px; overflow: hidden; }
+.conq-barra { height: 100%; background: linear-gradient(90deg, #e8112d, #c8102e); border-radius: 100px; transition: width .4s; }
+.conq-proxima { margin: 16px 0 0; padding: 10px 14px; border-radius: 10px; background: #fff6e5; color: #7a5200; font-size: 14px; }
+.conq-proxima-apto { background: #e6f6ed; color: #17663d; }
+.conq-subtitulo { font-size: 16px; color: #2b0d10; margin: 22px 0 12px; }
+.conq-emblemas { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.conq-emblema { border: 1px dashed #e6c4ca; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 4px; opacity: .55; filter: grayscale(1); }
+.conq-emblema strong { color: #2b0d10; font-size: 14px; }
+.conq-emblema-ic { font-size: 28px; }
+.conq-emblema-desc { font-size: 12px; color: #6b5054; line-height: 1.4; }
+.conq-emblema-status { font-size: 11px; font-weight: 600; color: #8a6b6f; margin-top: 4px; text-transform: uppercase; letter-spacing: .04em; }
+.conq-ganho { opacity: 1; filter: none; border: 1px solid #f3b8c1; background: #fff8f9; }
+.conq-ganho .conq-emblema-status { color: #17663d; }
+@media (max-width: 520px) {
+  .conq { padding: 18px; }
+  .conq-numeros { width: 100%; justify-content: space-around; }
+}
 /* Link "pular para o conteudo" - so aparece ao navegar por teclado (Tab) */
 .link-pular {
   position: absolute;

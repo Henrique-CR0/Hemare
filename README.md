@@ -24,6 +24,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 - 🔒 **Privacidade por consentimento (LGPD)** — o doador escolhe ser anônimo ou identificado; hospitais só veem contato de quem autoriza
 - 🩺 **Triagem de aptidão** — questionário que orienta se a pessoa pode doar, em 3 níveis, com limites oficiais de idade e peso e alertas em tempo real
 - 🗺️ **Onde doar** — hemocentros de todo o Brasil em mapa interativo, com busca por cidade e ordenação por proximidade (geolocalização)
+- 🏅 **Conquistas** — níveis, emblemas e contador de vidas salvas a cada doação confirmada, com aviso de quando poderá doar de novo
 - 📚 Conteúdo educativo — guia completo da doação, 16 mitos e verdades e os direitos do doador (folga na CLT, etc.)
 
 ### Para o hospital / hemocentro
@@ -45,7 +46,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 
 ## 🧠 Destaques técnicos
 
-- **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
+- **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
 - **Segurança em camadas** — bcrypt para senhas, JWT com middleware no backend e guarda de rota no frontend, tokens de recuperação de senha com expiração e uso único
 - **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram
 - **Arquitetura cliente-servidor** — o frontend nunca acessa o banco diretamente; toda a lógica passa por uma API REST
@@ -127,7 +128,7 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Confirmação de doação pelo hospital
 - [x] Radar preditivo de aptidão
 - [x] Acessibilidade completa (VLibras, alto contraste, fonte, atalhos)
-- [ ] Gamificação — emblemas e níveis por número de doações confirmadas
+- [x] Gamificação — emblemas e níveis por número de doações confirmadas
 - [ ] Verificação de hospitais por administrador
 - [ ] Apadrinhamento de pacientes com necessidade recorrente de doação
 
