@@ -180,6 +180,61 @@ select.hemare-input { cursor: pointer; }
 .alerta-dica { margin: 12px 0 0; padding: 10px 14px; border-radius: 10px; background: #fff4d6; color: #5b4a3a; font-size: 14px; line-height: 1.5; }
 .alto-contraste .alerta-dica { background: #000 !important; border: 1px solid #fff; }
 
+/* ===== Comprovante de doacao verificavel ===== */
+.compr { max-width: 760px; margin: 0 auto; }
+.compr-vazio { text-align: center; color: #8a6b6f; padding: 30px 10px; }
+.compr-cartao { background: #fff; border: 2px solid #f0d4d9; border-radius: 16px; padding: 26px 28px; }
+.compr-valido { border-color: #8fd4ac; }
+.compr-invalido { border-color: #f3b8c1; }
+.compr-invalido h1 { color: #9b0d22; }
+.compr-topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.compr-marca { margin: 0; font-weight: 800; color: #c8102e; }
+.compr h1 { font-size: 22px; color: #2b0d10; margin: 4px 0 0; }
+.compr-selo-ok, .compr-selo-erro { padding: 6px 14px; border-radius: 100px; font-size: 13px; font-weight: 800; }
+.compr-selo-ok { background: #e6f6ed; color: #17663d; }
+.compr-selo-erro { background: #fde2e5; color: #9b0d22; }
+.compr-alerta { margin: 16px 0 0; background: #fff1f2; color: #6b1422; border-radius: 10px; padding: 10px 14px; }
+.compr-dados { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px 24px; margin: 22px 0 0; }
+.compr-dados dt { font-size: 12px; color: #8a6b6f; text-transform: uppercase; letter-spacing: .04em; }
+.compr-dados dd { margin: 3px 0 0; font-size: 17px; font-weight: 600; color: #2b0d10; overflow-wrap: break-word; }
+.compr-verificacao { display: flex; gap: 18px; align-items: center; margin-top: 24px; padding-top: 20px; border-top: 1px dashed #e6c4ca; }
+.compr-verificacao p { margin: 0 0 8px; font-size: 14px; color: #5b4a4c; line-height: 1.5; }
+.compr-qr { width: 140px; height: 140px; flex-shrink: 0; border: 1px solid #f0d4d9; border-radius: 8px; }
+.compr-codigo code { font-size: 11px; word-break: break-all; color: #6b5054; }
+.compr-legal { margin: 20px 0 0; font-size: 13px; color: #6b5054; line-height: 1.55; background: #fff8f9; border-radius: 10px; padding: 12px 14px; }
+.compr-acoes { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+.compr-btn { background: #e8112d; color: #fff; border: none; padding: 12px 22px; border-radius: 100px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; }
+.compr-btn:hover { background: #c8102e; }
+.compr-btn-vazado { background: #fff; color: #c8102e; border: 1px solid #e8112d; }
+.compr-btn-vazado:hover { background: #ffe9ec; }
+@media (max-width: 560px) {
+  .compr-cartao { padding: 20px 18px; }
+  .compr-verificacao { flex-direction: column; align-items: flex-start; }
+}
+.alto-contraste .compr-cartao, .alto-contraste .compr-legal, .alto-contraste .compr-alerta,
+.alto-contraste .compr-selo-ok, .alto-contraste .compr-selo-erro, .alto-contraste .doacoes, .alto-contraste .doacoes-item {
+  background: #000 !important; color: #fff !important; border: 1px solid #fff !important;
+}
+.alto-contraste .compr-dados dt, .alto-contraste .compr-dados dd, .alto-contraste .compr-codigo code { color: #fff !important; }
+.alto-contraste .compr-btn { background: #ffff00 !important; color: #000 !important; border: 2px solid #fff !important; }
+/* Impressao / PDF: so o comprovante, sem menu, rodape, botoes nem VLibras */
+@media print {
+  .site-topo, .site-rodape, .link-pular, .compr-acoes, #vlibras-access-wrapper, [vw] { display: none !important; }
+  .site, .site-conteudo { background: #fff !important; padding: 0 !important; }
+  .compr-cartao { border: 1px solid #999 !important; }
+}
+
+/* Minhas doacoes (area do doador) */
+.doacoes { background: #fff; border: 1px solid #f0d4d9; border-radius: 14px; padding: 22px 24px; margin-bottom: 30px; text-align: left; }
+.doacoes-titulo { font-size: 20px; color: #c8102e; margin: 0 0 6px; }
+.doacoes-sub { margin: 0 0 14px; font-size: 14px; color: #6b5054; }
+.doacoes-lista { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.doacoes-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border: 1px solid #f6e3e6; border-radius: 10px; padding: 10px 14px; }
+.doacoes-item strong { display: block; color: #2b0d10; }
+.doacoes-item span { font-size: 13px; color: #6b5054; }
+.doacoes-link { color: #c8102e; font-weight: 700; font-size: 14px; text-decoration: none; }
+.doacoes-link:hover { text-decoration: underline; }
+
 /* ===== Painel do administrador (verificacao de hospitais) ===== */
 .adm-filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
 .adm-filtro { background: #fff; border: 1px solid #e6c4ca; color: #6b5054; padding: 8px 16px; border-radius: 100px; font-size: 14px; font-weight: 600; cursor: pointer; }
