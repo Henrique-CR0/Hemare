@@ -27,6 +27,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 - 🏅 **Conquistas** — níveis, emblemas e contador de vidas salvas a cada doação confirmada, com aviso de quando poderá doar de novo, comemoração de emblema novo e botão para compartilhar (WhatsApp e redes)
 - 🔔 **Lembrete de retorno** — quem pedir recebe um email quando o intervalo entre doações acaba (um por ciclo, opt-in), para voltar a doar
 - 🤝 **Traga um amigo** — cada doador tem um link de convite (`/cadastro?ref=CÓDIGO`) para copiar ou mandar pelo WhatsApp; o convite só conta quando o amigo faz a **primeira doação confirmada por um hospital** (contas falsas não rendem nada), e rende os emblemas *Recrutador* (1 amigo) e *Multiplicador* (3 amigos). O doador vê só números, nunca o nome de quem convidou
+- 🩸 **Quem doa por mim (campanhas de reposição)** — quando alguém é internado e o hospital pede reposição de sangue, a família deixa de pedir doador por mensagem solta: o hospital abre uma campanha com **link público**, meta de bolsas e prazo; cada amigo **promete uma data** (só datas em que estará apto pelo intervalo entre doações) e a doação só entra na meta quando o **hospital confirma**, já registrada na cadeia de confiança. O paciente aparece só por apelido, e o hospital vê nome e telefone apenas de quem prometeu naquela campanha. Quem doa ganha o emblema *Solidário* e um convite para continuar doando
 - 💝 **Apadrinhamento de pacientes** — quem precisa de transfusões regulares (anemia falciforme, talassemia...) é cadastrado pelo hospital com um **apelido** (nunca o nome), tipo sanguíneo e frequência; doadores compatíveis viram padrinhos (até 3 pacientes por pessoa), acompanham a meta e ganham o emblema *Padrinho*. O hospital chama por email só os padrinhos **aptos hoje** (no máximo uma vez por semana por paciente) e nunca vê quem são
 - 🏙️ **Placar das cidades** — página pública com as cidades que mais doam, só com números agregados (cidades com menos de 3 doadores não aparecem, por privacidade)
 - 📚 Conteúdo educativo — guia completo da doação, 16 mitos e verdades e os direitos do doador (folga na CLT, etc.)
@@ -51,7 +52,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 
 ## 🧠 Destaques técnicos
 
-- **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação, convite de amigos, apadrinhamento, alerta inteligente, lembrete de retorno e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
+- **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação, convite de amigos, apadrinhamento, campanha de reposição, alerta inteligente, lembrete de retorno e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
 - **Segurança em camadas** — bcrypt para senhas, JWT com middleware no backend e guarda de rota no frontend, tokens de recuperação de senha com expiração e uso único, permissões por papel (doador, hospital aprovado, administrador) conferidas no backend
 - **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram; o apadrinhamento não guarda nome de paciente (só apelido e uma condição de lista fixa, com autorização registrada)
 - **Arquitetura cliente-servidor** — o frontend nunca acessa o banco diretamente; toda a lógica passa por uma API REST
@@ -108,6 +109,7 @@ node db/ajustar-alertas.js     # data do último alerta de cada doador (alerta i
 node db/ajustar-lembretes.js   # lembrete de retorno (opt-in do doador)
 node db/ajustar-indicacao.js   # código de convite e quem convidou (Traga um amigo)
 node db/criar-apadrinhamento.js # tabelas do apadrinhamento de pacientes
+node db/criar-campanhas.js     # tabelas das campanhas de reposição (Quem doa por mim)
 node db/tornar-admin.js seu@email.com  # torna uma conta já cadastrada administrador
 node servidor.js               # inicia a API (porta 3000)
 ```
@@ -142,6 +144,7 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Gamificação — emblemas e níveis por número de doações confirmadas
 - [x] Verificação de hospitais por administrador
 - [x] Programa "Traga um amigo" (link de convite e emblemas de recrutador)
+- [x] Campanhas de reposição com link, meta e promessas de doação ("Quem doa por mim")
 - [x] Apadrinhamento de pacientes com necessidade recorrente de doação
 
 ---
