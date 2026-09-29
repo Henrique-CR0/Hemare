@@ -1,10 +1,19 @@
 // Hemare - Layout base: cabecalho com acessibilidade completa (Libras, contraste, fonte, atalhos) + menu + conteudo + rodape.
 import { useState, useEffect, useRef } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+
+// No celular um toque tambem dispara "mouse em cima"; o hover so vale com mouse de verdade
+// (e so no menu largo: no menu "☰" o "Aprenda" abre so no clique).
+function temMouse() {
+  return window.matchMedia('(hover: hover) and (min-width: 1101px)').matches;
+}
 
 function Layout() {
   const [abertoAprenda, setAbertoAprenda] = useState(false);
+  // Menu "hamburguer" (so aparece em telas menores).
+  const [menuAberto, setMenuAberto] = useState(false);
   const navegar = useNavigate();
+  const local = useLocation();
   const refConteudo = useRef(null);
   const refMenu = useRef(null);
 
@@ -44,12 +53,19 @@ function Layout() {
     document.body.style.zoom = escalaFonte + '%';
   }, []);
 
-  // Atalhos de teclado no padrao do governo (ALT + numero).
+  // Ao trocar de pagina, fecha o menu e o "Aprenda".
+  useEffect(() => {
+    setMenuAberto(false);
+    setAbertoAprenda(false);
+  }, [local.pathname]);
+
+  // Atalhos de teclado no padrao do governo (ALT + numero). ESC fecha os menus.
   useEffect(() => {
     function aoTeclar(e) {
+      if (e.key === 'Escape') { setMenuAberto(false); setAbertoAprenda(false); return; }
       if (!e.altKey) return;
       if (e.key === '1') { e.preventDefault(); refConteudo.current?.focus(); }
-      if (e.key === '2') { e.preventDefault(); refMenu.current?.focus(); }
+      if (e.key === '2') { e.preventDefault(); setMenuAberto(true); refMenu.current?.focus(); }
       if (e.key === '5') { e.preventDefault(); alternarContraste(); }
       if (e.key === '6') { e.preventDefault(); ajustarFonte(-10); }
       if (e.key === '7') { e.preventDefault(); ajustarFonte(10); }
@@ -72,11 +88,24 @@ function Layout() {
       <header className="site-topo">
         <Link to="/" className="site-logo">🩸 Hemare</Link>
 
-        <nav className="site-menu" ref={refMenu} tabIndex={-1}>
+        {/* Acessibilidade fica sempre visivel, inclusive no celular. */}
+        <div className="acess-barra">
           <button className="btn-acessibilidade" onClick={() => ajustarFonte(-10)} title="Diminuir fonte (ALT+6)">A−</button>
           <button className="btn-acessibilidade" onClick={() => ajustarFonte(10)} title="Aumentar fonte (ALT+7)">A+</button>
           <button className="btn-acessibilidade" onClick={alternarContraste} title="Alto contraste (ALT+5)">🌗 Contraste</button>
+        </div>
 
+        <button
+          className="menu-botao"
+          aria-expanded={menuAberto}
+          aria-controls="menu-principal"
+          onClick={() => setMenuAberto((aberto) => !aberto)}
+        >
+          {menuAberto ? '✕ Fechar' : '☰ Menu'}
+        </button>
+
+        <nav id="menu-principal" className={'site-menu' + (menuAberto ? ' site-menu-aberto' : '')}
+             ref={refMenu} tabIndex={-1} aria-label="Menu principal">
           <Link to="/">Início</Link>
           <Link to="/locais">Onde doar</Link>
           <Link to="/triagem">Posso doar?</Link>
@@ -85,12 +114,21 @@ function Layout() {
 
           <div
             className="menu-drop"
-            onMouseEnter={() => setAbertoAprenda(true)}
-            onMouseLeave={() => setAbertoAprenda(false)}
+            onMouseEnter={() => temMouse() && setAbertoAprenda(true)}
+            onMouseLeave={() => temMouse() && setAbertoAprenda(false)}
           >
-            <span className="menu-drop-titulo">Aprenda ▾</span>
+            {/* Botao (e nao so "passar o mouse"): funciona no toque e no teclado. */}
+            <button
+              type="button"
+              className="menu-drop-titulo"
+              aria-expanded={abertoAprenda}
+              aria-controls="menu-aprenda"
+              onClick={() => setAbertoAprenda((aberto) => !aberto)}
+            >
+              Aprenda ▾
+            </button>
             {abertoAprenda && (
-              <div className="menu-drop-lista">
+              <div className="menu-drop-lista" id="menu-aprenda">
                 <Link to="/orientacoes">Guia da doação</Link>
                 <Link to="/mitos">Mitos e verdades</Link>
                 <Link to="/direitos">Seus direitos</Link>
