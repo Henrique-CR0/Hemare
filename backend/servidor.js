@@ -44,3 +44,7 @@ app.use('/recuperacao', rotasRecuperacao);
 // Rotas do radar preditivo.
 const rotasRadar = require('./rotas/radar');
 app.use('/radar', rotasRadar);
+
+// Rotas do "clima" do sangue (previsao por regiao).
+const rotasClima = require('./rotas/clima');
+app.use('/clima', rotasClima);

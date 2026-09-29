@@ -81,6 +81,7 @@ function Layout() {
           <Link to="/locais">Onde doar</Link>
           <Link to="/triagem">Posso doar?</Link>
           <Link to="/estoque">Termômetro de estoque</Link>
+          <Link to="/clima">Previsão do sangue</Link>
 
           <div
             className="menu-drop"

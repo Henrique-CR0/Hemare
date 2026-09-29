@@ -318,3 +318,18 @@ select.hemare-input { cursor: pointer; }
 .radar-30d { background: #8fa8d0; }
 .radar-numero { font-size: 13px; font-weight: 700; color: #2b0d10; text-align: right; }
 .radar-alerta { display: inline-block; margin-top: 10px; background: #fdeaec; color: #c8102e; font-size: 12px; padding: 4px 12px; border-radius: 100px; }
+/* Previsao do tempo do sangue */
+.clima-pagina { max-width: 900px; margin: 0 auto; }
+.clima-pagina h1 { color: #c8102e; text-align: center; margin-bottom: 8px; }
+.clima-sub { text-align: center; color: #6b5054; margin-bottom: 24px; }
+.clima-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.clima-card { border-radius: 16px; padding: 24px 18px; text-align: center; color: #fff; }
+.clima-icone { font-size: 48px; margin-bottom: 8px; }
+.clima-card h3 { font-size: 16px; margin-bottom: 6px; }
+.clima-rotulo { display: inline-block; font-size: 12px; font-weight: 700; background: rgba(255,255,255,.25); padding: 3px 12px; border-radius: 100px; margin-bottom: 10px; }
+.clima-tipos { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.clima-tipo-chip { background: rgba(255,255,255,.25); font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 6px; }
+.clima-sol { background: linear-gradient(135deg, #35c47a, #2aa565); }
+.clima-nublado { background: linear-gradient(135deg, #e0b000, #c99900); }
+.clima-chuva { background: linear-gradient(135deg, #e8112d, #c8102e); }
+.clima-tempestade { background: linear-gradient(135deg, #7a0a17, #4a0610); }
