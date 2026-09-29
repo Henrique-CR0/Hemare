@@ -94,6 +94,7 @@ function Layout() {
                 <Link to="/orientacoes">Guia da doação</Link>
                 <Link to="/mitos">Mitos e verdades</Link>
                 <Link to="/direitos">Seus direitos</Link>
+                <Link to="/placar">Placar das cidades</Link>
               </div>
             )}
           </div>

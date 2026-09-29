@@ -3,6 +3,7 @@ import Clima from './paginas/Clima';
 import Radar from './paginas/Radar';
 import VLibras from '@djpfs/react-vlibras';
 import Estoque from './paginas/Estoque';
+import Placar from './paginas/Placar';
 import RecuperarSenha from './paginas/RecuperarSenha';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PainelHospital from './paginas/PainelHospital';
@@ -41,6 +42,7 @@ function App() {
           <Route path="painel-hospital" element={<RotaProtegida><PainelHospital /></RotaProtegida>} />
           <Route path="recuperar-senha" element={<RecuperarSenha />} />
           <Route path="estoque" element={<Estoque />} />
+          <Route path="placar" element={<Placar />} />
           <Route path="radar" element={<RotaProtegida><Radar /></RotaProtegida>} />
           <Route path="clima" element={<Clima />} />
         </Route>
