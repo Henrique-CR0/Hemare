@@ -6,6 +6,7 @@ import Estoque from './paginas/Estoque';
 import Placar from './paginas/Placar';
 import Apadrinhar from './paginas/Apadrinhar';
 import Campanha from './paginas/Campanha';
+import Noticias from './paginas/Noticias';
 import PainelAdmin from './paginas/PainelAdmin';
 import RecuperarSenha from './paginas/RecuperarSenha';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -48,6 +49,7 @@ function App() {
           <Route path="placar" element={<Placar />} />
           <Route path="apadrinhar" element={<Apadrinhar />} />
           <Route path="campanha/:codigo" element={<Campanha />} />
+          <Route path="noticias" element={<Noticias />} />
           <Route path="admin" element={<RotaProtegida><PainelAdmin /></RotaProtegida>} />
           <Route path="radar" element={<RotaProtegida><Radar /></RotaProtegida>} />
           <Route path="clima" element={<Clima />} />

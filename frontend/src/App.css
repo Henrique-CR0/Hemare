@@ -595,3 +595,51 @@ select.hemare-input { cursor: pointer; }
 }
 .alto-contraste .camp h1, .alto-contraste .camp h2, .alto-contraste .camp-sub, .alto-contraste .camp-numeros strong,
 .alto-contraste .camp-numeros span, .alto-contraste .camp-privacidade, .alto-contraste .camp-vazio { color: #fff !important; }
+
+/* ===== CANAL DE NOTICIAS ===== */
+.noti { max-width: 960px; margin: 0 auto; text-align: left; }
+.noti h1 { color: #c8102e; }
+.noti h3 { font-size: 16px; color: #2b0d10; margin: 18px 0 8px; }
+.noti-sub { color: #6b5054; }
+.noti-vazio { color: #8a6b6f; margin: 16px 0; }
+.noti-destaque { background: #fff6e5; color: #7a5200; border-radius: 10px; padding: 10px 14px; font-size: 15px; }
+.noti-filtros { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+.noti-filtro { border: 1px solid #f0d4d9; background: #fff; color: #6b5054; border-radius: 100px; padding: 6px 14px; font-size: 13px; cursor: pointer; }
+.noti-filtro-ativo { background: #c8102e; color: #fff; border-color: #c8102e; }
+.noti-estados { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.noti-estado { background: #fff; border: 1px solid #f0d4d9; border-left-width: 6px; border-radius: 12px; overflow: hidden; }
+.noti-borda-critico { border-left-color: #c8102e; }
+.noti-borda-alerta { border-left-color: #f08a00; }
+.noti-borda-atencao { border-left-color: #e0b400; }
+.noti-borda-estavel { border-left-color: #1f8f4e; }
+.noti-borda-sem-dados { border-left-color: #b8a9ab; }
+.noti-estado-btn { width: 100%; display: grid; grid-template-columns: 44px minmax(120px, 190px) auto 1fr; gap: 12px; align-items: center; text-align: left; background: none; border: 0; padding: 12px 14px; cursor: pointer; font: inherit; color: inherit; }
+.noti-estado-btn:hover { background: #fff8f9; }
+.noti-sigla { font-weight: 800; color: #c8102e; font-size: 18px; }
+.noti-nome { font-weight: 600; color: #2b0d10; }
+.noti-manchete { color: #6b5054; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.noti-selo { display: inline-block; border-radius: 100px; padding: 3px 10px; font-size: 12px; font-weight: 700; white-space: nowrap; background: #f6e9eb; color: #6b5054; }
+.noti-critico { background: #ffe1e5; color: #a30c24; }
+.noti-alerta { background: #ffeed6; color: #9a5600; }
+.noti-atencao { background: #fff6cc; color: #7a6200; }
+.noti-estavel { background: #dff5e7; color: #17733e; }
+.noti-detalhe { padding: 4px 18px 18px; border-top: 1px solid #f6e3e6; }
+.noti-lista { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.noti-lista li { display: flex; flex-direction: column; gap: 4px; }
+.noti-lista p { margin: 0; font-size: 14px; color: #4a3437; }
+.noti-topo { display: flex; gap: 10px; align-items: center; }
+.noti-ref { font-size: 12px; color: #8a6b6f; }
+.noti-sinais { margin: 0; padding-left: 18px; font-size: 14px; color: #4a3437; }
+.noti-acoes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+.adm-noticias { margin-top: 40px; padding-top: 20px; border-top: 1px solid #f0d4d9; }
+.adm-noticias .noti-lista li { flex-direction: row; justify-content: space-between; align-items: center; gap: 10px; font-size: 14px; }
+@media (max-width: 720px) {
+  .noti-estado-btn { grid-template-columns: 40px 1fr; }
+  .noti-estado-btn .noti-selo, .noti-manchete { grid-column: 1 / -1; }
+  .noti-manchete { white-space: normal; }
+}
+.alto-contraste .noti-estado, .alto-contraste .noti-filtro, .alto-contraste .noti-destaque { background: #000 !important; color: #fff !important; border-color: #fff !important; }
+.alto-contraste .noti-filtro-ativo { background: #ffff00 !important; color: #000 !important; }
+.alto-contraste .noti h1, .alto-contraste .noti h3, .alto-contraste .noti-sub, .alto-contraste .noti-nome, .alto-contraste .noti-sigla,
+.alto-contraste .noti-manchete, .alto-contraste .noti-lista p, .alto-contraste .noti-sinais, .alto-contraste .noti-vazio, .alto-contraste .noti-ref { color: #fff !important; }
+.alto-contraste .noti-selo { background: #000 !important; color: #fff !important; border: 1px solid #fff; }
