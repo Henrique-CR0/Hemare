@@ -1,0 +1,19 @@
+// Hemare - Configuracao do GitHub Codespaces.
+// Ao criar um Codespace, ele ja vem com Node, dependencias instaladas
+// e as portas do site (5173) e da API (3000) configuradas.
+{
+  "name": "Hemare",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:24",
+
+  // Instala as dependencias do backend e do frontend uma vez, ao criar o Codespace.
+  "postCreateCommand": "npm install --prefix backend && npm install --prefix frontend",
+
+  // A cada inicio, deixa a porta da API publica para o navegador conseguir acessar.
+  "postStartCommand": "gh codespace ports visibility 3000:public -c \"$CODESPACE_NAME\" || true",
+
+  "forwardPorts": [5173, 3000],
+  "portsAttributes": {
+    "5173": { "label": "Site (frontend)", "onAutoForward": "openBrowser" },
+    "3000": { "label": "API (backend)", "onAutoForward": "silent" }
+  }
+}
