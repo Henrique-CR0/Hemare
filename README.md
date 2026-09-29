@@ -52,35 +52,42 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 
 - **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação, alerta inteligente, lembrete de retorno, comprovante verificável e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
 - **Segurança em camadas** — bcrypt para senhas, JWT com middleware no backend e guarda de rota no frontend, tokens de recuperação de senha com expiração e uso único, permissões por papel (doador, hospital aprovado, administrador) conferidas no backend
+- **Cadeia de confiança** — cada doação confirmada guarda um hash SHA-256 que inclui o hash da doação anterior; adulterar qualquer registro quebra a cadeia e o comprovante deixa de ser válido
 - **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram
 - **Arquitetura cliente-servidor** — o frontend nunca acessa o banco diretamente; toda a lógica passa por uma API REST
-- **Email transacional real** (recuperação de senha e alertas de emergência) via Resend
+- **Email transacional real** (recuperação de senha, alertas de emergência, lembretes de retorno e avisos de verificação de hospital) via Resend, com conteúdo escapado contra injeção de HTML
+- **Tarefa agendada** — o lembrete de retorno roda sozinho a cada 12 horas dentro do próprio servidor
 - **Análise preditiva simples e explicável** — o radar de aptidão cruza dados já existentes (última doação + regra de elegibilidade) para gerar previsão, sem depender de serviços externos de IA
 
 ---
 
 ## 🛠️ Tecnologias
 
-**Frontend:** React (Vite), React Router, Leaflet + OpenStreetMap (mapa), VLibras
+**Frontend:** React (Vite), React Router, Leaflet + OpenStreetMap (mapa), VLibras, `qrcode` (QR do comprovante)
 **Backend:** Node.js + Express (API REST), PostgreSQL (nuvem), JWT + bcrypt, Resend (email)
 
 ---
 
 ## 📁 Estrutura do projeto
 
+```
 Hemare/
 ├── backend/
-│ ├── servidor.js # servidor Express e rotas
-│ ├── banco.js # conexão com o PostgreSQL
-│ ├── regras/ # lógica de negócio (compatibilidade, elegibilidade, triagem, distância)
-│ ├── rotas/ # endpoints (auth, doador, hospital, admin, locais, recuperação, radar)
-│ ├── middleware/ # autenticação (JWT) e permissões por papel
-│ └── db/ # scripts de criação e povoamento das tabelas
-└── frontend/
-└── src/
-├── paginas/ # telas (Início, Login, Triagem, Locais, Painel, Radar...)
-├── componentes/ # Layout (com acessibilidade), mapa, rota protegida
-└── regras/ # cópias das regras usadas no navegador
+│   ├── servidor.js    # servidor Express e rotas
+│   ├── banco.js       # conexão com o PostgreSQL
+│   ├── regras/        # lógica de negócio pura + testar-*.js (compatibilidade, elegibilidade,
+│   │                  #   triagem, distância, gamificação, alerta, lembrete, cadeia, comprovante)
+│   ├── rotas/         # endpoints (auth, doador, hospital, admin, locais, recuperação, radar, clima, comprovante)
+│   ├── middleware/    # autenticação (JWT) e permissões por papel
+│   ├── tarefas/       # tarefas agendadas (lembrete de retorno)
+│   └── db/            # scripts de criação, ajuste e povoamento das tabelas
+├── frontend/
+│   └── src/
+│       ├── paginas/       # telas (Início, Login, Triagem, Locais, Painéis, Placar, Comprovante...)
+│       ├── componentes/   # Layout (com acessibilidade), mapa, conquistas, minhas doações, VLibras
+│       └── regras/        # cópias das regras usadas no navegador
+└── .devcontainer/     # configuração do GitHub Codespaces
+```
 
 ---
 
@@ -102,11 +109,19 @@ node db/criar-locais.js        # tabela de locais + popular-locais.js
 node db/criar-recuperacao.js   # tabela de recuperação de senha
 node db/criar-estoque.js       # tabela de estoque
 node db/criar-doacoes.js       # tabela de doações confirmadas
+node db/ajustar-cadeia.js      # colunas de hash da cadeia de confiança (comprovante)
 node db/ajustar-verificacao.js # verificação de hospitais (novos começam pendentes)
 node db/ajustar-alertas.js     # data do último alerta de cada doador (alerta inteligente)
 node db/ajustar-lembretes.js   # lembrete de retorno (opt-in do doador)
 node db/tornar-admin.js seu@email.com  # torna uma conta já cadastrada administrador
 node servidor.js               # inicia a API (porta 3000)
+```
+
+**Testes das regras de negócio** (não precisam de banco):
+```bash
+cd backend
+node regras/testar-triagem.js       # cada script imprime ✅/❌ por caso
+node regras/testar-gamificacao.js   # os demais seguem o mesmo padrão: regras/testar-*.js
 ```
 
 **Frontend:**
@@ -138,6 +153,10 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Acessibilidade completa (VLibras, alto contraste, fonte, atalhos)
 - [x] Gamificação — emblemas e níveis por número de doações confirmadas
 - [x] Verificação de hospitais por administrador
+- [x] Alerta de emergência inteligente (só quem pode ajudar) e lembrete de retorno
+- [x] Comprovante de doação verificável com QR code
+- [ ] Programa "Traga um amigo" (link de indicação e emblema de recrutador)
+- [ ] Agendamento de doação
 - [ ] Apadrinhamento de pacientes com necessidade recorrente de doação
 
 ---
