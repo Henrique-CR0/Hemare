@@ -42,6 +42,10 @@ app.use('/clima', rotasClima);
 const rotasAdmin = require('./rotas/admin');
 app.use('/admin', rotasAdmin);
 
+// Rotas do apadrinhamento de pacientes com necessidade recorrente de sangue.
+const rotasApadrinhamento = require('./rotas/apadrinhamento');
+app.use('/apadrinhamento', rotasApadrinhamento);
+
 // Rota de teste: quando alguem acessar a raiz, responde uma mensagem.
 app.get('/', (req, res) => {
     res.json({ mensagem: 'Ola, Hemare! O backend esta funcionando.' });
