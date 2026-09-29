@@ -34,7 +34,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 - 📢 Publicação de **necessidades** de sangue por tipo e nível de urgência
 - 🎯 **Match automático** — a regra de compatibilidade sanguínea encontra os doadores certos, respeitando a privacidade de cada um
 - 🌡️ **Termômetro de estoque** — o hospital classifica seu estoque por tipo (estável/alerta/crítico/emergência); uma página **pública** exibe onde há falta de sangue no momento
-- 🚨 **Alerta automático por email** — necessidades críticas ou de emergência disparam convocação aos doadores compatíveis e identificados
+- 🚨 **Alerta de emergência inteligente** — necessidades críticas ou de emergência chamam por email só quem pode ajudar de verdade: doadores compatíveis, que consentiram ser contatados, **aptos a doar hoje** e **da mesma cidade** do hospital — e cada doador recebe no máximo um alerta a cada 3 dias, para não cansar quem doa
 - ✅ **Confirmação de doação** — registra doações reais, atualizando o histórico do doador (base para gamificação e previsão)
 - 🔮 **Radar preditivo de aptidão** — estima quantos doadores de cada tipo ficarão aptos a doar nos próximos 7 e 30 dias, antecipando a escassez antes que ela aconteça
 
@@ -48,7 +48,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 
 ## 🧠 Destaques técnicos
 
-- **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
+- **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação, alerta inteligente e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
 - **Segurança em camadas** — bcrypt para senhas, JWT com middleware no backend e guarda de rota no frontend, tokens de recuperação de senha com expiração e uso único, permissões por papel (doador, hospital aprovado, administrador) conferidas no backend
 - **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram
 - **Arquitetura cliente-servidor** — o frontend nunca acessa o banco diretamente; toda a lógica passa por uma API REST
@@ -101,6 +101,7 @@ node db/criar-recuperacao.js   # tabela de recuperação de senha
 node db/criar-estoque.js       # tabela de estoque
 node db/criar-doacoes.js       # tabela de doações confirmadas
 node db/ajustar-verificacao.js # verificação de hospitais (novos começam pendentes)
+node db/ajustar-alertas.js     # data do último alerta de cada doador (alerta inteligente)
 node db/tornar-admin.js seu@email.com  # torna uma conta já cadastrada administrador
 node servidor.js               # inicia a API (porta 3000)
 ```
