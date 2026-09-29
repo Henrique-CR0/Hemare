@@ -1,7 +1,7 @@
 // Hemare - Radar preditivo: mostra quantos doadores de cada tipo ficarao aptos em breve.
 import { useState, useEffect } from 'react';
 
-const URL_BACKEND = 'https://expert-waddle-7vwq77rg5ppp3pq67-3000.app.github.dev';
+import { URL_BACKEND } from '../config';
 const ORDEM_TIPOS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 
 function Radar() {
