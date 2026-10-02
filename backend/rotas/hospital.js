@@ -9,6 +9,7 @@ const { statusVerificacao } = require('../regras/verificacao');
 const { doadoresCompativeis } = require('../regras/compatibilidade');
 const { selecionarDoadoresParaAlerta, descreverAlerta, DIAS_ENTRE_ALERTAS } = require('../regras/alerta');
 const { escaparHtml } = require('../regras/html');
+const { visaoDoHospital } = require('../regras/perfil');
 const { calcularHash, GENESIS } = require('../regras/cadeia');
 const { registrarDoacao } = require('../servicos/registrarDoacao');
 
@@ -181,23 +182,14 @@ router.get('/match/:necessidadeId', autenticar, exigirHospitalAprovado, async (r
         }
 
         const r = await pool.query(
-            `SELECT d.id, u.nome, d.tipo_sanguineo, d.cidade, d.visibilidade, d.telefone
+            `SELECT d.id, u.nome, d.nome_social, d.tipo_sanguineo, d.cidade, d.visibilidade, d.telefone
              FROM doadores d JOIN usuarios u ON u.id = d.usuario_id
              WHERE d.tipo_sanguineo = ANY($1)`,
             [tiposCompativeis]
         );
 
-        const doadores = r.rows.map((doa) => {
-            const identificado = doa.visibilidade === 'identificado';
-            return {
-                doador_id: identificado ? doa.id : null,
-                nome: identificado ? doa.nome : 'Doador anônimo',
-                tipo_sanguineo: doa.tipo_sanguineo,
-                cidade: doa.cidade,
-                telefone: identificado ? (doa.telefone || 'Não informado') : null,
-                identificado: identificado
-            };
-        });
+        // A mesma funcao alimenta a "visao do hospital" mostrada no perfil do doador.
+        const doadores = r.rows.map((doa) => visaoDoHospital(doa));
 
         res.json({ tipoReceptor, tiposCompativeis, doadores });
     } catch (erro) {
