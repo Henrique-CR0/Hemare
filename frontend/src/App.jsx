@@ -7,6 +7,7 @@ import Placar from './paginas/Placar';
 import Apadrinhar from './paginas/Apadrinhar';
 import Campanha from './paginas/Campanha';
 import Noticias from './paginas/Noticias';
+import MeuPerfil from './paginas/MeuPerfil';
 import PainelAdmin from './paginas/PainelAdmin';
 import RecuperarSenha from './paginas/RecuperarSenha';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -41,6 +42,7 @@ function App() {
           <Route path="mitos" element={<Mitos />} />
           <Route path="direitos" element={<Direitos />} />
           <Route path="area-doador" element={<RotaProtegida><AreaDoador /></RotaProtegida>} />
+          <Route path="meu-perfil" element={<RotaProtegida><MeuPerfil /></RotaProtegida>} />
           <Route path="completar-perfil" element={<RotaProtegida><CompletarPerfil /></RotaProtegida>} />
           <Route path="cadastro-hospital" element={<CadastroHospital />} />
           <Route path="painel-hospital" element={<RotaProtegida><PainelHospital /></RotaProtegida>} />
