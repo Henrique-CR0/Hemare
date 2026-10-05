@@ -148,6 +148,8 @@ router.get('/exportar', async (req, res) => {
         const afilhados = idDoador ? await opcional(
             `SELECT c.apelido, p.criado_em FROM padrinhos p JOIN casos_apadrinhamento c ON c.id = p.caso_id
               WHERE p.doador_id = $1`, [idDoador]) : [];
+        const rara = idDoador ? await opcional(
+            'SELECT raro_fenotipo, raro_status, raro_consentimento, raro_alcance FROM doadores WHERE id = $1 AND raro_fenotipo IS NOT NULL', [idDoador]) : [];
         const promessas = idDoador ? await opcional(
             `SELECT c.apelido, p.data_prevista, p.doacao_id FROM promessas_campanha p
                JOIN campanhas_reposicao c ON c.id = p.campanha_id WHERE p.doador_id = $1`, [idDoador]) : [];
@@ -163,6 +165,9 @@ router.get('/exportar', async (req, res) => {
                 temFoto: !!doador.foto, foto: doador.foto
             },
             doacoesConfirmadas: doacoes.map((d) => ({ id: d.id, data: paraDia(d.data_doacao), hospital: d.hospital, selo: d.hash })),
+            redeSangueRaro: rara[0] ? {
+                participa: rara[0].raro_consentimento === true, fenotipo: rara[0].raro_fenotipo, situacao: rara[0].raro_status, alcance: rara[0].raro_alcance
+            } : null,
             pacientesApadrinhados: afilhados.map((a) => ({ apelido: a.apelido, desde: a.criado_em })),
             promessasEmCampanhas: promessas.map((p) => ({ apelido: p.apelido, dataPrevista: paraDia(p.data_prevista), confirmada: !!p.doacao_id }))
         };
@@ -193,6 +198,11 @@ router.post('/excluir', async (req, res) => {
         // Partes opcionais (recursos que podem nem existir ainda no banco): falhar aqui nao impede a exclusao.
         if (idDoador) {
             await opcional('DELETE FROM padrinhos WHERE doador_id = $1', [idDoador]);
+            await opcional('DELETE FROM convocacoes_raras WHERE doador_id = $1 AND doacao_id IS NULL', [idDoador]);
+            await opcional(
+                `UPDATE doadores SET raro_fenotipo = NULL, raro_status = NULL, raro_consentimento = false, raro_alcance = NULL,
+                        raro_codigo = NULL, raro_confirmado_por = NULL, raro_confirmado_em = NULL, raro_ultima_notificacao = NULL
+                  WHERE id = $1`, [idDoador]);
             await opcional('DELETE FROM promessas_campanha WHERE doador_id = $1 AND doacao_id IS NULL', [idDoador]);
             await opcional('UPDATE doadores SET quer_lembrete = false WHERE id = $1', [idDoador]);
             await opcional(
