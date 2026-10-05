@@ -24,6 +24,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 - 🔒 **Privacidade por consentimento (LGPD)** — o doador escolhe ser anônimo ou identificado; hospitais só veem contato de quem autoriza
 - 🩺 **Triagem de aptidão** — questionário que orienta se a pessoa pode doar, em 3 níveis, com limites oficiais de idade e peso e alertas em tempo real
 - 🗺️ **Onde doar** — hemocentros de todo o Brasil em mapa interativo, com busca por cidade e ordenação por proximidade (geolocalização)
+- 👤 **Meu perfil** — página só do doador para editar nome, **nome social**, gênero, nascimento, telefone, cidade/estado, peso, tipo sanguíneo e **foto** (recortada e reduzida no próprio navegador, o que também apaga os metadados da câmera). Tem indicador de perfil completo, **"como o hospital te vê agora"** (prévia ao vivo, gerada pela mesma regra que o match usa), **carteirinha digital** de doador para baixar (com contato de emergência opcional, montada no aparelho) e os direitos da LGPD: **baixar meus dados** e **excluir minha conta** (apaga os dados pessoais; as doações confirmadas ficam anônimas na cadeia de confiança)
 - 🏅 **Conquistas** — níveis, emblemas e contador de vidas salvas a cada doação confirmada, com aviso de quando poderá doar de novo, comemoração de emblema novo e botão para compartilhar (WhatsApp e redes)
 - 🔔 **Lembrete de retorno** — quem pedir recebe um email quando o intervalo entre doações acaba (um por ciclo, opt-in), para voltar a doar
 - 🤝 **Traga um amigo** — cada doador tem um link de convite (`/cadastro?ref=CÓDIGO`) para copiar ou mandar pelo WhatsApp; o convite só conta quando o amigo faz a **primeira doação confirmada por um hospital** (contas falsas não rendem nada), e rende os emblemas *Recrutador* (1 amigo) e *Multiplicador* (3 amigos). O doador vê só números, nunca o nome de quem convidou
@@ -55,7 +56,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 
 - **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação, convite de amigos, apadrinhamento, campanha de reposição, notícias por estado, alerta inteligente, lembrete de retorno e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
 - **Segurança em camadas** — bcrypt para senhas, JWT com middleware no backend e guarda de rota no frontend, tokens de recuperação de senha com expiração e uso único, permissões por papel (doador, hospital aprovado, administrador) conferidas no backend
-- **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram; o apadrinhamento não guarda nome de paciente (só apelido e uma condição de lista fixa, com autorização registrada)
+- **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram (e mostra o nome social quando existe); o apadrinhamento não guarda nome de paciente (só apelido e uma condição de lista fixa, com autorização registrada)
 - **Arquitetura cliente-servidor** — o frontend nunca acessa o banco diretamente; toda a lógica passa por uma API REST
 - **Email transacional real** (recuperação de senha e alertas de emergência) via Resend
 - **Análise preditiva simples e explicável** — o radar de aptidão cruza dados já existentes (última doação + regra de elegibilidade) para gerar previsão, sem depender de serviços externos de IA
@@ -109,6 +110,7 @@ node db/ajustar-verificacao.js # verificação de hospitais (novos começam pend
 node db/ajustar-alertas.js     # data do último alerta de cada doador (alerta inteligente)
 node db/ajustar-lembretes.js   # lembrete de retorno (opt-in do doador)
 node db/ajustar-indicacao.js   # código de convite e quem convidou (Traga um amigo)
+node db/ajustar-perfil.js      # colunas do perfil completo (foto, nascimento, gênero, peso, contato de emergência)
 node db/criar-apadrinhamento.js # tabelas do apadrinhamento de pacientes
 node db/criar-campanhas.js     # tabelas das campanhas de reposição (Quem doa por mim)
 node db/criar-noticias.js      # tabela do canal de notícias por estado
@@ -149,6 +151,7 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Programa "Traga um amigo" (link de convite e emblemas de recrutador)
 - [x] Campanhas de reposição com link, meta e promessas de doação ("Quem doa por mim")
 - [x] Canal de notícias por estado, com panorama dos 27 estados e sinais dos hospitais
+- [x] Perfil completo do doador com foto, carteirinha digital e direitos da LGPD
 - [x] Apadrinhamento de pacientes com necessidade recorrente de doação
 
 ---
