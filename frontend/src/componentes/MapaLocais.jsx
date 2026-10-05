@@ -27,6 +27,12 @@ function pinoGota(corPino, corGota) {
   });
 }
 
+// Imagens do mapa (OpenStreetMap). O servidor exige que cada imagem chegue com o "Referer" (o endereco do
+// site); sem ele responde 403 "Access blocked". Em alguns ambientes (como o GitHub Codespaces) o navegador
+// nao manda esse dado, entao pedimos para as imagens do mapa enviarem sempre a origem do site
+// (referrerPolicy="origin"). Para usar outro servidor de mapa, defina VITE_MAPA_URL em frontend/.env.local.
+const URL_MAPA = import.meta.env.VITE_MAPA_URL || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+
 // Hemocentros: pino vermelho. "Voce esta aqui": pino dourado.
 const iconeLocal = pinoGota('#e8112d', '#c00020');
 const iconeVoce = pinoGota('#f5b400', '#c00020');
@@ -39,8 +45,10 @@ function MapaLocais({ locais, centro }) {
     <div className="mapa-caixa">
       <MapContainer center={posInicial} zoom={zoom} style={{ height: '360px', width: '100%' }}>
         <TileLayer
-          attribution='&copy; OpenStreetMap'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url={URL_MAPA}
+          maxZoom={19}
+          referrerPolicy="origin"
         />
 
         {centro && (

@@ -1,12 +1,27 @@
 // Hemare - Area do doador (refinada).
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { URL_BACKEND } from '../config';
 import Conquistas from '../componentes/Conquistas';
+import Indicacao from '../componentes/Indicacao';
+import MeusAfilhados from '../componentes/MeusAfilhados';
+import MinhasPromessas from '../componentes/MinhasPromessas';
 
 function AreaDoador() {
   const navegar = useNavigate();
   const usuarioSalvo = localStorage.getItem('hemare_usuario');
   const usuario = usuarioSalvo ? JSON.parse(usuarioSalvo) : null;
-  const primeiroNome = usuario ? usuario.nome.split(' ')[0] : 'doador';
+  const [perfil, setPerfil] = useState(null); // foto e nome social vindos do perfil (se ja foi completado)
+  const primeiroNome = perfil && perfil.nomeSocial ? perfil.nomeSocial.split(' ')[0] : (usuario ? usuario.nome.split(' ')[0] : 'doador');
+
+  useEffect(() => {
+    let ativo = true;
+    fetch(URL_BACKEND + '/perfil', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('hemare_token') } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => ativo && d && setPerfil(d))
+      .catch(() => {});
+    return () => { ativo = false; };
+  }, []);
 
   function sair() {
     localStorage.removeItem('hemare_token');
@@ -17,7 +32,9 @@ function AreaDoador() {
   return (
     <div className="area-doador">
       <div className="area-saudacao">
-        <div className="area-avatar">🩸</div>
+        <Link to="/meu-perfil" className="area-avatar" aria-label="Abrir meu perfil">
+          {perfil && perfil.foto ? <img src={perfil.foto} alt="" /> : '🩸'}
+        </Link>
         <div>
           <h1>Olá, {primeiroNome}!</h1>
           <p className="area-sub">Bem-vindo(a) à sua área. O que você quer fazer hoje?</p>
@@ -25,12 +42,15 @@ function AreaDoador() {
       </div>
 
       <Conquistas />
+      <MinhasPromessas />
+      <MeusAfilhados />
+      <Indicacao />
 
       <div className="area-cards">
-        <Link to="/completar-perfil" className="area-card">
-          <div className="area-card-ic">📝</div>
-          <h3>Completar meu perfil</h3>
-          <p>Informe seu tipo sanguíneo, cidade e outros dados.</p>
+        <Link to="/meu-perfil" className="area-card">
+          <div className="area-card-ic">👤</div>
+          <h3>Meu perfil</h3>
+          <p>Foto, dados pessoais, privacidade e sua carteirinha de doador.</p>
         </Link>
         <Link to="/triagem" className="area-card">
           <div className="area-card-ic">🩺</div>

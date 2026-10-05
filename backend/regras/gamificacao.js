@@ -28,17 +28,31 @@ const EMBLEMAS = [
     { id: 'universal',    icone: '🌍', nome: 'Doador universal',  descricao: 'Tipo O-: seu sangue serve para todos.',
       condicao: (d) => d.tipoSanguineo === 'O-' },
     { id: 'dourado',      icone: '🌟', nome: 'Sangue dourado',    descricao: 'Rh nulo: um dos sangues mais raros do mundo.',
-      condicao: (d) => typeof d.tipoSanguineo === 'string' && d.tipoSanguineo.startsWith('Rh nulo') }
+      condicao: (d) => typeof d.tipoSanguineo === 'string' && d.tipoSanguineo.startsWith('Rh nulo') },
+    { id: 'recrutador',   icone: '🤝', nome: 'Recrutador',        descricao: 'Um amigo que você convidou fez a primeira doação.',
+      condicao: (d) => d.amigosQueDoaram >= 1 },
+    { id: 'multiplicador', icone: '📈', nome: 'Multiplicador',    descricao: 'Três amigos que você convidou já doaram.',
+      condicao: (d) => d.amigosQueDoaram >= 3 },
+    { id: 'padrinho',     icone: '💝', nome: 'Padrinho',          descricao: 'Apadrinhou um paciente que precisa de transfusões regulares.',
+      condicao: (d) => d.afilhados >= 1 },
+    { id: 'solidario',    icone: '🤲', nome: 'Solidário',         descricao: 'Doou por alguém em uma campanha de reposição.',
+      condicao: (d) => d.doacoesEmCampanha >= 1 },
+    { id: 'rede-rara',    icone: '💎', nome: 'Rede de sangue raro', descricao: 'Faz parte da rede de emergência de fenótipos raros, confirmada por um hospital.',
+      condicao: (d) => d.redeRara === true }
 ];
 
-// dados: { totalDoacoes, doacoesUltimoAno, tipoSanguineo, visibilidade }
+// dados: { totalDoacoes, doacoesUltimoAno, tipoSanguineo, visibilidade, amigosQueDoaram, afilhados, doacoesEmCampanha, redeRara }
 function calcularConquistas(dados) {
     const total = Math.max(0, Number(dados.totalDoacoes) || 0);
     const doador = {
         totalDoacoes: total,
         doacoesUltimoAno: Math.max(0, Number(dados.doacoesUltimoAno) || 0),
         tipoSanguineo: dados.tipoSanguineo || null,
-        visibilidade: dados.visibilidade || 'anonimo'
+        visibilidade: dados.visibilidade || 'anonimo',
+        amigosQueDoaram: Math.max(0, Number(dados.amigosQueDoaram) || 0),
+        afilhados: Math.max(0, Number(dados.afilhados) || 0),
+        doacoesEmCampanha: Math.max(0, Number(dados.doacoesEmCampanha) || 0),
+        redeRara: dados.redeRara === true
     };
 
     // Nivel atual = o ultimo nivel cujo minimo foi alcancado.

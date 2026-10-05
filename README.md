@@ -24,8 +24,15 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 - 🔒 **Privacidade por consentimento (LGPD)** — o doador escolhe ser anônimo ou identificado; hospitais só veem contato de quem autoriza
 - 🩺 **Triagem de aptidão** — questionário que orienta se a pessoa pode doar, em 3 níveis, com limites oficiais de idade e peso e alertas em tempo real
 - 🗺️ **Onde doar** — hemocentros de todo o Brasil em mapa interativo, com busca por cidade e ordenação por proximidade (geolocalização)
+- 👤 **Meu perfil** — página só do doador para editar nome, **nome social**, gênero, nascimento, telefone, cidade/estado, peso, tipo sanguíneo e **foto** (recortada e reduzida no próprio navegador, o que também apaga os metadados da câmera). Tem indicador de perfil completo, **"como o hospital te vê agora"** (prévia ao vivo, gerada pela mesma regra que o match usa), **carteirinha digital** de doador para baixar (com contato de emergência opcional, montada no aparelho) e os direitos da LGPD: **baixar meus dados** e **excluir minha conta** (apaga os dados pessoais; as doações confirmadas ficam anônimas na cadeia de confiança)
+- 💎 **Rede de sangue raro** — doadores de fenótipos raros (Rh nulo, Bombay, Vel negativo, Jk(a-b-), Kell nulo) entram na rede por vontade própria e escolhem até onde podem ir (cidade, estado ou país). O fenótipo começa **declarado** e só vira **confirmado** quando um hospital confere o laudo pessoalmente, por um código curto. Numa emergência real o hospital **não recebe a lista**: descreve o caso, vê só **quantos** doadores existem e o Hemare chama os compatíveis e aptos; o hospital só passa a ver nome e telefone de quem responde "posso ajudar". Cada doador recebe no máximo um chamado por semana, todo pedido fica registrado e expira em 72 horas
+- ♿ **Ficha PcD** — pessoas com deficiência podem doar sangue, e a norma federal (Portaria GM/MS nº 11.685/2026) não trata a deficiência em si como impedimento: o que conta é a causa, os remédios e a capacidade de entender e consentir. No **Meu perfil** a pessoa declara (com consentimento) o tipo de deficiência e o que ajuda no atendimento, e abre uma **ficha de orientação** que cruza as respostas com a norma: o que impede, o que depende de prazo ou relatório, o que levar ao hemocentro e o que combinar antes (Libras, mobilidade, acompanhante). As respostas da ficha não são guardadas, nenhum hospital vê a condição e ela some ao desmarcar ou excluir a conta
 - 🏅 **Conquistas** — níveis, emblemas e contador de vidas salvas a cada doação confirmada, com aviso de quando poderá doar de novo, comemoração de emblema novo e botão para compartilhar (WhatsApp e redes)
 - 🔔 **Lembrete de retorno** — quem pedir recebe um email quando o intervalo entre doações acaba (um por ciclo, opt-in), para voltar a doar
+- 🤝 **Traga um amigo** — cada doador tem um link de convite (`/cadastro?ref=CÓDIGO`) para copiar ou mandar pelo WhatsApp; o convite só conta quando o amigo faz a **primeira doação confirmada por um hospital** (contas falsas não rendem nada), e rende os emblemas *Recrutador* (1 amigo) e *Multiplicador* (3 amigos). O doador vê só números, nunca o nome de quem convidou
+- 🩸 **Quem doa por mim (campanhas de reposição)** — quando alguém é internado e o hospital pede reposição de sangue, a família deixa de pedir doador por mensagem solta: o hospital abre uma campanha com **link público**, meta de bolsas e prazo; cada amigo **promete uma data** (só datas em que estará apto pelo intervalo entre doações) e a doação só entra na meta quando o **hospital confirma**, já registrada na cadeia de confiança. O paciente aparece só por apelido, e o hospital vê nome e telefone apenas de quem prometeu naquela campanha. Quem doa ganha o emblema *Solidário* e um convite para continuar doando
+- 💝 **Apadrinhamento de pacientes** — quem precisa de transfusões regulares (anemia falciforme, talassemia...) é cadastrado pelo hospital com um **apelido** (nunca o nome), tipo sanguíneo e frequência; doadores compatíveis viram padrinhos (até 3 pacientes por pessoa), acompanham a meta e ganham o emblema *Padrinho*. O hospital chama por email só os padrinhos **aptos hoje** (no máximo uma vez por semana por paciente) e nunca vê quem são
+- 📰 **Canal de notícias por estado** — página pública com os 27 estados ordenados do mais grave ao mais tranquilo: avisos dos hemocentros e da imprensa (resumo próprio + link da matéria original, com nível e data de referência) somados aos **sinais do Hemare** calculados na hora com os hospitais aprovados do estado (estoque crítico, pedidos urgentes, campanhas de reposição, pacientes procurando padrinhos). O administrador cadastra e remove avisos pelo painel
 - 🏙️ **Placar das cidades** — página pública com as cidades que mais doam, só com números agregados (cidades com menos de 3 doadores não aparecem, por privacidade)
 - 📚 Conteúdo educativo — guia completo da doação, 16 mitos e verdades e os direitos do doador (folga na CLT, etc.)
 
@@ -49,9 +56,9 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 
 ## 🧠 Destaques técnicos
 
-- **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação, alerta inteligente, lembrete de retorno e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
+- **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação, convite de amigos, apadrinhamento, campanha de reposição, notícias por estado, alerta inteligente, lembrete de retorno e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
 - **Segurança em camadas** — bcrypt para senhas, JWT com middleware no backend e guarda de rota no frontend, tokens de recuperação de senha com expiração e uso único, permissões por papel (doador, hospital aprovado, administrador) conferidas no backend
-- **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram
+- **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram (e mostra o nome social quando existe); o apadrinhamento não guarda nome de paciente (só apelido e uma condição de lista fixa, com autorização registrada)
 - **Arquitetura cliente-servidor** — o frontend nunca acessa o banco diretamente; toda a lógica passa por uma API REST
 - **Email transacional real** (recuperação de senha e alertas de emergência) via Resend
 - **Análise preditiva simples e explicável** — o radar de aptidão cruza dados já existentes (última doação + regra de elegibilidade) para gerar previsão, sem depender de serviços externos de IA
@@ -104,6 +111,14 @@ node db/criar-doacoes.js       # tabela de doações confirmadas
 node db/ajustar-verificacao.js # verificação de hospitais (novos começam pendentes)
 node db/ajustar-alertas.js     # data do último alerta de cada doador (alerta inteligente)
 node db/ajustar-lembretes.js   # lembrete de retorno (opt-in do doador)
+node db/ajustar-indicacao.js   # código de convite e quem convidou (Traga um amigo)
+node db/ajustar-perfil.js      # colunas do perfil completo (foto, nascimento, gênero, peso, contato de emergência)
+node db/ajustar-raros.js       # rede de sangue raro (participação do doador, pedidos e chamados)
+node db/ajustar-pcd.js         # ficha PcD (declaração de pessoa com deficiência no perfil)
+node db/criar-apadrinhamento.js # tabelas do apadrinhamento de pacientes
+node db/criar-campanhas.js     # tabelas das campanhas de reposição (Quem doa por mim)
+node db/criar-noticias.js      # tabela do canal de notícias por estado
+node db/popular-noticias.js    # panorama inicial dos 27 estados (pesquisa de 29/09/2026)
 node db/tornar-admin.js seu@email.com  # torna uma conta já cadastrada administrador
 node servidor.js               # inicia a API (porta 3000)
 ```
@@ -137,7 +152,13 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Acessibilidade completa (VLibras, alto contraste, fonte, atalhos)
 - [x] Gamificação — emblemas e níveis por número de doações confirmadas
 - [x] Verificação de hospitais por administrador
-- [ ] Apadrinhamento de pacientes com necessidade recorrente de doação
+- [x] Programa "Traga um amigo" (link de convite e emblemas de recrutador)
+- [x] Campanhas de reposição com link, meta e promessas de doação ("Quem doa por mim")
+- [x] Canal de notícias por estado, com panorama dos 27 estados e sinais dos hospitais
+- [x] Perfil completo do doador com foto, carteirinha digital e direitos da LGPD
+- [x] Rede de sangue raro com confirmação de laudo e chamados que protegem os dados do doador
+- [x] Ficha PcD: orientação de triagem para pessoas com deficiência, baseada na norma federal
+- [x] Apadrinhamento de pacientes com necessidade recorrente de doação
 
 ---
 

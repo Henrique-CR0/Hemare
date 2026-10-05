@@ -20,7 +20,7 @@ function Locais() {
 
     fetch(url)
       .then((r) => r.json())
-      .then((dados) => { setLocais(dados); setCarregando(false); })
+      .then((dados) => { setLocais(Array.isArray(dados) ? dados : []); setCarregando(false); })
       .catch(() => setCarregando(false));
   }
 

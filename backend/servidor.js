@@ -8,7 +8,8 @@ const app = express();
 
 // Middlewares: liberar o frontend (cors) e entender JSON no corpo das requisicoes.
 app.use(cors());
-app.use(express.json());
+// Limite maior que o padrao (100kb) so para caber a foto de perfil, que chega reduzida (~256x256).
+app.use(express.json({ limit: '200kb' }));
 
 // Rotas de autenticacao (cadastro e login).
 const rotasAuth = require('./rotas/auth');
@@ -41,6 +42,30 @@ app.use('/clima', rotasClima);
 // Rotas do administrador (verificacao de hospitais).
 const rotasAdmin = require('./rotas/admin');
 app.use('/admin', rotasAdmin);
+
+// Rotas do apadrinhamento de pacientes com necessidade recorrente de sangue.
+const rotasApadrinhamento = require('./rotas/apadrinhamento');
+app.use('/apadrinhamento', rotasApadrinhamento);
+
+// Rotas das campanhas de reposicao ("Quem doa por mim").
+const rotasCampanha = require('./rotas/campanha');
+app.use('/campanha', rotasCampanha);
+
+// Canal de noticias por estado (avisos curados + sinais dos hospitais do Hemare).
+const rotasNoticias = require('./rotas/noticias');
+app.use('/noticias', rotasNoticias);
+
+// Perfil do doador (dados pessoais, foto, privacidade, exportar e excluir).
+const rotasPerfil = require('./rotas/perfil');
+app.use('/perfil', rotasPerfil);
+
+// Rede de sangue raro (doadores de fenotipos raros, chamados de emergencia protegidos).
+const rotasRaros = require('./rotas/raros');
+app.use('/raros', rotasRaros);
+
+// Ficha PcD (declaracao no perfil e orientacao de triagem para pessoas com deficiencia).
+const rotasPcd = require('./rotas/pcd');
+app.use('/pcd', rotasPcd);
 
 // Rota de teste: quando alguem acessar a raiz, responde uma mensagem.
 app.get('/', (req, res) => {
