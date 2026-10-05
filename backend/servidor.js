@@ -59,6 +59,10 @@ app.use('/noticias', rotasNoticias);
 const rotasPerfil = require('./rotas/perfil');
 app.use('/perfil', rotasPerfil);
 
+// Rede de sangue raro (doadores de fenotipos raros, chamados de emergencia protegidos).
+const rotasRaros = require('./rotas/raros');
+app.use('/raros', rotasRaros);
+
 // Rota de teste: quando alguem acessar a raiz, responde uma mensagem.
 app.get('/', (req, res) => {
     res.json({ mensagem: 'Ola, Hemare! O backend esta funcionando.' });

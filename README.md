@@ -25,6 +25,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 - 🩺 **Triagem de aptidão** — questionário que orienta se a pessoa pode doar, em 3 níveis, com limites oficiais de idade e peso e alertas em tempo real
 - 🗺️ **Onde doar** — hemocentros de todo o Brasil em mapa interativo, com busca por cidade e ordenação por proximidade (geolocalização)
 - 👤 **Meu perfil** — página só do doador para editar nome, **nome social**, gênero, nascimento, telefone, cidade/estado, peso, tipo sanguíneo e **foto** (recortada e reduzida no próprio navegador, o que também apaga os metadados da câmera). Tem indicador de perfil completo, **"como o hospital te vê agora"** (prévia ao vivo, gerada pela mesma regra que o match usa), **carteirinha digital** de doador para baixar (com contato de emergência opcional, montada no aparelho) e os direitos da LGPD: **baixar meus dados** e **excluir minha conta** (apaga os dados pessoais; as doações confirmadas ficam anônimas na cadeia de confiança)
+- 💎 **Rede de sangue raro** — doadores de fenótipos raros (Rh nulo, Bombay, Vel negativo, Jk(a-b-), Kell nulo) entram na rede por vontade própria e escolhem até onde podem ir (cidade, estado ou país). O fenótipo começa **declarado** e só vira **confirmado** quando um hospital confere o laudo pessoalmente, por um código curto. Numa emergência real o hospital **não recebe a lista**: descreve o caso, vê só **quantos** doadores existem e o Hemare chama os compatíveis e aptos; o hospital só passa a ver nome e telefone de quem responde "posso ajudar". Cada doador recebe no máximo um chamado por semana, todo pedido fica registrado e expira em 72 horas
 - 🏅 **Conquistas** — níveis, emblemas e contador de vidas salvas a cada doação confirmada, com aviso de quando poderá doar de novo, comemoração de emblema novo e botão para compartilhar (WhatsApp e redes)
 - 🔔 **Lembrete de retorno** — quem pedir recebe um email quando o intervalo entre doações acaba (um por ciclo, opt-in), para voltar a doar
 - 🤝 **Traga um amigo** — cada doador tem um link de convite (`/cadastro?ref=CÓDIGO`) para copiar ou mandar pelo WhatsApp; o convite só conta quando o amigo faz a **primeira doação confirmada por um hospital** (contas falsas não rendem nada), e rende os emblemas *Recrutador* (1 amigo) e *Multiplicador* (3 amigos). O doador vê só números, nunca o nome de quem convidou
@@ -111,6 +112,7 @@ node db/ajustar-alertas.js     # data do último alerta de cada doador (alerta i
 node db/ajustar-lembretes.js   # lembrete de retorno (opt-in do doador)
 node db/ajustar-indicacao.js   # código de convite e quem convidou (Traga um amigo)
 node db/ajustar-perfil.js      # colunas do perfil completo (foto, nascimento, gênero, peso, contato de emergência)
+node db/ajustar-raros.js       # rede de sangue raro (participação do doador, pedidos e chamados)
 node db/criar-apadrinhamento.js # tabelas do apadrinhamento de pacientes
 node db/criar-campanhas.js     # tabelas das campanhas de reposição (Quem doa por mim)
 node db/criar-noticias.js      # tabela do canal de notícias por estado
@@ -152,6 +154,7 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Campanhas de reposição com link, meta e promessas de doação ("Quem doa por mim")
 - [x] Canal de notícias por estado, com panorama dos 27 estados e sinais dos hospitais
 - [x] Perfil completo do doador com foto, carteirinha digital e direitos da LGPD
+- [x] Rede de sangue raro com confirmação de laudo e chamados que protegem os dados do doador
 - [x] Apadrinhamento de pacientes com necessidade recorrente de doação
 
 ---

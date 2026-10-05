@@ -6,6 +6,7 @@ import { URL_BACKEND } from '../config';
 import { reduzirFoto } from '../regras/foto';
 import { mascaraCpf, mascaraTelefone, cpfValido } from '../regras/documentos';
 import Carteirinha from '../componentes/Carteirinha';
+import RedeRara from '../componentes/RedeRara';
 
 const TIPOS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 const RH_NULO = 'Rh nulo (sangue dourado)';
@@ -315,6 +316,8 @@ function MeuPerfil() {
           {mensagem && <div className="auth-msg" role="status">{mensagem}</div>}
         </div>
       </form>
+
+      <RedeRara />
 
       <section className="mp-bloco">
         <h2>🪪 Minha carteirinha de doador</h2>

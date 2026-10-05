@@ -36,10 +36,12 @@ const EMBLEMAS = [
     { id: 'padrinho',     icone: '💝', nome: 'Padrinho',          descricao: 'Apadrinhou um paciente que precisa de transfusões regulares.',
       condicao: (d) => d.afilhados >= 1 },
     { id: 'solidario',    icone: '🤲', nome: 'Solidário',         descricao: 'Doou por alguém em uma campanha de reposição.',
-      condicao: (d) => d.doacoesEmCampanha >= 1 }
+      condicao: (d) => d.doacoesEmCampanha >= 1 },
+    { id: 'rede-rara',    icone: '💎', nome: 'Rede de sangue raro', descricao: 'Faz parte da rede de emergência de fenótipos raros, confirmada por um hospital.',
+      condicao: (d) => d.redeRara === true }
 ];
 
-// dados: { totalDoacoes, doacoesUltimoAno, tipoSanguineo, visibilidade, amigosQueDoaram, afilhados, doacoesEmCampanha }
+// dados: { totalDoacoes, doacoesUltimoAno, tipoSanguineo, visibilidade, amigosQueDoaram, afilhados, doacoesEmCampanha, redeRara }
 function calcularConquistas(dados) {
     const total = Math.max(0, Number(dados.totalDoacoes) || 0);
     const doador = {
@@ -49,7 +51,8 @@ function calcularConquistas(dados) {
         visibilidade: dados.visibilidade || 'anonimo',
         amigosQueDoaram: Math.max(0, Number(dados.amigosQueDoaram) || 0),
         afilhados: Math.max(0, Number(dados.afilhados) || 0),
-        doacoesEmCampanha: Math.max(0, Number(dados.doacoesEmCampanha) || 0)
+        doacoesEmCampanha: Math.max(0, Number(dados.doacoesEmCampanha) || 0),
+        redeRara: dados.redeRara === true
     };
 
     // Nivel atual = o ultimo nivel cujo minimo foi alcancado.

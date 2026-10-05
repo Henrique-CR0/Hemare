@@ -110,7 +110,8 @@ router.get('/conquistas', autenticar, async (req, res) => {
             visibilidade: doa.visibilidade,
             amigosQueDoaram: await contarAmigosQueDoaram(req.usuario.id),
             afilhados: await contarAfilhados(doa.id),
-            doacoesEmCampanha: await contarDoacoesEmCampanha(doa.id)
+            doacoesEmCampanha: await contarDoacoesEmCampanha(doa.id),
+            redeRara: doa.raro_status === 'confirmado' && doa.raro_consentimento === true
         });
 
         // Quando pode doar de novo (so se o sexo estiver informado como M/F).
