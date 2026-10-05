@@ -7,6 +7,7 @@ import { reduzirFoto } from '../regras/foto';
 import { mascaraCpf, mascaraTelefone, cpfValido } from '../regras/documentos';
 import Carteirinha from '../componentes/Carteirinha';
 import RedeRara from '../componentes/RedeRara';
+import FichaPcd from '../componentes/FichaPcd';
 
 const TIPOS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 const RH_NULO = 'Rh nulo (sangue dourado)';
@@ -318,6 +319,8 @@ function MeuPerfil() {
       </form>
 
       <RedeRara />
+
+      <FichaPcd dataNascimento={dados.dataNascimento || ''} pesoKg={dados.pesoKg === null || dados.pesoKg === undefined ? '' : String(dados.pesoKg)} />
 
       <section className="mp-bloco">
         <h2>🪪 Minha carteirinha de doador</h2>

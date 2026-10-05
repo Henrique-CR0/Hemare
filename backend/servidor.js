@@ -63,6 +63,10 @@ app.use('/perfil', rotasPerfil);
 const rotasRaros = require('./rotas/raros');
 app.use('/raros', rotasRaros);
 
+// Ficha PcD (declaracao no perfil e orientacao de triagem para pessoas com deficiencia).
+const rotasPcd = require('./rotas/pcd');
+app.use('/pcd', rotasPcd);
+
 // Rota de teste: quando alguem acessar a raiz, responde uma mensagem.
 app.get('/', (req, res) => {
     res.json({ mensagem: 'Ola, Hemare! O backend esta funcionando.' });
