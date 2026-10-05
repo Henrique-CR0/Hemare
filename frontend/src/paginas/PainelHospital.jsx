@@ -6,6 +6,7 @@ import { URL_BACKEND } from '../config';
 import CasosApadrinhamento from '../componentes/CasosApadrinhamento';
 import CampanhasHospital from '../componentes/CampanhasHospital';
 import RedeRaraHospital from '../componentes/RedeRaraHospital';
+import FeriadosHospital from '../componentes/FeriadosHospital';
 const TIPOS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 const NIVEIS = [
   { valor: 'estavel', rotulo: '🟢 Estável' },
@@ -285,6 +286,7 @@ function PainelHospital() {
       )}
 
       <CampanhasHospital />
+      <FeriadosHospital />
       <RedeRaraHospital />
       <CasosApadrinhamento />
       </>)}

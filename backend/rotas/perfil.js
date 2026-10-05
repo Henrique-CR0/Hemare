@@ -150,6 +150,8 @@ router.get('/exportar', async (req, res) => {
               WHERE p.doador_id = $1`, [idDoador]) : [];
         const rara = idDoador ? await opcional(
             'SELECT raro_fenotipo, raro_status, raro_consentimento, raro_alcance FROM doadores WHERE id = $1 AND raro_fenotipo IS NOT NULL', [idDoador]) : [];
+        const avisoFeriado = idDoador ? await opcional(
+            'SELECT quer_aviso_feriado FROM doadores WHERE id = $1', [idDoador]) : [];
         const pcd = idDoador ? await opcional(
             'SELECT pcd, pcd_tipos, pcd_apoios, pcd_declarado_em FROM doadores WHERE id = $1 AND pcd = true', [idDoador]) : [];
         const promessas = idDoador ? await opcional(
@@ -170,6 +172,7 @@ router.get('/exportar', async (req, res) => {
             redeSangueRaro: rara[0] ? {
                 participa: rara[0].raro_consentimento === true, fenotipo: rara[0].raro_fenotipo, situacao: rara[0].raro_status, alcance: rara[0].raro_alcance
             } : null,
+            avisoPorEmailAntesDeFeriados: avisoFeriado[0] ? avisoFeriado[0].quer_aviso_feriado === true : false,
             declaracaoPcd: pcd[0] ? {
                 tipos: String(pcd[0].pcd_tipos || '').split(',').filter(Boolean),
                 apoios: String(pcd[0].pcd_apoios || '').split(',').filter(Boolean),
@@ -211,6 +214,8 @@ router.post('/excluir', async (req, res) => {
                         raro_codigo = NULL, raro_confirmado_por = NULL, raro_confirmado_em = NULL, raro_ultima_notificacao = NULL
                   WHERE id = $1`, [idDoador]);
             await opcional('UPDATE doadores SET pcd = false, pcd_tipos = NULL, pcd_apoios = NULL, pcd_declarado_em = NULL WHERE id = $1', [idDoador]);
+            await opcional('DELETE FROM avisos_feriado WHERE doador_id = $1', [idDoador]);
+            await opcional('UPDATE doadores SET quer_aviso_feriado = false WHERE id = $1', [idDoador]);
             await opcional('DELETE FROM promessas_campanha WHERE doador_id = $1 AND doacao_id IS NULL', [idDoador]);
             await opcional('UPDATE doadores SET quer_lembrete = false WHERE id = $1', [idDoador]);
             await opcional(

@@ -67,6 +67,10 @@ app.use('/raros', rotasRaros);
 const rotasPcd = require('./rotas/pcd');
 app.use('/pcd', rotasPcd);
 
+// Calendario do sangue (feriados prolongados, plano do doador e chamada "doe antes do feriado").
+const rotasFeriados = require('./rotas/feriados');
+app.use('/feriados', rotasFeriados);
+
 // Rota de teste: quando alguem acessar a raiz, responde uma mensagem.
 app.get('/', (req, res) => {
     res.json({ mensagem: 'Ola, Hemare! O backend esta funcionando.' });
@@ -81,3 +85,7 @@ app.listen(PORTA, () => {
 // Tarefa automatica: lembrete "voce ja pode doar de novo" (ao ligar e a cada 12h).
 const { agendarLembretes } = require('./tarefas/lembretes');
 agendarLembretes();
+
+// Tarefa automatica: aviso "doe antes do feriado" para quem pediu (ao ligar e a cada 12h).
+const { agendarAvisosFeriado } = require('./tarefas/avisosFeriado');
+agendarAvisosFeriado();
