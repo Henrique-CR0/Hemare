@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { URL_BACKEND } from '../config';
 import Conquistas from '../componentes/Conquistas';
 import Indicacao from '../componentes/Indicacao';
+import FaixaFeriado from '../componentes/FaixaFeriado';
 import MeusAfilhados from '../componentes/MeusAfilhados';
 import MinhasPromessas from '../componentes/MinhasPromessas';
 
@@ -41,6 +42,7 @@ function AreaDoador() {
         </div>
       </div>
 
+      <FaixaFeriado />
       <Conquistas />
       <MinhasPromessas />
       <MeusAfilhados />

@@ -772,3 +772,30 @@ a.area-avatar { text-decoration: none; overflow: hidden; }
   .pcd-so-impressao { display: block; font-size: 12px; }
   .pcd-nao-imprimir { display: none !important; }
 }
+
+/* ===== CALENDARIO DO SANGUE (FERIADOS) ===== */
+.fer-porque { font-size: 14px; color: #6b5054; background: #fff8f9; border-left: 4px solid #e8a6b0; border-radius: 8px; padding: 10px 14px; margin: 0 0 16px; line-height: 1.5; }
+.fer-aviso { background: #fff6e5; border: 1px solid #f0d9a8; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; }
+.fer-entre { font-size: 14px; margin: 0 0 16px; color: #4a3437; }
+.fer-lista { display: flex; flex-direction: column; gap: 14px; }
+.fer-card { background: #fff; border: 1px solid #f0d4d9; border-left: 6px solid #e6b422; border-radius: 14px; padding: 14px 18px; }
+.fer-card.fer-alto { border-left-color: #c8102e; }
+.fer-card.fer-medio { border-left-color: #e6b422; }
+.fer-topo { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.fer-topo h2 { margin: 0; font-size: 19px; color: #2b0d10; }
+.fer-risco { font-size: 12px; font-weight: 700; border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+.fer-risco-alto { background: #ffe0e4; color: #a30c24; }
+.fer-risco-medio { background: #fff3cf; color: #7a5200; }
+.fer-datas, .fer-ultimo { margin: 6px 0 0; font-size: 14px; color: #4a3437; }
+.fer-plano { margin: 10px 0 0; border-radius: 10px; padding: 8px 12px; font-size: 14px; line-height: 1.45; }
+.fer-plano-ok { background: #e9f8ee; color: #17733e; }
+.fer-plano-depois { background: #f3eff0; color: #5c4a4d; }
+.fer-nota { font-size: 13px; color: #6b5054; margin-top: 18px; line-height: 1.5; }
+.fer-faixa { display: flex; flex-direction: column; gap: 4px; text-decoration: none; background: #fff6e5; border: 1px solid #f0d9a8; border-left: 6px solid #e6b422; border-radius: 12px; padding: 12px 16px; margin: 14px 0; color: #4a3437; font-size: 14px; line-height: 1.4; }
+.fer-faixa.fer-alto { border-left-color: #c8102e; background: #ffeaed; border-color: #f4b6bf; }
+.fer-faixa strong { color: #2b0d10; }
+.alto-contraste .fer-card, .alto-contraste .fer-aviso, .alto-contraste .fer-porque, .alto-contraste .fer-faixa, .alto-contraste .fer-plano {
+  background: #000 !important; color: #fff !important; border-color: #fff !important; }
+.alto-contraste .fer-topo h2, .alto-contraste .fer-datas, .alto-contraste .fer-ultimo, .alto-contraste .fer-nota, .alto-contraste .fer-entre,
+.alto-contraste .fer-faixa strong { color: #fff !important; }
+.alto-contraste .fer-risco { background: #000 !important; color: #fff !important; border: 1px solid #fff; }
