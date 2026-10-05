@@ -13,7 +13,8 @@ const PERGUNTAS_SAUDE = [
 ];
 
 const PERGUNTAS_RECENTES = [
-  { campo: 'tatuagemRecente', texto: 'Fez tatuagem ou micropigmentação nos últimos 12 meses?' },
+  { campo: 'tatuagemRecente', texto: 'Fez tatuagem, piercing, maquiagem definitiva ou botox/preenchimento nos últimos 4 meses?' },
+  { campo: 'endoscopiaRecente', texto: 'Fez endoscopia ou colonoscopia nos últimos 4 meses?' },
   { campo: 'gripeResfriado', texto: 'Está com gripe ou resfriado (ou teve há poucos dias)?' },
   { campo: 'bebidaAlcoolica', texto: 'Ingeriu bebida alcoólica nas últimas 12 horas?' },
   { campo: 'gravidezOuPosParto', texto: 'Está grávida ou teve parto recentemente?' }
@@ -44,9 +45,11 @@ function Triagem() {
   }
 
   // Avisos de "fora do ideal" (aparecem embaixo do campo enquanto digita).
-  const avisoIdade = respostas.idade && (respostas.idade < IDADE_MIN || respostas.idade > IDADE_MAX)
-    ? 'Idade para doação: ' + IDADE_MIN + ' a ' + IDADE_MAX + ' anos.'
-    : '';
+  const avisoIdade = respostas.idade && respostas.idade < IDADE_MIN
+    ? 'Idade mínima para doação: ' + IDADE_MIN + ' anos.'
+    : respostas.idade > IDADE_MAX
+      ? 'Acima de ' + IDADE_MAX + ' anos, só doadores regulares, após avaliação da triagem clínica.'
+      : '';
   const avisoPeso = respostas.peso && respostas.peso < PESO_MIN
     ? 'Peso mínimo para doação: ' + PESO_MIN + ' kg.'
     : '';

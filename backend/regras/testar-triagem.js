@@ -1,8 +1,10 @@
 // Teste da regra de triagem: confere se cada situacao gera o nivel certo.
 const { avaliarTriagem } = require('./triagem');
 
+let falhas = 0;
 function verificar(descricao, obtido, nivelEsperado) {
     const ok = obtido.nivel === nivelEsperado;
+    if (!ok) falhas++;
     console.log((ok ? '✅' : '❌') + ' ' + descricao + '  ->  nivel: ' + obtido.nivel);
 }
 
@@ -66,12 +68,46 @@ verificar('18 anos: pode',
 verificar('59 anos: pode',
     avaliarTriagem({ idade: 59, peso: 70 }),
     'verde');
-verificar('60 anos: so quem ja doou antes',
+verificar('60 anos: ainda pode fazer a primeira doacao (limite 60 anos e 11 meses)',
     avaliarTriagem({ idade: 60, peso: 70 }),
+    'verde');
+verificar('61 anos: primeira doacao ja passou do limite, doador de repeticao segue',
+    avaliarTriagem({ idade: 61, peso: 70 }),
     'amarelo');
-verificar('69 anos: ultimo ano permitido',
+verificar('69 anos: doador de repeticao segue',
     avaliarTriagem({ idade: 69, peso: 70 }),
     'amarelo');
-verificar('70 anos: fora da faixa',
+
+// 11) Regras novas (Portaria GM/MS 11.685/2026, em vigor desde 30/09/2026; Hemope)
+verificar('70 anos: nao e mais impedimento, e atencao (so doador regular, apos triagem clinica)',
     avaliarTriagem({ idade: 70, peso: 70 }),
+    'amarelo');
+verificar('75 anos: tambem atencao',
+    avaliarTriagem({ idade: 75, peso: 70 }),
+    'amarelo');
+verificar('Endoscopia ou colonoscopia recente: atencao (4 meses)',
+    avaliarTriagem({ idade: 30, peso: 70, endoscopiaRecente: true }),
+    'amarelo');
+verificar('Endoscopia + HIV: vermelho tem prioridade',
+    avaliarTriagem({ idade: 30, peso: 70, endoscopiaRecente: true, temHIV: true }),
     'vermelho');
+
+function textos(r) { return r.motivos.join(' | '); }
+function conferirTexto(descricao, texto, trecho, esperado) {
+    const ok = texto.includes(trecho) === esperado;
+    if (!ok) falhas++;
+    console.log((ok ? '✅' : '❌') + ' ' + descricao);
+}
+const tat = textos(avaliarTriagem({ idade: 30, peso: 70, tatuagemRecente: true }));
+conferirTexto('Tatuagem: fala em 4 meses', tat, '4 meses', true);
+conferirTexto('Tatuagem: fala dos 7 dias com alvara sanitario', tat, '7 dias', true);
+conferirTexto('Tatuagem: nao fala mais em 12 meses', tat, '12 meses (1 ano)', false);
+conferirTexto('Tatuagem: cita piercing e botox', tat, 'botox', true);
+const endo = textos(avaliarTriagem({ idade: 30, peso: 70, endoscopiaRecente: true }));
+conferirTexto('Endoscopia: fala em 4 meses', endo, '4 meses', true);
+const idoso = textos(avaliarTriagem({ idade: 72, peso: 70 }));
+conferirTexto('70+: explica que so continua quem ja e doador regular', idoso, 'doador regular', true);
+conferirTexto('70+: nao diz mais "16 a 69 anos"', idoso, '16 a 69 anos', false);
+
+console.log(falhas === 0 ? '\nTodos os testes passaram.' : '\n' + falhas + ' teste(s) falharam.');
+process.exit(falhas === 0 ? 0 : 1);

@@ -18,15 +18,18 @@ function avaliarTriagem(r) {
     if (r.peso !== undefined && r.peso > 0 && r.peso < 50) {
         impedimentos.push('Seu peso está abaixo de 50 kg, que é o mínimo para doar.');
     }
-    if (r.idade !== undefined && r.idade > 0 && (r.idade < 16 || r.idade > 69)) {
-        impedimentos.push('A idade para doar é de 16 a 69 anos.');
+    if (r.idade !== undefined && r.idade > 0 && r.idade < 16) {
+        impedimentos.push('A idade mínima para doar é 16 anos.');
     }
     // Dentro da faixa, mas com condicoes (viram atencao).
     if (r.idade >= 16 && r.idade <= 17) {
         atencoes.push('Menores de 18 anos precisam do consentimento formal dos pais ou responsáveis.');
     }
-    if (r.idade >= 60 && r.idade <= 69) {
-        atencoes.push('A partir dos 60 anos, só pode doar quem já doou sangue antes dos 60.');
+    if (r.idade >= 61 && r.idade <= 69) {
+        atencoes.push('Se esta for a sua primeira doação, o limite é 60 anos. Quem já doa de repetição pode continuar até os 69.');
+    }
+    if (r.idade >= 70) {
+        atencoes.push('Acima de 70 anos, só continua doando quem já é doador regular e passa pela avaliação da triagem clínica. Alguns hemocentros, como o Hemope, pedem ao menos uma doação nos últimos 12 meses e intervalo de 6 meses entre as doações.');
     }
     if (r.dormiuBem === false) {
         atencoes.push('É importante ter dormido bem antes de doar.');
@@ -37,7 +40,10 @@ function avaliarTriagem(r) {
 
     // --- Impedimentos temporarios (viram atencao) ---
     if (r.tatuagemRecente) {
-        atencoes.push('Tatuagem/micropigmentação nos últimos 12 meses (1 ano) pede um tempo de espera.');
+        atencoes.push('Tatuagem, piercing, maquiagem definitiva ou botox/preenchimento pedem 4 meses de espera (eram 12). O prazo cai para 7 dias se o local tiver alvará sanitário e você levar o comprovante. Piercing na boca ou na região genital: 4 meses depois de retirar.');
+    }
+    if (r.endoscopiaRecente) {
+        atencoes.push('Endoscopia ou colonoscopia pedem 4 meses de espera (eram 6).');
     }
     if (r.gripeResfriado) {
         atencoes.push('Gripe ou resfriado recente pede aguardar alguns dias.');
