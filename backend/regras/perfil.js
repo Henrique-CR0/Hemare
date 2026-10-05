@@ -225,7 +225,7 @@ function descreverVisaoDoHospital(doador) {
         { rotulo: 'Tipo sanguíneo', valor: v.tipo_sanguineo },
         { rotulo: 'Cidade', valor: v.cidade || '—' }
     ];
-    const naoVe = ['Foto', 'CPF', 'Data de nascimento', 'Peso', 'Gênero', 'E-mail', 'Contato de emergência', 'Histórico de doações'];
+    const naoVe = ['Foto', 'CPF', 'Data de nascimento', 'Peso', 'Gênero', 'Condição de PcD', 'E-mail', 'Contato de emergência', 'Histórico de doações'];
     return { identificado: v.identificado, ve, naoVe };
 }
 
