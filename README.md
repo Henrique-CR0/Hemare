@@ -105,7 +105,8 @@ Hemare/
 │   ├── API.md             # todas as rotas e o CRUD de cada recurso (gerado do código)
 │   ├── openapi.json       # a mesma API em OpenAPI 3 (abra no Swagger Editor)
 │   ├── ARQUITETURA.md     # revisão arquitetural, REST, login e roteiro de melhorias
-│   └── NOTICIAS.md        # feed de notícias: pesquisa, fontes, licenças e como acrescentar uma
+│   ├── NOTICIAS.md        # feed de notícias: pesquisa, fontes, licenças e como acrescentar uma
+│   └── STATUS.md          # status report do desenvolvimento: saúde, números, riscos e próximos passos (npm run status)
 └── .github/workflows/     # CI: testes, lint e build a cada PR
 ```
 
@@ -178,6 +179,7 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Campanhas de reposição com link, meta e promessas de doação ("Quem doa por mim")
 - [x] Canal de notícias por estado, com panorama dos 27 estados e sinais dos hospitais
 - [x] Feed de notícias atualizado de hora em hora (RSS de fontes públicas), no estilo Google Notícias
+- [x] Status report do desenvolvimento (`docs/STATUS.md`), com números gerados do código por `npm run status`
 - [ ] Mais fontes: hemocentros estaduais que publiquem RSS (a lista está em `backend/regras/fontes.js`)
 - [x] Perfil completo do doador com foto, carteirinha digital e direitos da LGPD
 - [x] Rede de sangue raro com confirmação de laudo e chamados que protegem os dados do doador
