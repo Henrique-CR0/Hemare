@@ -12,6 +12,7 @@ const { escaparHtml } = require('../regras/html');
 const { visaoDoHospital } = require('../regras/perfil');
 const { calcularHash, GENESIS } = require('../regras/cadeia');
 const { registrarDoacao } = require('../servicos/registrarDoacao');
+const { validarNecessidade, validarAtualizacao, podeMudar } = require('../regras/necessidade');
 
 const router = express.Router();
 
@@ -75,19 +76,16 @@ router.get('/meus-dados', autenticar, async (req, res) => {
 
 // PUBLICAR uma necessidade (o hospital pede um tipo sanguineo).
 router.post('/necessidade', autenticar, exigirHospitalAprovado, async (req, res) => {
-    const usuarioId = req.usuario.id;
-    const { tipoSanguineo, tipoDoacao, urgencia } = req.body;
-
-    if (!tipoSanguineo) {
-        return res.status(400).json({ erro: 'Informe o tipo sanguineo necessario.' });
-    }
+    const validada = validarNecessidade(req.body);
+    if (validada.erro) return res.status(400).json({ erro: validada.erro });
+    const { tipoSanguineo, tipoDoacao, urgencia } = validada.necessidade;
 
     try {
         const hospitalId = req.hospital.id;
 
-        await pool.query(
-            'INSERT INTO necessidades (hospital_id, tipo_sanguineo, tipo_doacao, urgencia) VALUES ($1, $2, $3, $4)',
-            [hospitalId, tipoSanguineo, tipoDoacao || 'sangue', urgencia || 'normal']
+        const inserida = await pool.query(
+            'INSERT INTO necessidades (hospital_id, tipo_sanguineo, tipo_doacao, urgencia) VALUES ($1, $2, $3, $4) RETURNING id',
+            [hospitalId, tipoSanguineo, tipoDoacao, urgencia]
         );
 
         // ALERTA INTELIGENTE: so chama quem e compativel, identificado, apto hoje,
@@ -138,7 +136,8 @@ router.post('/necessidade', autenticar, exigirHospitalAprovado, async (req, res)
             alerta = { ...resumo, mensagem: descreverAlerta(resumo, cidade) };
         }
 
-        res.status(201).json({
+        res.status(201).location('/hospital/necessidades/' + inserida.rows[0].id).json({
+            id: inserida.rows[0].id,
             mensagem: 'Necessidade publicada!' + (alerta ? ' ' + alerta.mensagem : ''),
             alerta
         });
@@ -162,6 +161,40 @@ router.get('/necessidades', autenticar, async (req, res) => {
         res.json(r.rows);
     } catch (erro) {
         res.status(500).json({ erro: erro.message });
+    }
+});
+
+// ATUALIZAR uma necessidade: fechar como "atendida" ou "cancelada", reabrir ou mudar a urgencia.
+// Fechada, ela deixa de contar como urgencia no canal de noticias.
+router.patch('/necessidades/:id', autenticar, exigirHospitalAprovado, async (req, res) => {
+    if (!/^[0-9]{1,9}$/.test(req.params.id)) return res.status(400).json({ erro: 'Necessidade inválida.' });
+    const { erro, mudancas } = validarAtualizacao(req.body);
+    if (erro) return res.status(400).json({ erro });
+    try {
+        const r = await pool.query('SELECT id, status, urgencia FROM necessidades WHERE id = $1 AND hospital_id = $2', [Number(req.params.id), req.hospital.id]);
+        if (r.rows.length === 0) return res.status(404).json({ erro: 'Necessidade não encontrada.' });
+        const pode = podeMudar(r.rows[0], mudancas);
+        if (!pode.ok) return res.status(409).json({ erro: pode.erro });
+        const status = mudancas.status !== undefined ? mudancas.status : r.rows[0].status;
+        const urgencia = mudancas.urgencia !== undefined ? mudancas.urgencia : r.rows[0].urgencia;
+        const u = await pool.query(
+            'UPDATE necessidades SET status = $1, urgencia = $2 WHERE id = $3 AND hospital_id = $4 RETURNING id, tipo_sanguineo, tipo_doacao, urgencia, status, criada_em',
+            [status, urgencia, Number(req.params.id), req.hospital.id]);
+        res.json(u.rows[0]);
+    } catch (e) {
+        res.status(500).json({ erro: 'Erro ao atualizar a necessidade: ' + e.message });
+    }
+});
+
+// APAGAR uma necessidade do proprio hospital (de vez). Para so tirar do ar, prefira marcar como "cancelada".
+router.delete('/necessidades/:id', autenticar, exigirHospitalAprovado, async (req, res) => {
+    if (!/^[0-9]{1,9}$/.test(req.params.id)) return res.status(400).json({ erro: 'Necessidade inválida.' });
+    try {
+        const r = await pool.query('DELETE FROM necessidades WHERE id = $1 AND hospital_id = $2 RETURNING id', [Number(req.params.id), req.hospital.id]);
+        if (r.rows.length === 0) return res.status(404).json({ erro: 'Necessidade não encontrada.' });
+        res.status(204).end();
+    } catch (e) {
+        res.status(500).json({ erro: 'Erro ao apagar a necessidade: ' + e.message });
     }
 });
 

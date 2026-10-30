@@ -19,6 +19,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 ## ✨ Funcionalidades
 
 ### Para o doador
+- 🔁 **Login automático** — quem já entrou volta direto para a sua área ao abrir o site; a sessão é conferida com o servidor e renovada em silêncio enquanto a pessoa usa; se acabar (venceu, a senha foi trocada em outro aparelho, conta excluída) o site leva ao login com um aviso. "Manter conectado por 7 dias" é opcional
 - 🔐 Cadastro e login seguros — senha criptografada (bcrypt), token JWT, validação de email, medidor de força de senha e **recuperação de senha por email real**
 - 👤 Perfil completo — tipo sanguíneo (incluindo o raríssimo Rh nulo), gênero, cidade, nome social, CPF e telefone validados
 - 🔒 **Privacidade por consentimento (LGPD)** — o doador escolhe ser anônimo ou identificado; hospitais só veem contato de quem autoriza
@@ -27,6 +28,8 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 - 👤 **Meu perfil** — página só do doador para editar nome, **nome social**, gênero, nascimento, telefone, cidade/estado, peso, tipo sanguíneo e **foto** (recortada e reduzida no próprio navegador, o que também apaga os metadados da câmera). Tem indicador de perfil completo, **"como o hospital te vê agora"** (prévia ao vivo, gerada pela mesma regra que o match usa), **carteirinha digital** de doador para baixar (com contato de emergência opcional, montada no aparelho) e os direitos da LGPD: **baixar meus dados** e **excluir minha conta** (apaga os dados pessoais; as doações confirmadas ficam anônimas na cadeia de confiança)
 - 💎 **Rede de sangue raro** — doadores de fenótipos raros (Rh nulo, Bombay, Vel negativo, Jk(a-b-), Kell nulo) entram na rede por vontade própria e escolhem até onde podem ir (cidade, estado ou país). O fenótipo começa **declarado** e só vira **confirmado** quando um hospital confere o laudo pessoalmente, por um código curto. Numa emergência real o hospital **não recebe a lista**: descreve o caso, vê só **quantos** doadores existem e o Hemare chama os compatíveis e aptos; o hospital só passa a ver nome e telefone de quem responde "posso ajudar". Cada doador recebe no máximo um chamado por semana, todo pedido fica registrado e expira em 72 horas
 - ♿ **Ficha PcD** — pessoas com deficiência podem doar sangue, e a norma federal (Portaria GM/MS nº 11.685/2026) não trata a deficiência em si como impedimento: o que conta é a causa, os remédios e a capacidade de entender e consentir. No **Meu perfil** a pessoa declara (com consentimento) o tipo de deficiência e o que ajuda no atendimento, e abre uma **ficha de orientação** que cruza as respostas com a norma: o que impede, o que depende de prazo ou relatório, o que levar ao hemocentro e o que combinar antes (Libras, mobilidade, acompanhante). As respostas da ficha não são guardadas, nenhum hospital vê a condição e ela some ao desmarcar ou excluir a conta
+- 📅 **Agendar doação** — o doador escolhe um hospital aprovado, o dia e o horário; só aparecem horários em que ele **já estará apto** (intervalo de 60/90 dias e limite de 4 ou 3 doações por ano). Recebe confirmação por e-mail e um lembrete antes do horário, e pode **reagendar** ou **cancelar**. Cada vaga tem capacidade e nunca passa dela, nem com muita gente agendando ao mesmo tempo
+- 🩸 **Minhas doações** — histórico do doador: quantas doações, até quantas vidas, quando fica apto de novo, quantas doações ainda cabem no ano, doações por ano e uma linha do tempo com doações (com o selo da cadeia de confiança) e agendamentos, no estilo da carteira do app federal Hemovida
 - 🏅 **Conquistas** — níveis, emblemas e contador de vidas salvas a cada doação confirmada, com aviso de quando poderá doar de novo, comemoração de emblema novo e botão para compartilhar (WhatsApp e redes)
 - 🔔 **Lembrete de retorno** — quem pedir recebe um email quando o intervalo entre doações acaba (um por ciclo, opt-in), para voltar a doar
 - 🤝 **Traga um amigo** — cada doador tem um link de convite (`/cadastro?ref=CÓDIGO`) para copiar ou mandar pelo WhatsApp; o convite só conta quando o amigo faz a **primeira doação confirmada por um hospital** (contas falsas não rendem nada), e rende os emblemas *Recrutador* (1 amigo) e *Multiplicador* (3 amigos). O doador vê só números, nunca o nome de quem convidou
@@ -44,6 +47,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 - 🌡️ **Termômetro de estoque** — o hospital classifica seu estoque por tipo (estável/alerta/crítico/emergência); uma página **pública** exibe onde há falta de sangue no momento
 - 🚨 **Alerta de emergência inteligente** — necessidades críticas ou de emergência chamam por email só quem pode ajudar de verdade: doadores compatíveis, que consentiram ser contatados, **aptos a doar hoje** e **da mesma cidade** do hospital — e cada doador recebe no máximo um alerta a cada 3 dias, para não cansar quem doa
 - ✅ **Confirmação de doação** — registra doações reais, atualizando o histórico do doador (base para gamificação e previsão)
+- 📅 **Agenda de doações** — o hospital abre horários em lote (dias da semana, primeiro e último horário, intervalo, capacidade), ajusta a capacidade, vê quem agendou (só nome, tipo sanguíneo e horário) e marca quem **compareceu** (a doação entra na cadeia de confiança) ou **faltou**
 - 🔮 **Radar preditivo de aptidão** — estima quantos doadores de cada tipo ficarão aptos a doar nos próximos 7 e 30 dias, antecipando a escassez antes que ela aconteça
 
 ### Acessibilidade (padrão eMAG / Governo Federal)
@@ -57,6 +61,8 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 ## 🧠 Destaques técnicos
 
 - **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação, convite de amigos, apadrinhamento, campanha de reposição, notícias por estado, alerta inteligente, lembrete de retorno e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
+- **Qualidade conferida por máquina** — a cada PR o GitHub Actions roda os testes (regras, estrutura e ponta a ponta com Postgres simulado), o lint e o build; a documentação da API é gerada do código e um teste falha se ela ficar desatualizada; outro teste monta um banco vazio só com `db/ordem.js` e usa o sistema; e há conferências de arquitetura (nenhuma rota de escrita pública sem querer, nenhuma consulta SQL montada com texto do usuário, cópia da triagem igual no navegador e no servidor). Veja `docs/ARQUITETURA.md`
+- **Sessão e login** — e-mail sem diferença de maiúsculas, senha validada (8 a 72 bytes, sem as senhas mais comuns), limite de tentativas por conta (8 erros em 15 min travam o login) sem revelar se o e-mail existe nem pelo tempo de resposta, código de recuperação sorteado com `crypto` e com limite de tentativas, trocar a senha ou "sair de todos os aparelhos" encerra as outras sessões de verdade (os JWT antigos deixam de valer), erros sempre em JSON e cabeçalhos de segurança
 - **Segurança em camadas** — bcrypt para senhas, JWT com middleware no backend e guarda de rota no frontend, tokens de recuperação de senha com expiração e uso único, permissões por papel (doador, hospital aprovado, administrador) conferidas no backend
 - **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram (e mostra o nome social quando existe); o apadrinhamento não guarda nome de paciente (só apelido e uma condição de lista fixa, com autorização registrada)
 - **Arquitetura cliente-servidor** — o frontend nunca acessa o banco diretamente; toda a lógica passa por uma API REST
@@ -74,19 +80,30 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 
 ## 📁 Estrutura do projeto
 
+```
 Hemare/
 ├── backend/
-│ ├── servidor.js # servidor Express e rotas
-│ ├── banco.js # conexão com o PostgreSQL
-│ ├── regras/ # lógica de negócio (compatibilidade, elegibilidade, triagem, distância)
-│ ├── rotas/ # endpoints (auth, doador, hospital, admin, locais, recuperação, radar)
-│ ├── middleware/ # autenticação (JWT) e permissões por papel
-│ └── db/ # scripts de criação e povoamento das tabelas
-└── frontend/
-└── src/
-├── paginas/ # telas (Início, Login, Triagem, Locais, Painel, Radar...)
-├── componentes/ # Layout (com acessibilidade), mapa, rota protegida
-└── regras/ # cópias das regras usadas no navegador
+│   ├── servidor.js        # servidor Express: CORS, cabeçalhos, rotas, 404 e erros em JSON
+│   ├── banco.js           # conexão com o PostgreSQL
+│   ├── regras/            # lógica de negócio PURA (sem banco), cada uma com o seu testar-*.js
+│   ├── rotas/             # endpoints (86 rotas; lista em docs/API.md)
+│   ├── servicos/          # registrarDoacao (cadeia de confiança), sessões, e-mails
+│   ├── middleware/        # autenticação (JWT + sessão encerrável), papéis, erros 500
+│   ├── tarefas/           # lembretes por e-mail
+│   ├── db/                # scripts do banco; a ordem certa está em db/ordem.js (npm run migrar)
+│   ├── scripts/           # gerador da documentação da API
+│   └── testes/            # ambiente de teste (pg-mem), ponta a ponta e estrutura (npm test)
+├── frontend/src/
+│   ├── paginas/           # telas
+│   ├── componentes/       # Layout (acessibilidade), mapa, rota protegida, painéis
+│   ├── regras/            # cópias das regras usadas no navegador e textos de data
+│   └── sessao.js          # login automático, renovação e saída segura
+├── docs/
+│   ├── API.md             # todas as rotas e o CRUD de cada recurso (gerado do código)
+│   ├── openapi.json       # a mesma API em OpenAPI 3 (abra no Swagger Editor)
+│   └── ARQUITETURA.md     # revisão arquitetural, REST, login e roteiro de melhorias
+└── .github/workflows/     # CI: testes, lint e build a cada PR
+```
 
 ---
 
@@ -102,25 +119,24 @@ npm install
 #   DATABASE_URL=sua_string_do_postgres
 #   JWT_SECRET=uma_chave_secreta
 #   RESEND_API_KEY=sua_chave_do_resend
-node db/criar-tabelas.js       # cria as tabelas principais
-node db/criar-hospital.js      # tabelas de hospital
-node db/criar-locais.js        # tabela de locais + popular-locais.js
-node db/criar-recuperacao.js   # tabela de recuperação de senha
-node db/criar-estoque.js       # tabela de estoque
-node db/criar-doacoes.js       # tabela de doações confirmadas
-node db/ajustar-verificacao.js # verificação de hospitais (novos começam pendentes)
-node db/ajustar-alertas.js     # data do último alerta de cada doador (alerta inteligente)
-node db/ajustar-lembretes.js   # lembrete de retorno (opt-in do doador)
-node db/ajustar-indicacao.js   # código de convite e quem convidou (Traga um amigo)
-node db/ajustar-perfil.js      # colunas do perfil completo (foto, nascimento, gênero, peso, contato de emergência)
-node db/ajustar-raros.js       # rede de sangue raro (participação do doador, pedidos e chamados)
-node db/ajustar-pcd.js         # ficha PcD (declaração de pessoa com deficiência no perfil)
-node db/criar-apadrinhamento.js # tabelas do apadrinhamento de pacientes
-node db/criar-campanhas.js     # tabelas das campanhas de reposição (Quem doa por mim)
-node db/criar-noticias.js      # tabela do canal de notícias por estado
-node db/popular-noticias.js    # panorama inicial dos 27 estados (pesquisa de 29/09/2026)
+#   FRONTEND_URL=https://seu-site   (opcional: libera só esse site no CORS e põe links nos e-mails)
+# O servidor NÃO liga sem JWT_SECRET (mínimo de 8 caracteres).
+npm run migrar                 # monta o banco inteiro, na ordem certa (só o que ainda não foi feito)
 node db/tornar-admin.js seu@email.com  # torna uma conta já cadastrada administrador
-node servidor.js               # inicia a API (porta 3000)
+npm start                      # inicia a API (porta 3000)
+```
+
+**Banco novo ou já existente?** `npm run migrar` guarda numa tabela (`migracoes_aplicadas`) o que já rodou. Se você já montou o banco na mão, rode **uma vez** `npm run migrar -- --marcar-aplicadas` para anotar tudo como feito, e daí em diante só os scripts novos rodam. `npm run migrar -- --listar` mostra a lista e o que falta. A lista completa fica em `backend/db/ordem.js`. Versões antigas deste README esqueciam alguns scripts (`ajustar-doadores`, `ajustar-hospitais`, `ajustar-cadeia`...), e um teste agora monta um banco vazio só com essa lista para garantir que nada falte.
+
+**Testes (sem banco real e sem internet):**
+```bash
+cd backend
+npm test                       # tudo: regras + estrutura + ponta a ponta (Postgres simulado com pg-mem)
+npm run test:regras            # só as regras de negócio (rápido)
+npm run test:e2e               # só os testes de ponta a ponta (login, agenda, perfil, rede rara, banco do zero...)
+node testes/rodar.js estrutura # só as conferências automáticas de estrutura (migrações, rotas, documentação, segurança)
+npm run docs                   # gera docs/API.md e docs/openapi.json a partir das rotas
+npm run servir-teste           # API de demonstração com dados de exemplo (contas em backend/testes/servir.js)
 ```
 
 **Frontend:**
@@ -158,6 +174,11 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Perfil completo do doador com foto, carteirinha digital e direitos da LGPD
 - [x] Rede de sangue raro com confirmação de laudo e chamados que protegem os dados do doador
 - [x] Ficha PcD: orientação de triagem para pessoas com deficiência, baseada na norma federal
+- [x] Agendamento de doação e histórico "Minhas doações"
+- [x] Testes de ponta a ponta no repositório (`npm test`)
+- [x] Login automático, sessões encerráveis, limite de tentativas e troca de senha
+- [x] Documentação da API (OpenAPI + tabela de CRUD), revisão arquitetural, CI e `npm run migrar`
+- [x] CRUD completo de necessidades (fechar, reabrir, apagar) e edição de avisos do canal de notícias
 - [x] Apadrinhamento de pacientes com necessidade recorrente de doação
 
 ---

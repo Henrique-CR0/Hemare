@@ -6,6 +6,7 @@ const { verificarElegibilidade } = require('../regras/elegibilidade');
 
 const router = express.Router();
 
+// RADAR PREDITIVO: quantos doadores de cada tipo estao aptos agora, em ate 7 dias e em ate 30 dias (so numeros).
 router.get('/aptidao', autenticar, async (req, res) => {
     try {
         const r = await pool.query('SELECT tipo_sanguineo, sexo, ultima_doacao FROM doadores');

@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { URL_BACKEND } from '../config';
+import { encerrarSessao } from '../sessao';
+import AlterarSenha from '../componentes/AlterarSenha';
 import { reduzirFoto } from '../regras/foto';
 import { mascaraCpf, mascaraTelefone, cpfValido } from '../regras/documentos';
 import Carteirinha from '../componentes/Carteirinha';
@@ -53,8 +55,7 @@ function MeuPerfil() {
   const [avisoLgpd, setAvisoLgpd] = useState('');
 
   function sairDaConta() {
-    localStorage.removeItem('hemare_token');
-    localStorage.removeItem('hemare_usuario');
+    encerrarSessao();
     navegar('/');
   }
 
@@ -327,6 +328,8 @@ function MeuPerfil() {
         <p className="mp-dica">Cartão com sua foto, tipo sanguíneo e nível, para guardar no celular. Ele se atualiza com o que você preenche acima.</p>
         <Carteirinha perfil={cartao} />
       </section>
+
+      <AlterarSenha />
 
       <section className="mp-bloco mp-lgpd">
         <h2>🛡️ Meus dados (LGPD)</h2>

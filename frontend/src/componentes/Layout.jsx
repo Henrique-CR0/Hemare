@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { rotaInicial } from '../regras/rotaInicial';
+import { encerrarSessao } from '../sessao';
 
 // No celular um toque tambem dispara "mouse em cima"; o hover so vale com mouse de verdade
 // (e so no menu largo: no menu "☰" o "Aprenda" abre so no clique).
@@ -76,8 +77,7 @@ function Layout() {
   }, []);
 
   function sair() {
-    localStorage.removeItem('hemare_token');
-    localStorage.removeItem('hemare_usuario');
+    encerrarSessao();
     navegar('/');
   }
 

@@ -4,7 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node testes/rodar.js",
+    "test:regras": "node testes/rodar.js regras",
+    "test:e2e": "node testes/rodar.js e2e",
+    "start": "node servidor.js",
+    "servir-teste": "node testes/servir.js",
+    "migrar": "node db/migrar.js",
+    "docs": "node scripts/api.js"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +25,8 @@
     "nodemailer": "^10.0.0",
     "pg": "^8.22.0",
     "resend": "^6.26.0"
+  },
+  "devDependencies": {
+    "pg-mem": "^3.0.14"
   }
 }

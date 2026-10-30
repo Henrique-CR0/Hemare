@@ -7,6 +7,7 @@ const router = express.Router();
 // Peso de cada nivel, para calcular a "pior" situacao de uma cidade.
 const PESO_NIVEL = { emergencia: 4, critico: 3, alerta: 2, estavel: 1 };
 
+// PREVISAO DO SANGUE: o "clima" de cada cidade pelo pior nivel de estoque dos hospitais aprovados.
 router.get('/', async (req, res) => {
     try {
         const r = await pool.query(

@@ -12,10 +12,12 @@ const router = express.Router();
 
 const AVISO_MIGRACAO = 'A Ficha PcD ainda não foi ativada no banco (rode db/ajustar-pcd.js).';
 
+// PUBLICO: as perguntas e opcoes da ficha de PcD.
 router.get('/guia', (req, res) => {
     res.json(guia());
 });
 
+// PUBLICO: ficha de orientacao para a triagem de PcD. Calcula na hora e nao guarda nada.
 router.post('/ficha', (req, res) => {
     const { erro, resultado } = avaliarFicha(req.body);
     if (erro) return res.status(400).json({ erro });
@@ -37,6 +39,7 @@ function montar(d) {
     };
 }
 
+// DOADOR: a propria declaracao de pessoa com deficiencia (so a pessoa ve; nunca um hospital).
 router.get('/eu', async (req, res) => {
     try {
         const r = await pool.query('SELECT pcd, pcd_tipos, pcd_apoios, pcd_declarado_em FROM doadores WHERE usuario_id = $1', [req.usuario.id]);
@@ -48,6 +51,7 @@ router.get('/eu', async (req, res) => {
     }
 });
 
+// DOADOR: declara (com consentimento) ou deixa de declarar a condicao de PcD e o que ajuda no atendimento.
 router.put('/eu', async (req, res) => {
     const { erro, pcd } = validarPcd(req.body);
     if (erro) return res.status(400).json({ erro });

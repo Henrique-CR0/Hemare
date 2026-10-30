@@ -1,0 +1,267 @@
+// Teste de ponta a ponta do agendamento de doacao e do historico "Minhas doacoes".
+// Rode: node testes/e2e/agendamento.js   (ou  npm test)
+const path = require('path');
+const amb = require('../ambiente').criarAmbiente(3064);
+const { BACKEND, pool, emails, URL, api, conta, checar } = amb;
+
+async function main() {
+  await amb.iniciar(['criar-agendamentos.js']);
+  const { somarDias } = require(path.join(BACKEND, 'regras/campanha.js'));
+  const { hojeNoBrasil } = require(path.join(BACKEND, 'regras/agendamento.js'));
+  const { enviarLembretesDeAgendamento } = require(path.join(BACKEND, 'tarefas/lembreteAgendamento.js'));
+  const hoje = hojeNoBrasil(new Date());
+  const d1 = somarDias(hoje, 7), d2 = somarDias(hoje, 8);
+
+  async function doador(nome, email, extra) {
+    const t = await conta(nome, email, 'doador');
+    await api('POST', '/doador/perfil', t, { tipoSanguineo: 'O+', sexo: 'F', cidade: 'Recife', cpf: '529.982.247-25', telefone: '81999990001', visibilidade: 'anonimo', ...extra });
+    return t;
+  }
+  async function hospital(nome, email, cnpj, cidade, aprovado) {
+    const t = await conta(nome, email, 'hospital');
+    await api('POST', '/hospital/perfil', t, { cnpj, cnes: '1234567', cep: '50000-000', endereco: 'Rua A', numero: '1', bairro: 'Centro', cidade, estado: 'PE' });
+    await pool.query("UPDATE hospitais SET aprovado = " + aprovado + " WHERE usuario_id = (SELECT id FROM usuarios WHERE email = '" + email + "')");
+    return t;
+  }
+  const idDoador = async (email) => (await pool.query("SELECT d.id FROM doadores d JOIN usuarios u ON u.id = d.usuario_id WHERE u.email = '" + email + "'")).rows[0].id;
+
+  const tAna = await doador('Ana Lima', 'ana@x.com', { visibilidade: 'identificado', nomeSocial: undefined });
+  const tBia = await doador('Bia Rocha', 'bia@x.com');
+  const tCaio = await doador('Caio Dias', 'caio@x.com', { sexo: 'M' });
+  const tSemPerfil = await conta('Dani Sem Perfil', 'dani@x.com', 'doador');
+  const tH1 = await hospital('Hospital Recife', 'h1@x.com', '11.111.111/0001-11', 'Recife', true);
+  const tH2 = await hospital('Hospital Pendente', 'h2@x.com', '22.222.222/0001-22', 'Recife', false);
+  const tH3 = await hospital('Outro Hospital', 'h3@x.com', '33.333.333/0001-33', 'Olinda', true);
+  await pool.query("UPDATE doadores SET ultima_doacao = '" + somarDias(hoje, -10) + "' WHERE id = " + (await idDoador('bia@x.com')));
+  const idH1 = (await pool.query("SELECT h.id FROM hospitais h JOIN usuarios u ON u.id = h.usuario_id WHERE u.email = 'h1@x.com'")).rows[0].id;
+  const idH2 = (await pool.query("SELECT h.id FROM hospitais h JOIN usuarios u ON u.id = h.usuario_id WHERE u.email = 'h2@x.com'")).rows[0].id;
+  const lote = { de: d1, ate: d2, diasSemana: [0, 1, 2, 3, 4, 5, 6], horarios: ['08:00', '09:00'], capacidade: 1 };
+
+  console.log('--- Hospital abre vagas ---');
+  let r = await api('POST', '/agenda/vagas', null, lote);
+  checar('Sem login (401)', r.status === 401, r);
+  r = await api('POST', '/agenda/vagas', tAna, lote);
+  checar('Doador NAO abre vagas (403)', r.status === 403, r);
+  r = await api('POST', '/agenda/vagas', tH2, lote);
+  checar('Hospital pendente NAO abre vagas (403)', r.status === 403, r);
+  r = await api('POST', '/agenda/vagas', tH1, { ...lote, capacidade: 0 });
+  checar('Capacidade 0: 400', r.status === 400, r);
+  r = await api('POST', '/agenda/vagas', tH1, { ...lote, de: somarDias(hoje, -3) });
+  checar('Data no passado: 400', r.status === 400, r);
+  r = await api('POST', '/agenda/vagas', tH1, lote);
+  checar('Hospital aprovado abre 4 horarios (2 dias x 2 horarios): 201', r.status === 201 && r.dados.criadas === 4 && r.dados.jaExistiam === 0, r.dados);
+  r = await api('POST', '/agenda/vagas', tH1, lote);
+  checar('Repetir o mesmo lote nao duplica nada', r.status === 201 && r.dados.criadas === 0 && r.dados.jaExistiam === 4, r.dados);
+  r = await api('GET', '/agenda/vagas', tH1);
+  const vagas = r.dados;
+  checar('Hospital ve as 4 vagas, vazias, em ordem', r.status === 200 && vagas.length === 4 && vagas.every((v) => v.reservadas === 0 && v.capacidade === 1) && vagas[0].data === d1 && vagas[0].hora === '08:00', vagas);
+  r = await api('GET', '/agenda/vagas', tH3);
+  checar('Outro hospital nao ve as vagas deste (isolamento)', r.status === 200 && r.dados.length === 0, r.dados);
+  r = await api('GET', '/agenda/vagas?de=ontem', tH1);
+  checar('Filtro com data ruim: 400', r.status === 400, r);
+  const [vA, vB, vC, vD] = vagas;
+
+  console.log('--- Doador consulta os horarios ---');
+  r = await api('GET', '/agenda/hospitais');
+  checar('Sem login (401)', r.status === 401, r);
+  r = await api('GET', '/agenda/hospitais', tAna);
+  checar('Lista so hospitais aprovados COM horario livre (nem o pendente nem o sem vagas)', r.status === 200 && r.dados.length === 1 && r.dados[0].nome === 'Hospital Recife' && r.dados[0].vagasLivres === 4 && r.dados[0].proximoHorario === d1 + ' 08:00', r.dados);
+  r = await api('GET', '/agenda/hospitais/' + idH1 + '/vagas', tAna);
+  checar('Horarios do hospital agrupados por dia, com vagas livres', r.status === 200 && r.dados.dias.length === 2 && r.dados.dias[0].horarios.length === 2 && r.dados.dias[0].horarios[0].livres === 1 && r.dados.hospital.nome === 'Hospital Recife', r.dados);
+  r = await api('GET', '/agenda/hospitais/' + idH2 + '/vagas', tAna);
+  checar('Hospital pendente: 404', r.status === 404, r);
+  r = await api('GET', '/agenda/hospitais/abc/vagas', tAna);
+  checar('Id que nao e numero: 400', r.status === 400, r);
+
+  console.log('--- Doador agenda ---');
+  r = await api('POST', '/agendamentos', null, { vagaId: vA.id });
+  checar('Sem login (401)', r.status === 401, r);
+  r = await api('POST', '/agendamentos', tH1, { vagaId: vA.id });
+  checar('Hospital NAO agenda (403)', r.status === 403, r);
+  r = await api('POST', '/agendamentos', tSemPerfil, { vagaId: vA.id });
+  checar('Sem perfil de doador: 400', r.status === 400, r);
+  r = await api('POST', '/agendamentos', tAna, { vagaId: 'x' });
+  checar('vagaId invalido: 400', r.status === 400, r);
+  r = await api('POST', '/agendamentos', tAna, { vagaId: 99999 });
+  checar('Horario que nao existe: 404', r.status === 404, r);
+  r = await api('POST', '/agendamentos', tBia, { vagaId: vA.id });
+  checar('Quem doou ha 10 dias ainda nao esta apta: 400 dizendo quando fica', r.status === 400 && /fica apto em/.test(r.dados.erro), r.dados);
+  let antes = emails.length;
+  const respAgendar = await fetch(URL + '/agendamentos', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tAna }, body: JSON.stringify({ vagaId: vA.id }) });
+  const agAna = await respAgendar.json();
+  checar('Ana agenda: 201 com Location, status agendado e o hospital', respAgendar.status === 201 && respAgendar.headers.get('location') === '/agendamentos/' + agAna.id && agAna.status === 'agendado' && agAna.hospital.nome === 'Hospital Recife' && agAna.data === d1 && agAna.hora === '08:00', agAna);
+  await new Promise((x) => setTimeout(x, 300));
+  checar('Chega o e-mail de confirmacao, so para a Ana e sem CPF', emails.length === antes + 1 && emails[antes].to === 'ana@x.com' && /confirmado/.test(emails[antes].html) && !/529\.982/.test(emails[antes].html), emails.slice(antes).map((e) => e.to));
+  r = await api('POST', '/agendamentos', tAna, { vagaId: vB.id });
+  checar('Segundo agendamento ativo: 409', r.status === 409 && /já tem um agendamento/.test(r.dados.erro), r.dados);
+  r = await api('POST', '/agendamentos', tCaio, { vagaId: vA.id });
+  checar('Vaga com capacidade 1 ja ocupada: 409 (lotado)', r.status === 409 && /lotado/.test(r.dados.erro), r.dados);
+  r = await api('GET', '/agenda/hospitais', tCaio);
+  checar('A vaga lotada some da lista (3 livres)', r.dados[0].vagasLivres === 3, r.dados);
+  r = await api('GET', '/agendamentos', tAna);
+  checar('Ana ve o proprio agendamento', r.status === 200 && r.dados.length === 1 && r.dados[0].id === agAna.id, r.dados);
+  r = await api('GET', '/agendamentos?status=cancelado', tAna);
+  checar('Filtro por status', r.status === 200 && r.dados.length === 0, r.dados);
+  r = await api('GET', '/agendamentos?status=xyz', tAna);
+  checar('Status invalido no filtro: 400', r.status === 400, r);
+  r = await api('GET', '/agendamentos', tCaio);
+  checar('Caio nao ve o agendamento da Ana', r.status === 200 && r.dados.length === 0, r.dados);
+  r = await api('GET', '/agendamentos/' + agAna.id, tAna);
+  checar('Detalhe do agendamento proprio', r.status === 200 && r.dados.id === agAna.id, r.dados);
+  r = await api('GET', '/agendamentos/' + agAna.id, tCaio);
+  checar('Agendamento de outra pessoa: 404 (nao vaza que existe)', r.status === 404, r);
+
+  console.log('--- Ultima vaga: ninguem passa da capacidade ---');
+  const extras = [];
+  for (let i = 1; i <= 4; i++) extras.push(await doador('Extra ' + i, 'extra' + i + '@x.com', { sexo: 'M' }));
+  const disputantes = [tCaio, ...extras];
+  const resultados = await Promise.all(disputantes.map((t) => api('POST', '/agendamentos', t, { vagaId: vC.id })));
+  const ok = resultados.filter((x) => x.status === 201).length;
+  const lotado = resultados.filter((x) => x.status === 409).length;
+  const reservadasC = (await pool.query('SELECT reservadas FROM vagas_doacao WHERE id = ' + vC.id)).rows[0].reservadas;
+  checar('5 pessoas ao mesmo tempo na ultima vaga: so 1 consegue, 4 recebem 409, reservadas = 1', ok === 1 && lotado === 4 && reservadasC === 1, { ok, lotado, reservadasC });
+  const idxVencedor = resultados.findIndex((x) => x.status === 201);
+  const tVencedor = disputantes[idxVencedor];
+
+  console.log('--- Reagendar ---');
+  r = await api('PATCH', '/agendamentos/' + agAna.id, tAna, {});
+  checar('Sem informar o novo horario: 400', r.status === 400, r);
+  r = await api('PATCH', '/agendamentos/' + agAna.id, tAna, { vagaId: vA.id });
+  checar('Reagendar para o mesmo horario: 400', r.status === 400, r);
+  r = await api('PATCH', '/agendamentos/' + agAna.id, tAna, { vagaId: vC.id });
+  checar('Reagendar para horario lotado: 409', r.status === 409, r);
+  r = await api('PATCH', '/agendamentos/' + agAna.id, tCaio, { vagaId: vD.id });
+  checar('Reagendar o agendamento de outra pessoa: 404', r.status === 404, r);
+  antes = emails.length;
+  r = await api('PATCH', '/agendamentos/' + agAna.id, tAna, { vagaId: vB.id });
+  checar('Ana reagenda para 09:00: 200 e nova hora', r.status === 200 && r.dados.hora === '09:00' && r.dados.id === agAna.id, r.dados);
+  const res2 = (await pool.query('SELECT id, reservadas FROM vagas_doacao WHERE id IN (' + vA.id + ',' + vB.id + ') ORDER BY id')).rows;
+  checar('A vaga antiga foi liberada (0) e a nova reservada (1)', res2[0].reservadas === 0 && res2[1].reservadas === 1, res2);
+  await new Promise((x) => setTimeout(x, 300));
+  checar('Nova confirmacao por e-mail', emails.length === antes + 1 && emails[antes].to === 'ana@x.com', emails.slice(antes).map((e) => e.to));
+
+  console.log('--- Cancelar ---');
+  r = await api('DELETE', '/agendamentos/' + agAna.id, tCaio);
+  checar('Cancelar o de outra pessoa: 404', r.status === 404, r);
+  r = await api('DELETE', '/agendamentos/' + agAna.id, tAna);
+  checar('Ana cancela: 204', r.status === 204, r);
+  const res3 = (await pool.query('SELECT reservadas FROM vagas_doacao WHERE id = ' + vB.id)).rows[0].reservadas;
+  checar('A vaga foi liberada', res3 === 0, res3);
+  r = await api('DELETE', '/agendamentos/' + agAna.id, tAna);
+  checar('Cancelar de novo: 409 e a vaga nao e liberada duas vezes', r.status === 409 && (await pool.query('SELECT reservadas FROM vagas_doacao WHERE id = ' + vB.id)).rows[0].reservadas === 0, r);
+  r = await api('GET', '/agendamentos?status=cancelado', tAna);
+  checar('O cancelado fica no historico', r.status === 200 && r.dados.length === 1 && r.dados[0].status === 'cancelado', r.dados);
+  r = await api('POST', '/agendamentos', tAna, { vagaId: vD.id });
+  checar('Depois de cancelar, Ana pode marcar outro', r.status === 201, r.dados);
+  const agAna2 = r.dados;
+
+  console.log('--- Hospital acompanha e muda a capacidade ---');
+  r = await api('GET', '/agenda/agendamentos?data=' + d2, tH1);
+  checar('Hospital ve quem agendou o dia: nome e tipo, sem telefone de anonimo, sem CPF/e-mail', r.status === 200 && r.dados.agendamentos.some((a) => a.nome === 'Ana Lima' && a.tipoSanguineo === 'O+') && !/529\.982|@x\.com|cpf/i.test(JSON.stringify(r.dados)), r.dados);
+  const linhaAna = r.dados.agendamentos.find((a) => a.nome === 'Ana Lima');
+  checar('Ana escolheu ser identificada: o hospital ve o telefone dela', linhaAna.telefone === '81999990001', linhaAna);
+  r = await api('GET', '/agenda/agendamentos?data=' + d2, tH3);
+  checar('Outro hospital nao ve nada deste dia', r.status === 200 && r.dados.agendamentos.length === 0, r.dados);
+  r = await api('GET', '/agenda/agendamentos?data=hoje', tH1);
+  checar('Data ruim: 400', r.status === 400, r);
+  r = await api('PATCH', '/agenda/agendamentos/' + agAna2.id, tH1, { status: 'compareceu' });
+  checar('Confirmar presenca antes do dia: 400', r.status === 400 && /no dia da doação/.test(r.dados.erro), r.dados);
+  r = await api('PATCH', '/agenda/agendamentos/' + agAna2.id, tH3, { status: 'cancelado' });
+  checar('Outro hospital nao mexe no agendamento: 404', r.status === 404, r);
+  r = await api('PATCH', '/agenda/agendamentos/' + agAna2.id, tH1, { status: 'apagado' });
+  checar('Status inventado: 400', r.status === 400, r);
+  r = await api('PATCH', '/agenda/agendamentos/' + agAna2.id, tAna, { status: 'cancelado' });
+  checar('Doador NAO usa a rota do hospital (403)', r.status === 403, r);
+  r = await api('PATCH', '/agenda/vagas/' + vD.id, tH1, { capacidade: 3 });
+  checar('Aumentar a capacidade: 200', r.status === 200 && r.dados.capacidade === 3 && r.dados.reservadas === 1, r.dados);
+  r = await api('PATCH', '/agenda/vagas/' + vD.id, tH1, { capacidade: 0 });
+  checar('Capacidade 0: 400', r.status === 400, r);
+  r = await api('PATCH', '/agenda/vagas/' + vC.id, tH1, { capacidade: 3 });
+  r = await api('PATCH', '/agenda/vagas/' + vC.id, tH3, { capacidade: 5 });
+  checar('Mudar a vaga de outro hospital: 404', r.status === 404, r);
+  await api('PATCH', '/agenda/vagas/' + vD.id, tH1, { capacidade: 1 });
+  r = await api('DELETE', '/agenda/vagas/' + vD.id, tH1);
+  checar('Apagar vaga com gente agendada: 409', r.status === 409, r);
+  r = await api('DELETE', '/agenda/vagas/' + vD.id, tH3);
+  checar('Apagar vaga de outro hospital: 404', r.status === 404, r);
+  r = await api('PATCH', '/agenda/agendamentos/' + agAna2.id, tH1, { status: 'cancelado' });
+  checar('Hospital cancela o agendamento: vaga liberada', r.status === 200 && (await pool.query('SELECT reservadas FROM vagas_doacao WHERE id = ' + vD.id)).rows[0].reservadas === 0, r.dados);
+  r = await api('DELETE', '/agenda/vagas/' + vD.id, tH1);
+  checar('Vaga que ja teve agendamento nao some (historico): 409', r.status === 409, r.dados);
+  await api('POST', '/agenda/vagas', tH1, { de: somarDias(hoje, 20), ate: somarDias(hoje, 20), diasSemana: [0, 1, 2, 3, 4, 5, 6], horarios: ['10:00'], capacidade: 2 });
+  const vaga20 = (await api('GET', '/agenda/vagas?de=' + somarDias(hoje, 20) + '&ate=' + somarDias(hoje, 20), tH1)).dados[0];
+  r = await api('DELETE', '/agenda/vagas/' + vaga20.id, tH1);
+  checar('Vaga vazia e sem historico pode ser apagada: 204', r.status === 204, r);
+
+  console.log('--- Dia da doacao: presenca vira doacao na cadeia ---');
+  const idCaio = await idDoador('caio@x.com');
+  const vagaHoje = (await pool.query("INSERT INTO vagas_doacao (hospital_id, data, hora, capacidade, reservadas) VALUES (" + idH1 + ", '" + hoje + "', '23:00', 2, 1) RETURNING id")).rows[0].id;
+  const agHoje = (await pool.query("INSERT INTO agendamentos (doador_id, vaga_id) VALUES (" + idCaio + ", " + vagaHoje + ") RETURNING id")).rows[0].id;
+  r = await api('GET', '/agenda/agendamentos', tH1);
+  checar('Sem informar a data, o hospital ve o dia de hoje', r.status === 200 && r.dados.data === hoje && r.dados.agendamentos.some((a) => a.id === agHoje && a.nome === 'Caio Dias'), r.dados);
+  checar('Caio e anonimo: o telefone dele fica protegido (null)', r.dados.agendamentos.find((a) => a.id === agHoje).telefone === null, r.dados);
+  r = await api('PATCH', '/agenda/agendamentos/' + agHoje, tH1, { status: 'faltou' });
+  checar('Marcar falta antes do horario (23:00): 400', r.status === 400, r.dados);
+  r = await api('PATCH', '/agenda/agendamentos/' + agHoje, tH1, { status: 'compareceu' });
+  checar('Compareceu: 200 com o selo da cadeia (64 caracteres)', r.status === 200 && /^[0-9a-f]{64}$/.test(r.dados.selo), r.dados);
+  const dc = (await pool.query('SELECT total_doacoes FROM doadores WHERE id = ' + idCaio)).rows[0].total_doacoes;
+  const ag = (await pool.query('SELECT status, doacao_id FROM agendamentos WHERE id = ' + agHoje)).rows[0];
+  checar('A doacao foi registrada: total 1, agendamento ligado a ela', Number(dc) === 1 && ag.status === 'compareceu' && ag.doacao_id !== null, { dc, ag });
+  r = await api('GET', '/hospital/cadeia/verificar', tH1);
+  checar('A cadeia de confianca continua integra', r.status === 200 && r.dados.cadeiaIntegra === true, r.dados);
+  r = await api('PATCH', '/agenda/agendamentos/' + agHoje, tH1, { status: 'compareceu' });
+  checar('Confirmar de novo: 409 (nao conta duas doacoes)', r.status === 409, r.dados);
+  // Horario "00:00" de hoje (so por SQL; a API nao aceita antes das 05:00): sempre ja passou.
+  const agFalta = (await pool.query("INSERT INTO vagas_doacao (hospital_id, data, hora, capacidade, reservadas) VALUES (" + idH1 + ", '" + hoje + "', '00:00', 2, 1) RETURNING id")).rows[0].id;
+  const idExtra1 = await idDoador('extra1@x.com');
+  const agF = (await pool.query("INSERT INTO agendamentos (doador_id, vaga_id) VALUES (" + idExtra1 + ", " + agFalta + ") RETURNING id")).rows[0].id;
+  r = await api('PATCH', '/agenda/agendamentos/' + agF, tH1, { status: 'faltou' });
+  checar('Falta depois do horario: 200', r.status === 200 && r.dados.status === 'faltou', r.dados);
+  r = await api('PATCH', '/agenda/agendamentos/' + agF, tH1, { status: 'cancelado' });
+  checar('Depois de registrada a falta, nao muda mais: 409', r.status === 409, r.dados);
+
+  console.log('--- Historico "Minhas doacoes" ---');
+  r = await api('GET', '/historico');
+  checar('Sem login (401)', r.status === 401, r);
+  r = await api('GET', '/historico', tH1);
+  checar('Hospital NAO usa (403)', r.status === 403, r);
+  r = await api('GET', '/historico', tSemPerfil);
+  checar('Sem perfil: 404', r.status === 404, r);
+  r = await api('GET', '/historico', tCaio);
+  const h = r.dados;
+  checar('Caio: 1 doacao, ate 4 vidas, na linha do tempo com selo de 12 caracteres', r.status === 200 && h.resumo.totalDoacoes === 1 && h.resumo.vidasAte === 4 && h.linhaDoTempo.some((i) => i.tipo === 'doacao' && i.selo && i.selo.length === 12 && i.hospital === 'Hospital Recife'), h);
+  checar('Caio: ultima doacao hoje, ainda nao apto, limite anual de homem (4), restam 3', h.resumo.ultimaDoacao === hoje && h.resumo.aptoAgora === false && h.resumo.aptoEm === somarDias(hoje, 60) && h.resumo.limiteAnual === 4 && h.resumo.restantesNoAno === 3, h.resumo);
+  checar('Caio: comparecimento 1 de 1 (100%) e o agendamento que virou doacao nao aparece duas vezes', h.resumo.agendamentos.compareceu === 1 && h.resumo.agendamentos.taxaDeComparecimento === 100 && h.linhaDoTempo.filter((i) => i.data === hoje).length === 1, h.resumo.agendamentos);
+  checar('Texto do proximo passo (Caio ja pode ter outro agendamento marcado)', typeof h.proximoPasso === 'string' && /próximo agendamento|fica apto em/.test(h.proximoPasso), h.proximoPasso);
+  r = await api('GET', '/historico', tAna);
+  checar('Ana (nunca doou, com um agendamento cancelado pelo hospital): zero doacoes, apta, sem proximo agendamento', r.status === 200 && r.dados.resumo.totalDoacoes === 0 && r.dados.resumo.aptoAgora === true && r.dados.resumo.proximoAgendamento === null && r.dados.resumo.agendamentos.cancelado === 2, r.dados.resumo);
+  const agVenc = await api('GET', '/agendamentos?status=agendado', tVencedor);
+  checar('Quem venceu a disputa da ultima vaga aparece com proximo agendamento no historico', (await api('GET', '/historico', tVencedor)).dados.resumo.proximoAgendamento !== null && agVenc.dados.length === 1, agVenc.dados);
+
+  console.log('--- Lembrete automatico de agendamento ---');
+  const vv = (await pool.query('SELECT v.data, v.hora FROM agendamentos a JOIN vagas_doacao v ON v.id = a.vaga_id WHERE a.id = ' + (await api('GET', '/agendamentos', tVencedor)).dados[0].id)).rows[0];
+  const momentoV = Date.parse(String(vv.data.toISOString ? vv.data.toISOString().slice(0, 10) : vv.data).slice(0, 10) + 'T' + vv.hora + ':00-03:00');
+  antes = emails.length;
+  let n = await enviarLembretesDeAgendamento(new Date(momentoV - 20 * 3600 * 1000));
+  checar('Faltando 20h: lembra quem tem agendamento (o vencedor da disputa)', n === 1 && emails.length === antes + 1 && /chegando/.test(emails[antes].html), { n });
+  n = await enviarLembretesDeAgendamento(new Date(momentoV - 19 * 3600 * 1000));
+  checar('Rodar de novo nao repete o lembrete', n === 0, n);
+  n = await enviarLembretesDeAgendamento(new Date(momentoV - 5 * 24 * 3600 * 1000));
+  checar('Faltando 5 dias, ainda nao lembra', n === 0, n);
+
+  console.log('--- LGPD: baixar e excluir ---');
+  const resp = await fetch(URL + '/perfil/exportar', { headers: { Authorization: 'Bearer ' + tVencedor } });
+  const baixado = JSON.parse(await resp.text());
+  checar('Baixar meus dados inclui os agendamentos (o que compareceu e o que esta marcado)', Array.isArray(baixado.agendamentos) && baixado.agendamentos.some((a) => a.situacao === 'agendado') && baixado.agendamentos.some((a) => a.situacao === 'compareceu'), baixado.agendamentos);
+  const vagaVencedora = (await pool.query('SELECT reservadas FROM vagas_doacao WHERE id = ' + vC.id)).rows[0].reservadas;
+  r = await api('POST', '/perfil/excluir', tVencedor, { senha: 'senha-forte-123' });
+  const apos = (await pool.query('SELECT reservadas FROM vagas_doacao WHERE id = ' + vC.id)).rows[0].reservadas;
+  const stat = (await pool.query("SELECT a.status FROM agendamentos a JOIN doadores d ON d.id = a.doador_id JOIN usuarios u ON u.id = d.usuario_id WHERE u.nome = 'Conta removida'")).rows;
+  checar('Excluir a conta cancela o agendamento ativo e devolve a vaga (o que compareceu fica, sem dado pessoal)', r.status === 200 && vagaVencedora === 1 && apos === 0 && stat.some((s) => s.status === 'cancelado') && !stat.some((s) => s.status === 'agendado'), { vagaVencedora, apos, stat });
+  r = await api('GET', '/agenda/hospitais/' + idH1 + '/vagas', tAna);
+  checar('A vaga devolvida volta a aparecer para os outros', r.dados.dias.some((d) => d.horarios.some((hh) => hh.vagaId === vC.id)), r.dados);
+
+  amb.concluir();
+}
+
+main().catch((e) => { console.error('ERRO NO TESTE:', e); process.exit(1); });

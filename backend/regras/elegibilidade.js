@@ -36,4 +36,4 @@ function verificarElegibilidade(dataUltimaDoacao, sexo, hoje) {
     };
 }
 
-module.exports = { verificarElegibilidade };
+module.exports = { verificarElegibilidade, INTERVALO_DIAS };

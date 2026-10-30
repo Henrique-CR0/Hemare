@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 import { URL_BACKEND } from '../config';
+import { salvarSessao } from '../sessao';
 const ESTADOS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
 
 function cnpjValido(cnpj) {
@@ -96,8 +97,7 @@ function CadastroHospital() {
         body: JSON.stringify({ cnpj, cnes, cep, endereco, numero, bairro, complemento, cidade, estado })
       });
 
-      localStorage.setItem('hemare_token', dLog.token);
-      localStorage.setItem('hemare_usuario', JSON.stringify(dLog.usuario));
+      salvarSessao(dLog.token, dLog.usuario);
       setMensagem('✅ Hospital cadastrado! Redirecionando...');
       setTimeout(() => navegar('/painel-hospital'), 1500);
     } catch (e) {

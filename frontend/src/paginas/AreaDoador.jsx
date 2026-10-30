@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { URL_BACKEND } from '../config';
+import { encerrarSessao } from '../sessao';
 import Conquistas from '../componentes/Conquistas';
 import Indicacao from '../componentes/Indicacao';
 import MeusAfilhados from '../componentes/MeusAfilhados';
@@ -24,8 +25,7 @@ function AreaDoador() {
   }, []);
 
   function sair() {
-    localStorage.removeItem('hemare_token');
-    localStorage.removeItem('hemare_usuario');
+    encerrarSessao();
     navegar('/');
   }
 
@@ -47,6 +47,16 @@ function AreaDoador() {
       <Indicacao />
 
       <div className="area-cards">
+        <Link to="/agendar" className="area-card">
+          <div className="area-card-ic">📅</div>
+          <h3>Agendar doação</h3>
+          <p>Escolha o hospital, o dia e o horário. Você recebe a confirmação e um lembrete.</p>
+        </Link>
+        <Link to="/minhas-doacoes" className="area-card">
+          <div className="area-card-ic">🩸</div>
+          <h3>Minhas doações</h3>
+          <p>Quantas vezes você doou, quando fica apto de novo e seus agendamentos.</p>
+        </Link>
         <Link to="/meu-perfil" className="area-card">
           <div className="area-card-ic">👤</div>
           <h3>Meu perfil</h3>

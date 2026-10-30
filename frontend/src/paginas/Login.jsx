@@ -1,15 +1,26 @@
 // Hemare - Tela de login (refinada).
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 import { URL_BACKEND } from '../config';
 import { rotaInicial } from '../regras/rotaInicial';
+import { lerSessao, salvarSessao, lerMotivo } from '../sessao';
 
 function Login() {
   const navegar = useNavigate();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [lembrar, setLembrar] = useState(false);
   const [mensagem, setMensagem] = useState('');
+
+  // Quem ja esta logado (sessao valida guardada no navegador) vai direto para a sua area.
+  // Se chegou aqui porque a sessao acabou, mostra um aviso em vez de uma tela de login "do nada".
+  useEffect(() => {
+    const motivo = lerMotivo();
+    if (motivo === 'expirou') { setMensagem('⏳ Sua sessão terminou. Entre de novo para continuar.'); return; }
+    const sessao = lerSessao();
+    if (sessao) navegar(rotaInicial(sessao.usuario), { replace: true });
+  }, []);
 
   async function fazerLogin() {
     setMensagem('Entrando...');
@@ -17,13 +28,12 @@ function Login() {
       const resposta = await fetch(URL_BACKEND + '/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, senha: senha })
+        body: JSON.stringify({ email: email, senha: senha, lembrar: lembrar })
       });
       const dados = await resposta.json();
 
       if (resposta.ok) {
-        localStorage.setItem('hemare_token', dados.token);
-        localStorage.setItem('hemare_usuario', JSON.stringify(dados.usuario));
+        salvarSessao(dados.token, dados.usuario);
         navegar(rotaInicial(dados.usuario));
       } else {
         setMensagem('❌ ' + dados.erro);
@@ -45,6 +55,10 @@ function Login() {
             value={email} onChange={(e) => setEmail(e.target.value)} />
           <input className="auth-input" type="password" placeholder="Senha"
             value={senha} onChange={(e) => setSenha(e.target.value)} />
+          <label className="auth-lembrar">
+            <input type="checkbox" checked={lembrar} onChange={(e) => setLembrar(e.target.checked)} />
+            Manter conectado por 7 dias neste aparelho
+          </label>
           <button type="submit" className="auth-botao">Entrar</button>
         </form>
         {mensagem && <div className="auth-msg">{mensagem}</div>}
