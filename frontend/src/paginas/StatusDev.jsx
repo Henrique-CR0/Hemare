@@ -58,8 +58,7 @@ function StatusDev() {
           </div>
 
           {dados.relatorio ? (
-            <Markdown texto={dados.relatorio.replace(/^# .*
-/, '')} />
+            <Markdown texto={dados.relatorio.replace(/^# [^\n]*\n/, '')} />
           ) : (
             <p className="painel-vazio">O arquivo <code>docs/STATUS.md</code> não está neste servidor. Veja-o no repositório do projeto.</p>
           )}
