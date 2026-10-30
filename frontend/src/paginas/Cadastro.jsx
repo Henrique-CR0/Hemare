@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 
 import { URL_BACKEND } from '../config';
+import { destinoSeguro, comDestino } from '../regras/destino';
+import AcessoResumo from '../componentes/AcessoResumo';
 
 function forcaSenha(senha) {
   let f = 0;
@@ -17,6 +19,8 @@ function Cadastro() {
   // Vem de um convite de amigo: /cadastro?ref=CODIGO (o servidor confere se o codigo existe).
   const [params] = useSearchParams();
   const codigoConvite = params.get('ref') || '';
+  // Veio de uma tela que exige conta (ex.: "Posso doar?"): depois do login volta para ela.
+  const destino = destinoSeguro(params.get('destino'), null);
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -65,7 +69,7 @@ function Cadastro() {
       const dados = await resposta.json();
       if (resposta.ok) {
         setMensagem('✅ Conta criada! Redirecionando para o login...');
-        setTimeout(() => navegar('/login'), 1500);
+        setTimeout(() => navegar(comDestino('/login', destino)), 1500);
       } else {
         setMensagem('❌ ' + dados.erro);
       }
@@ -117,9 +121,10 @@ function Cadastro() {
         {mensagem && <div className="auth-msg">{mensagem}</div>}
 
         <p className="auth-troca">
-          Já tem conta? <Link to="/login">Entrar</Link>
+          Já tem conta? <Link to={comDestino('/login', destino)}>Entrar</Link>
         </p>
       </div>
+      <AcessoResumo tipo="doador" />
     </div>
   );
 }

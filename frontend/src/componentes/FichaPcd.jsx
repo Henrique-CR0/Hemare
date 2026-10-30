@@ -64,7 +64,7 @@ function FichaPcd({ dataNascimento, pesoKg }) {
         aplicar(await r.json());
       })
       .catch(() => ativo && setSituacao('indisponivel'));
-    fetch(URL_BACKEND + '/pcd/guia')
+    fetch(URL_BACKEND + '/pcd/guia', { headers: { 'Authorization': 'Bearer ' + token } })
       .then((r) => (r.ok ? r.json() : null))
       .then((g) => ativo && g && setGuia(g))
       .catch(() => {});
@@ -103,7 +103,7 @@ function FichaPcd({ dataNascimento, pesoKg }) {
       mesesDesdeProcedimento: meses === '' || !(causas.includes('lesao-trauma') || causas.includes('amputacao')) ? undefined : Number(meses)
     };
     try {
-      const r = await fetch(URL_BACKEND + '/pcd/ficha', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) });
+      const r = await fetch(URL_BACKEND + '/pcd/ficha', { method: 'POST', headers: cabecalho, body: JSON.stringify(corpo) });
       const d = await r.json();
       if (r.ok) { setResultado(d); setAvisoFicha(''); } else { setAvisoFicha('❌ ' + d.erro); }
     } catch {

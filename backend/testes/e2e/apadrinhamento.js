@@ -39,14 +39,18 @@ async function main() {
   const idCaso = r.dados && r.dados.id;
   checar('Hospital aprovado cadastra: 201', r.status === 201 && idCaso > 0, r);
 
-  console.log('--- Lista publica ---');
+  console.log('--- Lista de pacientes (so para doadores logados) ---');
   r = await api('GET', '/apadrinhamento');
+  checar('Visitante sem conta NAO ve a lista de pacientes (401)', r.status === 401, r);
+  r = await api('GET', '/apadrinhamento', tH1);
+  checar('Hospital NAO usa a lista publica dos doadores (403)', r.status === 403, r);
+  r = await api('GET', '/apadrinhamento', tAna);
   const item = r.dados && r.dados.casos && r.dados.casos[0];
-  checar('Publica (sem login) mostra o paciente', r.status === 200 && r.dados.casos.length === 1, r);
+  checar('Doador logado ve o paciente', r.status === 200 && r.dados.casos.length === 1, r);
   checar('Mostra apelido, tipo, hospital, cidade e meta', item && item.apelido === 'Paciente Aurora' && item.tipoSanguineo === 'A+'
     && item.hospital === 'Hospital Um' && item.cidade === 'Recife' && item.meta === 6 && item.padrinhos === 0, item);
   await pool.query('UPDATE hospitais SET aprovado = false WHERE id = 1');
-  r = await api('GET', '/apadrinhamento');
+  r = await api('GET', '/apadrinhamento', tAna);
   checar('Hospital que perdeu a aprovacao some da lista', r.dados.casos.length === 0, r.dados);
   await pool.query('UPDATE hospitais SET aprovado = true WHERE id = 1');
 
@@ -65,7 +69,7 @@ async function main() {
   checar('Ana (O-) apadrinha: 201', r.status === 201, r);
   r = await api('POST', '/apadrinhamento/' + idCaso + '/apadrinhar', tAna);
   checar('Apadrinhar de novo: 409', r.status === 409, r);
-  r = await api('GET', '/apadrinhamento');
+  r = await api('GET', '/apadrinhamento', tAna);
   checar('Lista mostra 1 padrinho e nenhum dado dele', r.dados.casos[0].padrinhos === 1
     && !JSON.stringify(r.dados).includes('Ana') && !JSON.stringify(r.dados).includes('ana@'), r.dados);
 
@@ -111,7 +115,7 @@ async function main() {
   checar('Outro hospital NAO encerra (404)', r.status === 404, r);
   r = await api('POST', '/apadrinhamento/' + idCaso + '/encerrar', tH1);
   checar('Dono encerra: 200', r.status === 200, r);
-  r = await api('GET', '/apadrinhamento');
+  r = await api('GET', '/apadrinhamento', tAna);
   checar('Pedido encerrado sai da lista publica', !r.dados.casos.some((c) => c.id === idCaso), r.dados.casos.map((c) => c.apelido));
   r = await api('POST', '/apadrinhamento/' + idCaso + '/apadrinhar', tAna);
   checar('Apadrinhar pedido encerrado: 409', r.status === 409, r);

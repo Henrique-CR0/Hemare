@@ -1,10 +1,11 @@
 // Hemare - Rotas da Ficha PcD (pessoa com deficiencia).
-// /pcd/guia e /pcd/ficha sao publicas e nao guardam nada: so devolvem as perguntas e calculam a orientacao na hora.
+// /pcd/guia e /pcd/ficha sao so para doadores logados (e uma ficha sobre saude) e nao guardam nada: devolvem as perguntas e calculam a orientacao na hora.
 // /pcd/eu e do doador logado: declarar (ou deixar de declarar) a condicao no perfil. Dado sensivel (LGPD, art. 11):
 // so a propria pessoa ve; nenhuma rota de hospital le estas colunas.
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
+const { exigirDoador } = require('../middleware/exigirPapel');
 const { paraDia } = require('../regras/alerta');
 const { TIPOS, APOIOS, guia, validarPcd, avaliarFicha, listaDoBanco } = require('../regras/pcd');
 
@@ -12,13 +13,13 @@ const router = express.Router();
 
 const AVISO_MIGRACAO = 'A Ficha PcD ainda não foi ativada no banco (rode db/ajustar-pcd.js).';
 
-// PUBLICO: as perguntas e opcoes da ficha de PcD.
-router.get('/guia', (req, res) => {
+// DOADOR: as perguntas e opcoes da ficha de PcD (so para quem tem conta: e uma ficha sobre saude).
+router.get('/guia', autenticar, exigirDoador, (req, res) => {
     res.json(guia());
 });
 
-// PUBLICO: ficha de orientacao para a triagem de PcD. Calcula na hora e nao guarda nada.
-router.post('/ficha', (req, res) => {
+// DOADOR: ficha de orientacao para a triagem de PcD. Calcula na hora e nao guarda nada.
+router.post('/ficha', autenticar, exigirDoador, (req, res) => {
     const { erro, resultado } = avaliarFicha(req.body);
     if (erro) return res.status(400).json({ erro });
     res.json(resultado);

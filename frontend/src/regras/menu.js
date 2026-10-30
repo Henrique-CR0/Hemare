@@ -5,10 +5,13 @@
 const INICIO = { para: '/', rotulo: 'Início' };
 const ONDE_DOAR = { para: '/locais', rotulo: 'Onde doar' };
 const POSSO_DOAR = { para: '/triagem', rotulo: 'Posso doar?' };
+// Para o visitante, estas duas telas pedem conta: ficam no menu com um cadeado e levam ao "portao de acesso".
+const POSSO_DOAR_TRAVADO = { ...POSSO_DOAR, exigeConta: true };
 const ESTOQUE = { para: '/estoque', rotulo: 'Termômetro de estoque' };
 const NOTICIAS = { para: '/noticias', rotulo: 'Notícias' };
 const CLIMA = { para: '/clima', rotulo: 'Previsão do sangue' };
 const APADRINHE = { para: '/apadrinhar', rotulo: 'Apadrinhe' };
+const APADRINHE_TRAVADO = { ...APADRINHE, exigeConta: true };
 const AGENDAR = { para: '/agendar', rotulo: 'Agendar doação' };
 const RADAR = { para: '/radar', rotulo: 'Radar de aptidão' };
 
@@ -24,7 +27,7 @@ export function menuDe(tipo) {
     return { links: [NOTICIAS, CLIMA, RADAR], aprenda: false };
   }
   // Visitante (sem login): o site inteiro aberto ao publico.
-  return { links: [INICIO, ONDE_DOAR, POSSO_DOAR, ESTOQUE, NOTICIAS, CLIMA, APADRINHE], aprenda: true };
+  return { links: [INICIO, ONDE_DOAR, POSSO_DOAR_TRAVADO, ESTOQUE, NOTICIAS, CLIMA, APADRINHE_TRAVADO], aprenda: true };
 }
 
 // Para onde vai o logotipo: visitante e doador vao para o inicio; hospital e administrador, para a sua area.
