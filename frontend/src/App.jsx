@@ -1,6 +1,8 @@
 // Hemare - Rotas do site.
 import Clima from './paginas/Clima';
 import Radar from './paginas/Radar';
+import Agendar from './paginas/Agendar';
+import MinhasDoacoes from './paginas/MinhasDoacoes';
 import VLibras from './componentes/VLibras';
 import Estoque from './paginas/Estoque';
 import Placar from './paginas/Placar';
@@ -54,6 +56,8 @@ function App() {
           <Route path="noticias" element={<Noticias />} />
           <Route path="admin" element={<RotaProtegida><PainelAdmin /></RotaProtegida>} />
           <Route path="radar" element={<RotaProtegida><Radar /></RotaProtegida>} />
+          <Route path="agendar" element={<RotaProtegida><Agendar /></RotaProtegida>} />
+          <Route path="minhas-doacoes" element={<RotaProtegida><MinhasDoacoes /></RotaProtegida>} />
           <Route path="clima" element={<Clima />} />
         </Route>
       </Routes>

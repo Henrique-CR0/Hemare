@@ -772,3 +772,51 @@ a.area-avatar { text-decoration: none; overflow: hidden; }
   .pcd-so-impressao { display: block; font-size: 12px; }
   .pcd-nao-imprimir { display: none !important; }
 }
+
+/* ===== AGENDAMENTO E MINHAS DOACOES ===== */
+.agd h2 { font-size: 18px; color: #2b0d10; margin: 20px 0 8px; }
+.agd-ativo { background: #e9f8ee; border: 1px solid #b6e3c4; border-radius: 14px; padding: 14px 18px; margin: 14px 0; }
+.agd-ativo h2 { margin-top: 0; color: #17733e; }
+.agd-quando { font-size: 20px; margin: 4px 0; }
+.agd-aviso { background: #fff6e5; border: 1px solid #f0d9a8; border-radius: 10px; padding: 8px 12px; font-size: 14px; color: #7a5200; }
+.agd-lista { display: flex; flex-direction: column; gap: 8px; }
+.agd-hosp { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; text-align: left; background: #fff; border: 2px solid #f0d4d9; border-radius: 12px; padding: 12px 16px; cursor: pointer; font-size: 15px; color: #2b0d10; }
+.agd-hosp span { color: #6b5054; font-size: 14px; }
+.agd-dias { display: flex; flex-wrap: wrap; gap: 8px; }
+.agd-dia, .agd-chip { background: #fff; border: 2px solid #f0d4d9; border-radius: 999px; padding: 8px 14px; cursor: pointer; font-size: 14px; color: #2b0d10; }
+.agd-dia:disabled { opacity: .4; cursor: not-allowed; }
+.agd-dia small { color: #6b5054; }
+.agd-hosp.agd-sel, .agd-dia.agd-sel, .agd-chip.agd-sel { border-color: #c8102e; background: #ffeaed; }
+.agd-chip input { margin-right: 4px; }
+.agd-semana { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.agd-confirmar { background: #fff8f9; border: 1px dashed #e8a6b0; border-radius: 12px; padding: 12px 16px; margin: 16px 0; }
+.agd-nota { font-size: 13px; color: #6b5054; margin-top: 18px; line-height: 1.5; }
+.agd-passo { font-size: 16px; background: #fff8f9; border-left: 4px solid #c8102e; border-radius: 8px; padding: 10px 14px; margin: 10px 0 16px; }
+.agd-numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.agd-numeros div { background: #fff; border: 1px solid #f0d4d9; border-radius: 14px; padding: 14px; text-align: center; }
+.agd-numeros strong { display: block; font-size: 24px; color: #c8102e; }
+.agd-numeros span { font-size: 13px; color: #6b5054; }
+.agd-limite p { margin: 0 0 6px; font-size: 14px; }
+.agd-barra { background: #f3e4e7; border-radius: 999px; height: 10px; flex: 1; overflow: hidden; }
+.agd-barra div { background: #c8102e; height: 100%; border-radius: 999px; }
+.agd-ano { display: flex; align-items: center; gap: 10px; font-size: 14px; margin: 4px 0; }
+.agd-ano span { width: 44px; }
+.agd-tempo { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.agd-item { display: flex; gap: 12px; background: #fff; border: 1px solid #f0d4d9; border-left: 5px solid #c8102e; border-radius: 12px; padding: 10px 14px; }
+.agd-item.agd-agendado { border-left-color: #3a7bd5; }
+.agd-item.agd-faltou { border-left-color: #e6b422; }
+.agd-item.agd-cancelado { border-left-color: #b8a9ab; opacity: .8; }
+.agd-item p { margin: 2px 0 0; font-size: 13px; color: #6b5054; }
+.agd-ic { font-size: 20px; }
+.agd-form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: #4a3437; }
+.agd-dia-input { display: flex; align-items: center; gap: 10px; font-size: 14px; margin-bottom: 10px; }
+.agd-vagas { list-style: none; padding: 0; margin: 0 0 14px; display: flex; flex-direction: column; gap: 8px; }
+.agd-vagas li { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; background: #fff8f9; border: 1px solid #f0d4d9; border-radius: 10px; padding: 8px 12px; font-size: 14px; }
+.agd-acoes { display: flex; gap: 6px; margin-left: auto; }
+.agd-status { font-size: 12px; font-weight: 700; border-radius: 999px; padding: 2px 10px; background: #e9eef8; color: #2b4a8a; }
+.agd-status-compareceu { background: #dff5e7; color: #17733e; }
+.agd-status-faltou { background: #fff3cf; color: #7a5200; }
+.alto-contraste .agd-ativo, .alto-contraste .agd-hosp, .alto-contraste .agd-dia, .alto-contraste .agd-chip, .alto-contraste .agd-confirmar, .alto-contraste .agd-numeros div,
+.alto-contraste .agd-item, .alto-contraste .agd-vagas li, .alto-contraste .agd-passo, .alto-contraste .agd-aviso { background: #000 !important; color: #fff !important; border-color: #fff !important; }
+.alto-contraste .agd h2, .alto-contraste .agd-hosp span, .alto-contraste .agd-dia small, .alto-contraste .agd-item p, .alto-contraste .agd-nota, .alto-contraste .agd-numeros span,
+.alto-contraste .agd-numeros strong { color: #fff !important; }

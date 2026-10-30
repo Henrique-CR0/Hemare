@@ -47,6 +47,16 @@ function AreaDoador() {
       <Indicacao />
 
       <div className="area-cards">
+        <Link to="/agendar" className="area-card">
+          <div className="area-card-ic">📅</div>
+          <h3>Agendar doação</h3>
+          <p>Escolha o hospital, o dia e o horário. Você recebe a confirmação e um lembrete.</p>
+        </Link>
+        <Link to="/minhas-doacoes" className="area-card">
+          <div className="area-card-ic">🩸</div>
+          <h3>Minhas doações</h3>
+          <p>Quantas vezes você doou, quando fica apto de novo e seus agendamentos.</p>
+        </Link>
         <Link to="/meu-perfil" className="area-card">
           <div className="area-card-ic">👤</div>
           <h3>Meu perfil</h3>

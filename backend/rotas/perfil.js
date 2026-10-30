@@ -150,6 +150,9 @@ router.get('/exportar', async (req, res) => {
               WHERE p.doador_id = $1`, [idDoador]) : [];
         const rara = idDoador ? await opcional(
             'SELECT raro_fenotipo, raro_status, raro_consentimento, raro_alcance FROM doadores WHERE id = $1 AND raro_fenotipo IS NOT NULL', [idDoador]) : [];
+        const agendamentos = idDoador ? await opcional(
+            `SELECT a.status, v.data, v.hora, uh.nome AS hospital FROM agendamentos a JOIN vagas_doacao v ON v.id = a.vaga_id
+               JOIN hospitais h ON h.id = v.hospital_id JOIN usuarios uh ON uh.id = h.usuario_id WHERE a.doador_id = $1 ORDER BY v.data`, [idDoador]) : [];
         const pcd = idDoador ? await opcional(
             'SELECT pcd, pcd_tipos, pcd_apoios, pcd_declarado_em FROM doadores WHERE id = $1 AND pcd = true', [idDoador]) : [];
         const promessas = idDoador ? await opcional(
@@ -170,6 +173,7 @@ router.get('/exportar', async (req, res) => {
             redeSangueRaro: rara[0] ? {
                 participa: rara[0].raro_consentimento === true, fenotipo: rara[0].raro_fenotipo, situacao: rara[0].raro_status, alcance: rara[0].raro_alcance
             } : null,
+            agendamentos: agendamentos.map((a) => ({ data: paraDia(a.data), hora: a.hora, hospital: a.hospital, situacao: a.status })),
             declaracaoPcd: pcd[0] ? {
                 tipos: String(pcd[0].pcd_tipos || '').split(',').filter(Boolean),
                 apoios: String(pcd[0].pcd_apoios || '').split(',').filter(Boolean),
@@ -204,6 +208,12 @@ router.post('/excluir', async (req, res) => {
 
         // Partes opcionais (recursos que podem nem existir ainda no banco): falhar aqui nao impede a exclusao.
         if (idDoador) {
+            // Agendamentos ativos: cancela e devolve as vagas (o hospital nao pode esperar alguem que apagou a conta).
+            const ativos = await opcional("SELECT id, vaga_id FROM agendamentos WHERE doador_id = $1 AND status = 'agendado'", [idDoador]);
+            for (const a of ativos) {
+                await opcional("UPDATE agendamentos SET status = 'cancelado', atualizado_em = NOW() WHERE id = $1", [a.id]);
+                await opcional('UPDATE vagas_doacao SET reservadas = reservadas - 1 WHERE id = $1 AND reservadas > 0', [a.vaga_id]);
+            }
             await opcional('DELETE FROM padrinhos WHERE doador_id = $1', [idDoador]);
             await opcional('DELETE FROM convocacoes_raras WHERE doador_id = $1 AND doacao_id IS NULL', [idDoador]);
             await opcional(

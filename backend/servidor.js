@@ -67,6 +67,14 @@ app.use('/raros', rotasRaros);
 const rotasPcd = require('./rotas/pcd');
 app.use('/pcd', rotasPcd);
 
+// Agendamento de doacao: agenda do hospital, agendamentos do doador e historico "Minhas doacoes".
+const rotasAgenda = require('./rotas/agenda');
+app.use('/agenda', rotasAgenda);
+const rotasAgendamentos = require('./rotas/agendamentos');
+app.use('/agendamentos', rotasAgendamentos);
+const rotasHistorico = require('./rotas/historico');
+app.use('/historico', rotasHistorico);
+
 // Rota de teste: quando alguem acessar a raiz, responde uma mensagem.
 app.get('/', (req, res) => {
     res.json({ mensagem: 'Ola, Hemare! O backend esta funcionando.' });
@@ -81,3 +89,7 @@ app.listen(PORTA, () => {
 // Tarefa automatica: lembrete "voce ja pode doar de novo" (ao ligar e a cada 12h).
 const { agendarLembretes } = require('./tarefas/lembretes');
 agendarLembretes();
+
+// Tarefa automatica: lembrete de agendamento (doacoes marcadas para as proximas ~26 horas).
+const { agendarLembretesDeAgendamento } = require('./tarefas/lembreteAgendamento');
+agendarLembretesDeAgendamento();
