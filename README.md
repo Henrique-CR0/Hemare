@@ -19,6 +19,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 ## ✨ Funcionalidades
 
 ### Para o doador
+- 🔁 **Login automático** — quem já entrou volta direto para a sua área ao abrir o site; a sessão é conferida com o servidor e renovada em silêncio enquanto a pessoa usa; se acabar (venceu, a senha foi trocada em outro aparelho, conta excluída) o site leva ao login com um aviso. "Manter conectado por 7 dias" é opcional
 - 🔐 Cadastro e login seguros — senha criptografada (bcrypt), token JWT, validação de email, medidor de força de senha e **recuperação de senha por email real**
 - 👤 Perfil completo — tipo sanguíneo (incluindo o raríssimo Rh nulo), gênero, cidade, nome social, CPF e telefone validados
 - 🔒 **Privacidade por consentimento (LGPD)** — o doador escolhe ser anônimo ou identificado; hospitais só veem contato de quem autoriza
@@ -60,6 +61,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 ## 🧠 Destaques técnicos
 
 - **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação, convite de amigos, apadrinhamento, campanha de reposição, notícias por estado, alerta inteligente, lembrete de retorno e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
+- **Sessão e login** — e-mail sem diferença de maiúsculas, senha validada (8 a 72 bytes, sem as senhas mais comuns), limite de tentativas por conta (8 erros em 15 min travam o login) sem revelar se o e-mail existe nem pelo tempo de resposta, código de recuperação sorteado com `crypto` e com limite de tentativas, trocar a senha ou "sair de todos os aparelhos" encerra as outras sessões de verdade (os JWT antigos deixam de valer), erros sempre em JSON e cabeçalhos de segurança
 - **Segurança em camadas** — bcrypt para senhas, JWT com middleware no backend e guarda de rota no frontend, tokens de recuperação de senha com expiração e uso único, permissões por papel (doador, hospital aprovado, administrador) conferidas no backend
 - **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram (e mostra o nome social quando existe); o apadrinhamento não guarda nome de paciente (só apelido e uma condição de lista fixa, com autorização registrada)
 - **Arquitetura cliente-servidor** — o frontend nunca acessa o banco diretamente; toda a lógica passa por uma API REST
@@ -105,6 +107,8 @@ npm install
 #   DATABASE_URL=sua_string_do_postgres
 #   JWT_SECRET=uma_chave_secreta
 #   RESEND_API_KEY=sua_chave_do_resend
+#   FRONTEND_URL=https://seu-site   (opcional: libera só esse site no CORS e põe links nos e-mails)
+# O servidor NÃO liga sem JWT_SECRET (mínimo de 8 caracteres).
 node db/criar-tabelas.js       # cria as tabelas principais
 node db/criar-hospital.js      # tabelas de hospital
 node db/criar-locais.js        # tabela de locais + popular-locais.js
@@ -119,6 +123,7 @@ node db/ajustar-perfil.js      # colunas do perfil completo (foto, nascimento, g
 node db/ajustar-raros.js       # rede de sangue raro (participação do doador, pedidos e chamados)
 node db/ajustar-pcd.js         # ficha PcD (declaração de pessoa com deficiência no perfil)
 node db/criar-agendamentos.js  # agenda de doações (vagas dos hospitais e agendamentos dos doadores)
+node db/ajustar-sessao.js      # sessões encerráveis (trocar a senha / sair de todos os aparelhos)
 node db/criar-apadrinhamento.js # tabelas do apadrinhamento de pacientes
 node db/criar-campanhas.js     # tabelas das campanhas de reposição (Quem doa por mim)
 node db/criar-noticias.js      # tabela do canal de notícias por estado
@@ -173,6 +178,8 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Ficha PcD: orientação de triagem para pessoas com deficiência, baseada na norma federal
 - [x] Agendamento de doação e histórico "Minhas doações"
 - [x] Testes de ponta a ponta no repositório (`npm test`)
+- [x] Login automático, sessões encerráveis, limite de tentativas e troca de senha
+- [x] CRUD completo de necessidades (fechar, reabrir, apagar) e edição de avisos do canal de notícias
 - [x] Apadrinhamento de pacientes com necessidade recorrente de doação
 
 ---

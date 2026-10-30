@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { URL_BACKEND } from '../config';
+import { encerrarSessao } from '../sessao';
 import Conquistas from '../componentes/Conquistas';
 import Indicacao from '../componentes/Indicacao';
 import MeusAfilhados from '../componentes/MeusAfilhados';
@@ -24,8 +25,7 @@ function AreaDoador() {
   }, []);
 
   function sair() {
-    localStorage.removeItem('hemare_token');
-    localStorage.removeItem('hemare_usuario');
+    encerrarSessao();
     navegar('/');
   }
 

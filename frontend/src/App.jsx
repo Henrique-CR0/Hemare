@@ -43,21 +43,21 @@ function App() {
           <Route path="orientacoes" element={<Orientacoes />} />
           <Route path="mitos" element={<Mitos />} />
           <Route path="direitos" element={<Direitos />} />
-          <Route path="area-doador" element={<RotaProtegida><AreaDoador /></RotaProtegida>} />
-          <Route path="meu-perfil" element={<RotaProtegida><MeuPerfil /></RotaProtegida>} />
-          <Route path="completar-perfil" element={<RotaProtegida><CompletarPerfil /></RotaProtegida>} />
+          <Route path="area-doador" element={<RotaProtegida papeis={['doador']}><AreaDoador /></RotaProtegida>} />
+          <Route path="meu-perfil" element={<RotaProtegida papeis={['doador']}><MeuPerfil /></RotaProtegida>} />
+          <Route path="completar-perfil" element={<RotaProtegida papeis={['doador']}><CompletarPerfil /></RotaProtegida>} />
           <Route path="cadastro-hospital" element={<CadastroHospital />} />
-          <Route path="painel-hospital" element={<RotaProtegida><PainelHospital /></RotaProtegida>} />
+          <Route path="painel-hospital" element={<RotaProtegida papeis={['hospital']}><PainelHospital /></RotaProtegida>} />
           <Route path="recuperar-senha" element={<RecuperarSenha />} />
           <Route path="estoque" element={<Estoque />} />
           <Route path="placar" element={<Placar />} />
           <Route path="apadrinhar" element={<Apadrinhar />} />
           <Route path="campanha/:codigo" element={<Campanha />} />
           <Route path="noticias" element={<Noticias />} />
-          <Route path="admin" element={<RotaProtegida><PainelAdmin /></RotaProtegida>} />
-          <Route path="radar" element={<RotaProtegida><Radar /></RotaProtegida>} />
-          <Route path="agendar" element={<RotaProtegida><Agendar /></RotaProtegida>} />
-          <Route path="minhas-doacoes" element={<RotaProtegida><MinhasDoacoes /></RotaProtegida>} />
+          <Route path="admin" element={<RotaProtegida papeis={['admin']}><PainelAdmin /></RotaProtegida>} />
+          <Route path="radar" element={<RotaProtegida papeis={['hospital', 'admin']}><Radar /></RotaProtegida>} />
+          <Route path="agendar" element={<RotaProtegida papeis={['doador']}><Agendar /></RotaProtegida>} />
+          <Route path="minhas-doacoes" element={<RotaProtegida papeis={['doador']}><MinhasDoacoes /></RotaProtegida>} />
           <Route path="clima" element={<Clima />} />
         </Route>
       </Routes>

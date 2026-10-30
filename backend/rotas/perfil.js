@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
 const { paraDia } = require('../regras/alerta');
+const sessoes = require('../servicos/sessoes');
 const { calcularConquistas } = require('../regras/gamificacao');
 const { validarPerfil, validarFoto, completude, mascararCpf, descreverVisaoDoHospital } = require('../regras/perfil');
 
@@ -253,6 +254,7 @@ router.post('/excluir', async (req, res) => {
             cliente.release();
         }
 
+        await sessoes.revogarTodas(id); // qualquer token que ainda exista para esta conta para de valer
         res.json({ mensagem: 'Sua conta foi excluída e seus dados pessoais foram apagados. Obrigado por ter ajudado! 💛' });
     } catch (erro) {
         res.status(500).json({ erro: 'Erro ao excluir a conta: ' + erro.message });

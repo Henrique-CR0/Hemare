@@ -41,7 +41,7 @@ const ESQUEMA_BASE = `
 
 // Migracoes que entram em todo teste (idempotentes). Cada teste acrescenta as suas.
 const MIGRACOES_BASE = [
-    'ajustar-verificacao.js', 'ajustar-alertas.js', 'ajustar-lembretes.js', 'ajustar-indicacao.js', 'ajustar-perfil.js'
+    'ajustar-verificacao.js', 'ajustar-alertas.js', 'ajustar-lembretes.js', 'ajustar-indicacao.js', 'ajustar-perfil.js', 'ajustar-sessao.js', 'criar-recuperacao.js', 'criar-agendamentos.js'
 ];
 
 function dormir(ms) { return new Promise((r) => setTimeout(r, ms)); }

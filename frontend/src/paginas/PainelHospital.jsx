@@ -7,6 +7,7 @@ import CasosApadrinhamento from '../componentes/CasosApadrinhamento';
 import CampanhasHospital from '../componentes/CampanhasHospital';
 import AgendaHospital from '../componentes/AgendaHospital';
 import RedeRaraHospital from '../componentes/RedeRaraHospital';
+import AlterarSenha from '../componentes/AlterarSenha';
 const TIPOS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 const NIVEIS = [
   { valor: 'estavel', rotulo: '🟢 Estável' },
@@ -34,6 +35,23 @@ function PainelHospital() {
       .then((r) => r.json())
       .then((dados) => setNecessidades(Array.isArray(dados) ? dados : []))
       .catch(() => {});
+  }
+
+  async function mudarNecessidade(n, mudancas) {
+    try {
+      const r = await fetch(URL_BACKEND + '/hospital/necessidades/' + n.id, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(mudancas)
+      });
+      if (r.ok) { carregarNecessidades(); setMensagem(''); } else { setMensagem('❌ ' + (await r.json()).erro); }
+    } catch (e) { setMensagem('❌ Não consegui falar com o servidor.'); }
+  }
+
+  async function apagarNecessidade(n) {
+    if (!window.confirm('Apagar esta necessidade de ' + n.tipo_sanguineo + '? Para só tirar do ar, use "Atendida" ou "Cancelar".')) return;
+    try {
+      const r = await fetch(URL_BACKEND + '/hospital/necessidades/' + n.id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+      if (r.status === 204) { carregarNecessidades(); setMensagem(''); } else { setMensagem('❌ ' + (await r.json()).erro); }
+    } catch (e) { setMensagem('❌ Não consegui falar com o servidor.'); }
   }
 
   function carregarEstoque() {
@@ -232,12 +250,24 @@ function PainelHospital() {
         ) : (
           <div className="nec-lista">
             {necessidades.map((n) => (
-              <div key={n.id} className="nec-item">
+              <div key={n.id} className={'nec-item' + (n.status !== 'aberta' ? ' nec-fechada' : '')}>
                 <div>
                   <span className="nec-tipo">{n.tipo_sanguineo}</span>
                   <span className={'selo-urg selo-' + n.urgencia}>{rotuloUrgencia(n.urgencia)}</span>
+                  {n.status !== 'aberta' && <span className="nec-status">{n.status === 'atendida' ? '✔️ Atendida' : '✖️ Cancelada'}</span>}
                 </div>
-                <button className="nec-botao" onClick={() => verMatch(n)}>Ver doadores compatíveis</button>
+                <div className="nec-acoes">
+                  {n.status === 'aberta' ? (
+                    <>
+                      <button className="nec-botao" onClick={() => verMatch(n)}>Ver doadores compatíveis</button>
+                      <button className="nec-botao" onClick={() => mudarNecessidade(n, { status: 'atendida' })}>✔️ Atendida</button>
+                      <button className="nec-botao" onClick={() => mudarNecessidade(n, { status: 'cancelada' })}>Cancelar</button>
+                    </>
+                  ) : (
+                    <button className="nec-botao" onClick={() => mudarNecessidade(n, { status: 'aberta' })}>Reabrir</button>
+                  )}
+                  <button className="nec-botao" aria-label="Apagar necessidade" onClick={() => apagarNecessidade(n)}>🗑</button>
+                </div>
               </div>
             ))}
           </div>
@@ -290,6 +320,7 @@ function PainelHospital() {
       <RedeRaraHospital />
       <CasosApadrinhamento />
       </>)}
+      <AlterarSenha />
     </div>
   );
 }

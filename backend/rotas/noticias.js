@@ -112,6 +112,25 @@ router.post('/', autenticar, exigirAdmin, async (req, res) => {
     }
 });
 
+// ADMIN: corrige um aviso (substitui os campos, como no cadastro).
+router.put('/:id', autenticar, exigirAdmin, async (req, res) => {
+    if (!/^[0-9]{1,9}$/.test(req.params.id)) return res.status(400).json({ erro: 'Aviso inválido.' });
+    const { erro, noticia } = validarNoticia(req.body);
+    if (erro) return res.status(400).json({ erro });
+    try {
+        const r = await pool.query(
+            `UPDATE noticias SET uf = $1, titulo = $2, resumo = $3, fonte = $4, url = $5, nivel = $6, referencia = $7
+              WHERE id = $8 RETURNING id`,
+            [noticia.uf, noticia.titulo, noticia.resumo, noticia.fonte, noticia.url, noticia.nivel, noticia.referencia, Number(req.params.id)]
+        );
+        if (r.rows.length === 0) return res.status(404).json({ erro: 'Aviso não encontrado.' });
+        res.json({ id: r.rows[0].id, mensagem: 'Aviso atualizado.' });
+    } catch (e) {
+        if (e.code === '23505') return res.status(409).json({ erro: 'Esse link já foi cadastrado em outro aviso.' });
+        res.status(500).json({ erro: 'Erro ao atualizar: ' + e.message });
+    }
+});
+
 // ADMIN: remove um aviso.
 router.delete('/:id', autenticar, exigirAdmin, async (req, res) => {
     if (!/^[0-9]{1,9}$/.test(req.params.id)) return res.status(400).json({ erro: 'Aviso inválido.' });
