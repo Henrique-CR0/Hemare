@@ -820,3 +820,21 @@ a.area-avatar { text-decoration: none; overflow: hidden; }
 .alto-contraste .agd-item, .alto-contraste .agd-vagas li, .alto-contraste .agd-passo, .alto-contraste .agd-aviso { background: #000 !important; color: #fff !important; border-color: #fff !important; }
 .alto-contraste .agd h2, .alto-contraste .agd-hosp span, .alto-contraste .agd-dia small, .alto-contraste .agd-item p, .alto-contraste .agd-nota, .alto-contraste .agd-numeros span,
 .alto-contraste .agd-numeros strong { color: #fff !important; }
+
+/* ===== ABAS DA CONTA (MINHA AREA / PERFIL) E ABAS DENTRO DAS TELAS ===== */
+.abas-conta { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 0 auto 22px; padding: 6px; background: #fff; border: 1px solid #f0d4d9; border-radius: 999px; width: fit-content; max-width: 100%; }
+.aba-conta { text-decoration: none; color: #4a3437; font-weight: 700; font-size: 15px; padding: 10px 22px; border-radius: 999px; transition: background .15s; }
+.aba-conta:hover { background: #fff0f2; }
+.aba-conta-ativa { background: #c8102e; color: #fff; }
+.aba-conta-ativa:hover { background: #c8102e; }
+.sub-abas { display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 2px solid #f0d4d9; margin: 6px 0 20px; }
+.sub-aba { background: none; border: none; border-bottom: 3px solid transparent; margin-bottom: -2px; padding: 10px 16px; font-size: 14px; font-weight: 700; color: #6b5054; cursor: pointer; border-radius: 8px 8px 0 0; }
+.sub-aba:hover { background: #fff0f2; color: #2b0d10; }
+.sub-aba-ativa { color: #c8102e; border-bottom-color: #c8102e; }
+.ph-resumo { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.ph-resumo strong { font-size: 18px; color: #2b0d10; }
+.alto-contraste .abas-conta, .alto-contraste .aba-conta { background: #000 !important; color: #fff !important; border-color: #fff !important; }
+.alto-contraste .aba-conta-ativa { background: #ffff00 !important; color: #000 !important; }
+.alto-contraste .sub-aba { color: #fff !important; }
+.alto-contraste .sub-aba-ativa { color: #ffff00 !important; border-bottom-color: #ffff00 !important; }
+.alto-contraste .ph-resumo strong { color: #fff !important; }

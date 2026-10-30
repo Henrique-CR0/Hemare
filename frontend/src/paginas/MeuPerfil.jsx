@@ -2,6 +2,8 @@
 // carteirinha digital e os direitos da LGPD (baixar meus dados e excluir a conta).
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import AbasConta from '../componentes/AbasConta';
+import SubAbas, { useAba } from '../componentes/SubAbas';
 import { URL_BACKEND } from '../config';
 import { encerrarSessao } from '../sessao';
 import AlterarSenha from '../componentes/AlterarSenha';
@@ -34,7 +36,15 @@ function hojeISO() {
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
 
+const ABAS_PERFIL = [
+  { id: 'dados', rotulo: '👤 Dados e privacidade' },
+  { id: 'saude', rotulo: '🩺 Saúde e doação' },
+  { id: 'carteirinha', rotulo: '🪪 Carteirinha' },
+  { id: 'seguranca', rotulo: '🔑 Conta e segurança' }
+];
+
 function MeuPerfil() {
+  const [aba, trocarAba] = useAba(ABAS_PERFIL.map((a) => a.id));
   const navegar = useNavigate();
   const token = localStorage.getItem('hemare_token');
   const cabecalho = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
@@ -165,6 +175,8 @@ function MeuPerfil() {
 
   return (
     <div className="mp">
+      <AbasConta tipo="doador" />
+
       <div className="mp-topo">
         <div className="mp-foto-bloco">
           <div className="mp-foto" aria-hidden={!foto}>
@@ -187,7 +199,6 @@ function MeuPerfil() {
             <span className="mp-chip">{dados.totalDoacoes} {dados.totalDoacoes === 1 ? 'doação' : 'doações'}</span>
           </p>
           <p className="mp-email">{dados.email}</p>
-          <Link to="/area-doador" className="mp-link">← Voltar para minha área</Link>
         </div>
 
         <div className="mp-completude" role="img" aria-label={'Perfil ' + pct + '% completo'}>
@@ -201,7 +212,10 @@ function MeuPerfil() {
         </div>
       </div>
 
-      <form onSubmit={salvar} className="mp-form">
+      <SubAbas abas={ABAS_PERFIL} atual={aba} aoTrocar={trocarAba} />
+
+      {aba === 'dados' && (
+      <form onSubmit={salvar} className="mp-form" id="painel-dados" role="tabpanel" aria-labelledby="aba-dados">
         <fieldset>
           <legend>👤 Identidade</legend>
           <label>Nome completo *
@@ -318,17 +332,25 @@ function MeuPerfil() {
           {mensagem && <div className="auth-msg" role="status">{mensagem}</div>}
         </div>
       </form>
+      )}
 
-      <RedeRara />
+      {aba === 'saude' && (
+        <div id="painel-saude" role="tabpanel" aria-labelledby="aba-saude">
+          <RedeRara />
 
-      <FichaPcd dataNascimento={dados.dataNascimento || ''} pesoKg={dados.pesoKg === null || dados.pesoKg === undefined ? '' : String(dados.pesoKg)} />
+          <FichaPcd dataNascimento={dados.dataNascimento || ''} pesoKg={dados.pesoKg === null || dados.pesoKg === undefined ? '' : String(dados.pesoKg)} />
+        </div>
+      )}
 
-      <section className="mp-bloco">
-        <h2>🪪 Minha carteirinha de doador</h2>
-        <p className="mp-dica">Cartão com sua foto, tipo sanguíneo e nível, para guardar no celular. Ele se atualiza com o que você preenche acima.</p>
-        <Carteirinha perfil={cartao} />
-      </section>
+      {aba === 'carteirinha' && (
+        <section className="mp-bloco" id="painel-carteirinha" role="tabpanel" aria-labelledby="aba-carteirinha">
+          <h2>🪪 Minha carteirinha de doador</h2>
+          <p className="mp-dica">Cartão com sua foto, tipo sanguíneo e nível, para guardar no celular. Ele se atualiza com o que você preenche na aba “Dados e privacidade”.</p>
+          <Carteirinha perfil={cartao} />
+        </section>
+      )}
 
+      {aba === 'seguranca' && (<div id="painel-seguranca" role="tabpanel" aria-labelledby="aba-seguranca">
       <AlterarSenha />
 
       <section className="mp-bloco mp-lgpd">
@@ -357,6 +379,7 @@ function MeuPerfil() {
         )}
         {avisoLgpd && <p className="conq-copia" role="status">{avisoLgpd}</p>}
       </section>
+      </div>)}
     </div>
   );
 }

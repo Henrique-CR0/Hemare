@@ -7,7 +7,8 @@ import CasosApadrinhamento from '../componentes/CasosApadrinhamento';
 import CampanhasHospital from '../componentes/CampanhasHospital';
 import AgendaHospital from '../componentes/AgendaHospital';
 import RedeRaraHospital from '../componentes/RedeRaraHospital';
-import AlterarSenha from '../componentes/AlterarSenha';
+import AbasConta from '../componentes/AbasConta';
+import SubAbas, { useAba } from '../componentes/SubAbas';
 const TIPOS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 const NIVEIS = [
   { valor: 'estavel', rotulo: '🟢 Estável' },
@@ -16,7 +17,15 @@ const NIVEIS = [
   { valor: 'emergencia', rotulo: '⚫ Emergência' }
 ];
 
+const ABAS_PAINEL = [
+  { id: 'estoque', rotulo: '🌡️ Estoque e necessidades' },
+  { id: 'agenda', rotulo: '📅 Agenda' },
+  { id: 'campanhas', rotulo: '🩸 Campanhas e pacientes' },
+  { id: 'raro', rotulo: '💎 Sangue raro' }
+];
+
 function PainelHospital() {
+  const [aba, trocarAba] = useAba(ABAS_PAINEL.map((a) => a.id));
   const [necessidades, setNecessidades] = useState([]);
   const [tipoSanguineo, setTipoSanguineo] = useState('');
   const [urgencia, setUrgencia] = useState('alerta');
@@ -152,6 +161,8 @@ function PainelHospital() {
 
   return (
     <div className="painel">
+      <AbasConta tipo="hospital" />
+
       <div className="painel-cabecalho">
         <h1>🏥 Painel do Hospital</h1>
         {dadosHospital && (
@@ -192,6 +203,10 @@ function PainelHospital() {
       )}
 
       {liberado && (<>
+
+      <SubAbas abas={ABAS_PAINEL} atual={aba} aoTrocar={trocarAba} />
+
+      {aba === 'estoque' && (<div id="painel-estoque" role="tabpanel" aria-labelledby="aba-estoque">
 
       {/* TERMOMETRO DE ESTOQUE */}
       <div className="painel-caixa">
@@ -315,12 +330,17 @@ function PainelHospital() {
         </div>
       )}
 
-      <AgendaHospital />
-      <CampanhasHospital />
-      <RedeRaraHospital />
-      <CasosApadrinhamento />
+      </div>)}
+
+      {aba === 'agenda' && <div id="painel-agenda" role="tabpanel" aria-labelledby="aba-agenda"><AgendaHospital /></div>}
+      {aba === 'campanhas' && (
+        <div id="painel-campanhas" role="tabpanel" aria-labelledby="aba-campanhas">
+          <CampanhasHospital />
+          <CasosApadrinhamento />
+        </div>
+      )}
+      {aba === 'raro' && <div id="painel-raro" role="tabpanel" aria-labelledby="aba-raro"><RedeRaraHospital /></div>}
       </>)}
-      <AlterarSenha />
     </div>
   );
 }
