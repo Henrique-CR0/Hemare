@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { URL_BACKEND } from '../config';
 import { encerrarSessao } from '../sessao';
+import AbasConta from '../componentes/AbasConta';
 import Conquistas from '../componentes/Conquistas';
 import Indicacao from '../componentes/Indicacao';
 import MeusAfilhados from '../componentes/MeusAfilhados';
@@ -31,6 +32,8 @@ function AreaDoador() {
 
   return (
     <div className="area-doador">
+      <AbasConta tipo="doador" />
+
       <div className="area-saudacao">
         <Link to="/meu-perfil" className="area-avatar" aria-label="Abrir meu perfil">
           {perfil && perfil.foto ? <img src={perfil.foto} alt="" /> : '🩸'}

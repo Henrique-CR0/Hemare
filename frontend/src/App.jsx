@@ -2,6 +2,7 @@
 import Clima from './paginas/Clima';
 import Radar from './paginas/Radar';
 import Agendar from './paginas/Agendar';
+import PerfilHospital from './paginas/PerfilHospital';
 import MinhasDoacoes from './paginas/MinhasDoacoes';
 import VLibras from './componentes/VLibras';
 import Estoque from './paginas/Estoque';
@@ -48,6 +49,7 @@ function App() {
           <Route path="completar-perfil" element={<RotaProtegida papeis={['doador']}><CompletarPerfil /></RotaProtegida>} />
           <Route path="cadastro-hospital" element={<CadastroHospital />} />
           <Route path="painel-hospital" element={<RotaProtegida papeis={['hospital']}><PainelHospital /></RotaProtegida>} />
+          <Route path="perfil-hospital" element={<RotaProtegida papeis={['hospital']}><PerfilHospital /></RotaProtegida>} />
           <Route path="recuperar-senha" element={<RecuperarSenha />} />
           <Route path="estoque" element={<Estoque />} />
           <Route path="placar" element={<Placar />} />

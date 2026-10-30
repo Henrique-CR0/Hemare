@@ -1893,7 +1893,7 @@
         "tags": [
           "Hospital"
         ],
-        "summary": "DADOS do hospital logado (nome, cidade, status de verificacao).",
+        "summary": "DADOS do hospital logado (nome, e-mail, CNPJ, CNES, endereco e status de verificacao): sao do proprio hospital.",
         "description": "Acesso: logado.",
         "responses": {
           "200": {

@@ -57,12 +57,12 @@ router.post('/perfil', autenticar, async (req, res) => {
     }
 });
 
-// DADOS do hospital logado (nome, cidade, status de verificacao).
+// DADOS do hospital logado (nome, e-mail, CNPJ, CNES, endereco e status de verificacao): sao do proprio hospital.
 router.get('/meus-dados', autenticar, async (req, res) => {
     const usuarioId = req.usuario.id;
     try {
         const r = await pool.query(
-            `SELECT u.nome, h.cidade, h.estado, h.aprovado, h.motivo_recusa
+            `SELECT u.nome, u.email, h.cnpj, h.cnes, h.cep, h.endereco, h.numero, h.bairro, h.complemento, h.cidade, h.estado, h.aprovado, h.motivo_recusa
              FROM hospitais h JOIN usuarios u ON u.id = h.usuario_id
              WHERE h.usuario_id = $1`,
             [usuarioId]

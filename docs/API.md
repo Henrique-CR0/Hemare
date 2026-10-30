@@ -154,7 +154,7 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 | `POST` | `/hospital/estoque` | hospital aprovado | DEFINIR/ATUALIZAR o nivel de estoque de um tipo sanguineo (hospital logado). |
 | `GET` | `/hospital/estoque-publico` | público | PUBLICO: lista o estoque de todos os hospitais (para o termometro publico). |
 | `GET` | `/hospital/match/:necessidadeId` | hospital aprovado | MATCH: dado o id de uma necessidade, acha os doadores compativeis. So o hospital aprovado DONO da necessidade ve os doadores (e o contato de quem consentiu). |
-| `GET` | `/hospital/meus-dados` | logado | DADOS do hospital logado (nome, cidade, status de verificacao). |
+| `GET` | `/hospital/meus-dados` | logado | DADOS do hospital logado (nome, e-mail, CNPJ, CNES, endereco e status de verificacao): sao do proprio hospital. |
 | `POST` | `/hospital/necessidade` | hospital aprovado | PUBLICAR uma necessidade (o hospital pede um tipo sanguineo). |
 | `GET` | `/hospital/necessidades` | logado | LISTAR as necessidades do hospital logado. |
 | `PATCH` | `/hospital/necessidades/:id` | hospital aprovado | ATUALIZAR uma necessidade: fechar como "atendida" ou "cancelada", reabrir ou mudar a urgencia. Fechada, ela deixa de contar como urgencia no canal de noticias. |

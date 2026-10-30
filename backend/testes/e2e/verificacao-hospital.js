@@ -24,6 +24,7 @@ async function main() {
   await api('POST', '/hospital/perfil', tH2, perfilHosp('22.222.222/0001-22'));
   let meus = await api('GET', '/hospital/meus-dados', tH1);
   checar('Hospital novo: status pendente', meus.dados.statusVerificacao === 'pendente', meus.dados);
+  checar('O hospital ve os proprios dados completos (para a tela de perfil): e-mail, CNPJ, CNES e endereco', meus.dados.email === 'h1@x.com' && meus.dados.cnpj === '11.111.111/0001-11' && meus.dados.cnes === '1234567' && meus.dados.endereco === 'Rua A' && meus.dados.cep === '50000-000', meus.dados);
   let r = await api('POST', '/hospital/necessidade', tH1, { tipoSanguineo: 'O-', urgencia: 'emergencia' });
   checar('Pendente NAO publica necessidade (403)', r.status === 403, r);
   checar('Pendente NAO dispara emails de emergencia', emails.length === 0, emails.length);

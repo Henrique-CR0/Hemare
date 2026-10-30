@@ -4,33 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 
 import { URL_BACKEND } from '../config';
 import { salvarSessao } from '../sessao';
+import { cnpjValido, mascaraCnpj, mascaraCep } from '../regras/documentos';
 const ESTADOS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
-
-function cnpjValido(cnpj) {
-  cnpj = cnpj.replace(/\D/g, '');
-  if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
-  const calc = (base) => {
-    let soma = 0, pos = base - 7;
-    for (let i = base; i >= 1; i--) {
-      soma += Number(cnpj[base - i]) * pos--;
-      if (pos < 2) pos = 9;
-    }
-    const r = soma % 11;
-    return r < 2 ? 0 : 11 - r;
-  };
-  return calc(12) === Number(cnpj[12]) && calc(13) === Number(cnpj[13]);
-}
-
-function mascaraCnpj(v) {
-  return v.replace(/\D/g, '').slice(0, 14)
-    .replace(/(\d{2})(\d)/, '$1.$2')
-    .replace(/(\d{3})(\d)/, '$1.$2')
-    .replace(/(\d{3})(\d)/, '$1/$2')
-    .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
-}
-function mascaraCep(v) {
-  return v.replace(/\D/g, '').slice(0, 8).replace(/(\d{5})(\d)/, '$1-$2');
-}
 
 function CadastroHospital() {
   const navegar = useNavigate();
