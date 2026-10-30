@@ -62,7 +62,7 @@ function papelNoCodigo(bloco) {
 function lerRotasDoArquivo(arquivo) {
     const fonte = ler(path.join(RAIZ, 'rotas', arquivo + '.js'));
     const linhas = fonte.split('\n');
-    const PORTEIROS = /\b(autenticar|exigirAdmin|exigirHospitalAprovado)\b/g;
+    const PORTEIROS = /\b(autenticar|exigirAdmin|exigirHospitalAprovado|exigirDoador|exigirHospitalOuAdmin|exigirHospital)\b/g;
 
     // router.use(...): vale para o arquivo todo (sem caminho) ou so para um prefixo ('/eu').
     const usos = [];
@@ -97,6 +97,9 @@ function acesso(rota) {
     if (!rota.porteiros.includes('autenticar')) return 'público';
     if (rota.porteiros.includes('exigirAdmin') || rota.papel === 'admin') return 'admin';
     if (rota.porteiros.includes('exigirHospitalAprovado')) return 'hospital aprovado';
+    if (rota.porteiros.includes('exigirHospitalOuAdmin')) return 'hospital ou admin';
+    if (rota.porteiros.includes('exigirHospital')) return 'hospital';
+    if (rota.porteiros.includes('exigirDoador')) return 'doador';
     if (rota.papel === 'hospital') return 'hospital';
     if (rota.papel === 'doador') return 'doador';
     return 'logado';

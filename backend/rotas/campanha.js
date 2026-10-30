@@ -4,7 +4,7 @@
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
-const { exigirHospitalAprovado } = require('../middleware/exigirPapel');
+const { exigirHospitalAprovado, exigirDoador } = require('../middleware/exigirPapel');
 const { gerarCodigo, normalizarCodigo } = require('../regras/indicacao');
 const { paraDia } = require('../regras/alerta');
 const { validarCampanha, situacaoCampanha, validarPromessa, somarDias } = require('../regras/campanha');
@@ -117,7 +117,7 @@ router.get('/minhas', autenticar, exigirHospitalAprovado, async (req, res) => {
 });
 
 // DOADOR: campanhas em que prometeu doar.
-router.get('/minhas-promessas', autenticar, async (req, res) => {
+router.get('/minhas-promessas', autenticar, exigirDoador, async (req, res) => {
     try {
         const achado = await buscarDoador(req.usuario);
         if (achado.erro) return res.status(achado.status).json({ erro: achado.erro });
@@ -165,7 +165,7 @@ router.get('/:codigo', async (req, res) => {
 });
 
 // DOADOR: promete doar em uma data (o hospital passa a ver seu nome e telefone so para esta campanha).
-router.post('/:codigo/prometer', autenticar, async (req, res) => {
+router.post('/:codigo/prometer', autenticar, exigirDoador, async (req, res) => {
     try {
         const achado = await buscarDoador(req.usuario);
         if (achado.erro) return res.status(achado.status).json({ erro: achado.erro });
@@ -200,7 +200,7 @@ router.post('/:codigo/prometer', autenticar, async (req, res) => {
 });
 
 // DOADOR: desiste da promessa (so enquanto o hospital nao confirmou a doacao).
-router.delete('/:codigo/prometer', autenticar, async (req, res) => {
+router.delete('/:codigo/prometer', autenticar, exigirDoador, async (req, res) => {
     try {
         const achado = await buscarDoador(req.usuario);
         if (achado.erro) return res.status(achado.status).json({ erro: achado.erro });

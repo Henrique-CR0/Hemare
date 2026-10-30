@@ -238,7 +238,7 @@
           "Agenda do hospital"
         ],
         "summary": "HOSPITAIS aprovados que tem horario livre para agendar (com o proximo horario).",
-        "description": "Acesso: logado.",
+        "description": "Acesso: doador.",
         "responses": {
           "200": {
             "description": "Deu certo"
@@ -248,6 +248,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -266,7 +269,7 @@
           "Agenda do hospital"
         ],
         "summary": "HORARIOS livres de um hospital, agrupados por dia.",
-        "description": "Acesso: logado.",
+        "description": "Acesso: doador.",
         "responses": {
           "200": {
             "description": "Deu certo"
@@ -276,6 +279,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -717,7 +723,7 @@
           "Apadrinhamento"
         ],
         "summary": "DOADOR: vira padrinho de um paciente.",
-        "description": "Acesso: logado.",
+        "description": "Acesso: doador.",
         "responses": {
           "201": {
             "description": "Deu certo"
@@ -727,6 +733,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -762,7 +771,7 @@
           "Apadrinhamento"
         ],
         "summary": "DOADOR: deixa de ser padrinho (a qualquer momento, sem explicacao).",
-        "description": "Acesso: logado.",
+        "description": "Acesso: doador.",
         "responses": {
           "204": {
             "description": "Deu certo"
@@ -772,6 +781,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -900,7 +912,7 @@
           "Apadrinhamento"
         ],
         "summary": "DOADOR: pacientes que ele apadrinha e se ja pode doar.",
-        "description": "Acesso: logado.",
+        "description": "Acesso: doador.",
         "responses": {
           "200": {
             "description": "Deu certo"
@@ -910,6 +922,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -1361,7 +1376,7 @@
           "Campanhas de reposição"
         ],
         "summary": "DOADOR: promete doar em uma data (o hospital passa a ver seu nome e telefone so para esta campanha).",
-        "description": "Acesso: logado.",
+        "description": "Acesso: doador.",
         "responses": {
           "201": {
             "description": "Deu certo"
@@ -1371,6 +1386,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -1406,7 +1424,7 @@
           "Campanhas de reposição"
         ],
         "summary": "DOADOR: desiste da promessa (so enquanto o hospital nao confirmou a doacao).",
-        "description": "Acesso: logado.",
+        "description": "Acesso: doador.",
         "responses": {
           "204": {
             "description": "Deu certo"
@@ -1416,6 +1434,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -1475,7 +1496,7 @@
           "Campanhas de reposição"
         ],
         "summary": "DOADOR: campanhas em que prometeu doar.",
-        "description": "Acesso: logado.",
+        "description": "Acesso: doador.",
         "responses": {
           "200": {
             "description": "Deu certo"
@@ -1485,6 +1506,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -1523,7 +1547,7 @@
           "Doador"
         ],
         "summary": "CONQUISTAS: nivel, emblemas e quando o doador logado pode doar de novo (gamificacao).",
-        "description": "Acesso: logado.",
+        "description": "Acesso: doador.",
         "responses": {
           "200": {
             "description": "Deu certo"
@@ -1533,6 +1557,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -1582,7 +1609,7 @@
           "Doador"
         ],
         "summary": "LEMBRETE DE RETORNO: o doador liga ou desliga o email \"voce ja pode doar de novo\" (opt-in).",
-        "description": "Acesso: logado.",
+        "description": "Acesso: doador.",
         "responses": {
           "201": {
             "description": "Deu certo"
@@ -1592,6 +1619,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -1619,7 +1649,7 @@
           "Doador"
         ],
         "summary": "COMPLETAR PERFIL: salva os dados do doador logado.",
-        "description": "Acesso: logado.",
+        "description": "Acesso: doador.",
         "responses": {
           "201": {
             "description": "Deu certo"
@@ -1629,6 +1659,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -1767,7 +1800,7 @@
           "Hospital"
         ],
         "summary": "LISTAR o estoque do hospital logado.",
-        "description": "Acesso: logado.",
+        "description": "Acesso: hospital.",
         "responses": {
           "200": {
             "description": "Deu certo"
@@ -1777,6 +1810,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -1894,7 +1930,7 @@
           "Hospital"
         ],
         "summary": "DADOS do hospital logado (nome, e-mail, CNPJ, CNES, endereco e status de verificacao): sao do proprio hospital.",
-        "description": "Acesso: logado.",
+        "description": "Acesso: hospital.",
         "responses": {
           "200": {
             "description": "Deu certo"
@@ -1904,6 +1940,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -1962,7 +2001,7 @@
           "Hospital"
         ],
         "summary": "LISTAR as necessidades do hospital logado.",
-        "description": "Acesso: logado.",
+        "description": "Acesso: hospital.",
         "responses": {
           "200": {
             "description": "Deu certo"
@@ -1972,6 +2011,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"
@@ -2544,7 +2586,7 @@
           "Radar preditivo"
         ],
         "summary": "RADAR PREDITIVO: quantos doadores de cada tipo estao aptos agora, em ate 7 dias e em ate 30 dias (so numeros).",
-        "description": "Acesso: logado.",
+        "description": "Acesso: hospital ou admin.",
         "responses": {
           "200": {
             "description": "Deu certo"
@@ -2554,6 +2596,9 @@
           },
           "401": {
             "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
           },
           "500": {
             "description": "Erro inesperado"

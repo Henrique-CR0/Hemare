@@ -2,12 +2,13 @@
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
+const { exigirHospitalOuAdmin } = require('../middleware/exigirPapel');
 const { verificarElegibilidade } = require('../regras/elegibilidade');
 
 const router = express.Router();
 
 // RADAR PREDITIVO: quantos doadores de cada tipo estao aptos agora, em ate 7 dias e em ate 30 dias (so numeros).
-router.get('/aptidao', autenticar, async (req, res) => {
+router.get('/aptidao', autenticar, exigirHospitalOuAdmin, async (req, res) => {
     try {
         const r = await pool.query('SELECT tipo_sanguineo, sexo, ultima_doacao FROM doadores');
 

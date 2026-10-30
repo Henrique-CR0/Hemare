@@ -2,6 +2,18 @@
 const pool = require('../banco');
 const { statusVerificacao, mensagemBloqueio } = require('../regras/verificacao');
 
+// Porteiro por TIPO de conta. Cada area do Hemare e de um tipo so: o doador nao ve o que e do hospital e o hospital nao ve
+// o que e do doador. (O frontend esconde as telas; este porteiro e o que vale de verdade.)
+function exigirTipo(tipos, mensagem) {
+    return (req, res, next) => {
+        if (req.usuario && tipos.includes(req.usuario.tipo)) return next();
+        return res.status(403).json({ erro: mensagem });
+    };
+}
+const exigirDoador = exigirTipo(['doador'], 'Esta área é só para contas de doador.');
+const exigirHospital = exigirTipo(['hospital'], 'Esta área é só para contas de hospital.');
+const exigirHospitalOuAdmin = exigirTipo(['hospital', 'admin'], 'Esta área é só para hospitais e administradores.');
+
 // So deixa passar administradores.
 function exigirAdmin(req, res, next) {
     if (req.usuario && req.usuario.tipo === 'admin') return next();
@@ -31,4 +43,4 @@ async function exigirHospitalAprovado(req, res, next) {
     }
 }
 
-module.exports = { exigirAdmin, exigirHospitalAprovado };
+module.exports = { exigirAdmin, exigirHospitalAprovado, exigirDoador, exigirHospital, exigirHospitalOuAdmin };

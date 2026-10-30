@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
-const { exigirHospitalAprovado } = require('../middleware/exigirPapel');
+const { exigirHospitalAprovado, exigirDoador } = require('../middleware/exigirPapel');
 const { verificarElegibilidade } = require('../regras/elegibilidade');
 const { escaparHtml } = require('../regras/html');
 const { DIAS_ENTRE_ALERTAS } = require('../regras/alerta');
@@ -190,7 +190,7 @@ async function buscarDoador(usuario) {
 }
 
 // DOADOR: vira padrinho de um paciente.
-router.post('/:id/apadrinhar', autenticar, async (req, res) => {
+router.post('/:id/apadrinhar', autenticar, exigirDoador, async (req, res) => {
     const id = idValido(req.params.id);
     if (!id) return res.status(400).json({ erro: 'Paciente invalido.' });
     try {
@@ -231,7 +231,7 @@ router.post('/:id/apadrinhar', autenticar, async (req, res) => {
 });
 
 // DOADOR: deixa de ser padrinho (a qualquer momento, sem explicacao).
-router.delete('/:id/apadrinhar', autenticar, async (req, res) => {
+router.delete('/:id/apadrinhar', autenticar, exigirDoador, async (req, res) => {
     const id = idValido(req.params.id);
     if (!id) return res.status(400).json({ erro: 'Paciente invalido.' });
     try {
@@ -246,7 +246,7 @@ router.delete('/:id/apadrinhar', autenticar, async (req, res) => {
 });
 
 // DOADOR: pacientes que ele apadrinha e se ja pode doar.
-router.get('/meus-afilhados', autenticar, async (req, res) => {
+router.get('/meus-afilhados', autenticar, exigirDoador, async (req, res) => {
     try {
         const achado = await buscarDoador(req.usuario);
         if (achado.erro) return res.status(achado.status).json({ erro: achado.erro });

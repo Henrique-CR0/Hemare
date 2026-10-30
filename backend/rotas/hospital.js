@@ -4,7 +4,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
-const { exigirHospitalAprovado } = require('../middleware/exigirPapel');
+const { exigirHospitalAprovado, exigirHospital } = require('../middleware/exigirPapel');
 const { statusVerificacao } = require('../regras/verificacao');
 const { doadoresCompativeis } = require('../regras/compatibilidade');
 const { selecionarDoadoresParaAlerta, descreverAlerta, DIAS_ENTRE_ALERTAS } = require('../regras/alerta');
@@ -17,7 +17,7 @@ const { validarNecessidade, validarAtualizacao, podeMudar } = require('../regras
 const router = express.Router();
 
 // COMPLETAR/ATUALIZAR PERFIL do hospital (dados completos).
-router.post('/perfil', autenticar, async (req, res) => {
+router.post('/perfil', autenticar, exigirHospital, async (req, res) => {
     const usuarioId = req.usuario.id;
     const { cnpj, cnes, cep, endereco, numero, bairro, complemento, cidade, estado } = req.body;
 
@@ -58,7 +58,7 @@ router.post('/perfil', autenticar, async (req, res) => {
 });
 
 // DADOS do hospital logado (nome, e-mail, CNPJ, CNES, endereco e status de verificacao): sao do proprio hospital.
-router.get('/meus-dados', autenticar, async (req, res) => {
+router.get('/meus-dados', autenticar, exigirHospital, async (req, res) => {
     const usuarioId = req.usuario.id;
     try {
         const r = await pool.query(
@@ -147,7 +147,7 @@ router.post('/necessidade', autenticar, exigirHospitalAprovado, async (req, res)
 });
 
 // LISTAR as necessidades do hospital logado.
-router.get('/necessidades', autenticar, async (req, res) => {
+router.get('/necessidades', autenticar, exigirHospital, async (req, res) => {
     const usuarioId = req.usuario.id;
     try {
         const rHosp = await pool.query('SELECT id FROM hospitais WHERE usuario_id = $1', [usuarioId]);
@@ -301,7 +301,7 @@ router.post('/estoque', autenticar, exigirHospitalAprovado, async (req, res) => 
 });
 
 // LISTAR o estoque do hospital logado.
-router.get('/estoque', autenticar, async (req, res) => {
+router.get('/estoque', autenticar, exigirHospital, async (req, res) => {
     const usuarioId = req.usuario.id;
     try {
         const rHosp = await pool.query('SELECT id FROM hospitais WHERE usuario_id = $1', [usuarioId]);

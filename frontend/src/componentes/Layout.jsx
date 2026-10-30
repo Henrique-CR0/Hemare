@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { rotaInicial } from '../regras/rotaInicial';
 import { encerrarSessao } from '../sessao';
+import { menuDe, destinoDoLogo } from '../regras/menu';
 
 // No celular um toque tambem dispara "mouse em cima"; o hover so vale com mouse de verdade
 // (e so no menu largo: no menu "☰" o "Aprenda" abre so no clique).
@@ -23,6 +24,8 @@ function Layout() {
   const usuarioSalvo = localStorage.getItem('hemare_usuario');
   const usuario = usuarioSalvo ? JSON.parse(usuarioSalvo) : null;
   const rotaArea = rotaInicial(usuario);
+  const tipoDaConta = token && usuario ? usuario.tipo : null;
+  const menu = menuDe(tipoDaConta);
 
   const [altoContraste, setAltoContraste] = useState(
     localStorage.getItem('hemare_contraste') === 'sim'
@@ -87,7 +90,7 @@ function Layout() {
       <a href="#conteudo-principal" className="link-pular">Ir para o conteúdo [ALT+1]</a>
 
       <header className="site-topo">
-        <Link to="/" className="site-logo">🩸 Hemare</Link>
+        <Link to={destinoDoLogo(tipoDaConta, rotaArea)} className="site-logo">🩸 Hemare</Link>
 
         {/* Acessibilidade fica sempre visivel, inclusive no celular. */}
         <div className="acess-barra">
@@ -107,14 +110,9 @@ function Layout() {
 
         <nav id="menu-principal" className={'site-menu' + (menuAberto ? ' site-menu-aberto' : '')}
              ref={refMenu} tabIndex={-1} aria-label="Menu principal">
-          <Link to="/">Início</Link>
-          <Link to="/locais">Onde doar</Link>
-          <Link to="/triagem">Posso doar?</Link>
-          <Link to="/estoque">Termômetro de estoque</Link>
-          <Link to="/noticias">Notícias</Link>
-          <Link to="/clima">Previsão do sangue</Link>
-          <Link to="/apadrinhar">Apadrinhe</Link>
+          {menu.links.map((l) => <Link key={l.para} to={l.para}>{l.rotulo}</Link>)}
 
+          {menu.aprenda && (
           <div
             className="menu-drop"
             onMouseEnter={() => temMouse() && setAbertoAprenda(true)}
@@ -139,6 +137,7 @@ function Layout() {
               </div>
             )}
           </div>
+          )}
 
           {token ? (
             <>

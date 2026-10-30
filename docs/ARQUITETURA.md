@@ -102,7 +102,7 @@ Regra para o que for novo: **recurso no plural, verbo HTTP faz a ação, estado 
 | Token | JWT (HS256) de 1 dia; 7 dias com "manter conectado". Renovado em silêncio depois da metade da vida. |
 | Encerrar | trocar senha, redefinir senha, excluir conta ou "sair de todos" invalidam tokens antigos (cache de 30 s por processo). |
 | Login automático | `sessao.js`: confere em `GET /auth/eu` ao abrir, a cada 5 min e ao voltar à aba; 401 em qualquer chamada limpa a sessão e leva ao login com aviso. |
-| Papéis | conferidos no servidor (`exigirAdmin`, `exigirHospitalAprovado`, checagem de `tipo`); o frontend só redireciona por conforto. |
+| Papéis | conferidos no servidor em **toda** rota não pública (`exigirDoador`, `exigirHospital`, `exigirHospitalAprovado`, `exigirHospitalOuAdmin`, `exigirAdmin`; só `/auth/*` fica para qualquer conta). O teste `testes/e2e/papeis.js` tenta o tipo errado em todas as rotas lidas do código (129 tentativas) e exige 403. O frontend monta o menu por tipo de conta (`regras/menu.js`) e redireciona quem abre tela de outro tipo, só por organização. |
 | Pendências | token em `localStorage` (A7), contagem de tentativas em memória (M9), troca de e-mail da conta, verificação de e-mail no cadastro, autenticação em dois fatores para administradores. |
 
 ## 5. CRUD: onde há lacunas
