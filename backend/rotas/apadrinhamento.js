@@ -48,7 +48,7 @@ function idValido(texto) {
 }
 
 // PUBLICO: pacientes que estao procurando padrinhos (so de hospitais aprovados).
-router.get('/', async (req, res) => {
+router.get('/', autenticar, exigirDoador, async (req, res) => {
     try {
         const r = await pool.query(
             `SELECT ${CAMPOS_CASO}

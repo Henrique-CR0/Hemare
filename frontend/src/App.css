@@ -838,3 +838,26 @@ a.area-avatar { text-decoration: none; overflow: hidden; }
 .alto-contraste .sub-aba { color: #fff !important; }
 .alto-contraste .sub-aba-ativa { color: #ffff00 !important; border-bottom-color: #ffff00 !important; }
 .alto-contraste .ph-resumo strong { color: #fff !important; }
+
+/* ===== PORTAO DE ACESSO E RESUMO DE ACESSO (visitante x conta) ===== */
+.portao { max-width: 640px; margin: 20px auto; background: #fff; border: 1px solid #f0d4d9; border-radius: 18px; padding: 28px 30px; text-align: center; }
+.portao-icone { font-size: 46px; }
+.portao h1 { font-size: 24px; color: #c8102e; margin: 6px 0 10px; }
+.portao h2 { font-size: 16px; color: #2b0d10; margin: 22px 0 8px; }
+.portao-porque { font-size: 15px; color: #4a3437; line-height: 1.55; text-align: left; background: #fff8f9; border-left: 4px solid #e8a6b0; border-radius: 8px; padding: 10px 14px; }
+.portao-lista { list-style: none; padding: 0; margin: 0 auto; text-align: left; max-width: 480px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; color: #3a2528; }
+.portao-botoes { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+.portao-botoes .auth-botao { width: auto; padding: 12px 26px; text-decoration: none; display: inline-block; }
+.portao-hospital { font-size: 13px; color: #6b5054; margin-top: 14px; }
+.portao-abertas { border-top: 1px dashed #e8a6b0; margin-top: 22px; padding-top: 4px; font-size: 14px; }
+.acesso-resumo { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; max-width: 760px; margin: 18px auto 0; }
+.acesso-resumo > div { background: #fff; border: 1px solid #f0d4d9; border-radius: 14px; padding: 14px 16px; }
+.acesso-resumo .acesso-destaque { border: 2px solid #c8102e; background: #fff8f9; }
+.acesso-resumo h3 { font-size: 15px; margin: 0 0 6px; color: #2b0d10; }
+.acesso-resumo ul { margin: 0; padding-left: 18px; font-size: 13px; color: #4a3437; line-height: 1.5; }
+.so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.alto-contraste .portao, .alto-contraste .portao-porque, .alto-contraste .acesso-resumo > div { background: #000 !important; color: #fff !important; border-color: #fff !important; }
+.alto-contraste .portao h1, .alto-contraste .portao h2, .alto-contraste .portao-lista, .alto-contraste .acesso-resumo h3, .alto-contraste .acesso-resumo ul, .alto-contraste .portao-hospital { color: #fff !important; }
+
+/* O resumo de acesso fica embaixo do cartao de entrada/cadastro (antes o cartao era o unico filho). */
+.auth-tela { flex-direction: column; justify-content: flex-start; align-items: center; padding-bottom: 30px; }

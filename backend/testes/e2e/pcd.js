@@ -21,18 +21,24 @@ async function main() {
   const colunasLia = async () => (await pool.query("SELECT pcd, pcd_tipos, pcd_apoios, pcd_declarado_em FROM doadores WHERE usuario_id = (SELECT id FROM usuarios WHERE email = 'lia@x.com')")).rows[0];
   const declarar = (extra) => ({ declarado: true, tipos: ['fisica'], apoios: ['mobilidade'], consentimento: true, ...extra });
 
-  console.log('--- Guia e ficha publicos (nao guardam nada) ---');
+  console.log('--- Guia e ficha: so para doador logado (e nao guardam nada) ---');
   let r = await api('GET', '/pcd/guia');
-  checar('Guia publico traz causas, remedios, tipos e aviso', r.status === 200 && r.dados.causas.length === 11 && r.dados.medicamentos.length === 10 && r.dados.tipos.length === 7 && !!r.dados.aviso, r.dados && Object.keys(r.dados));
+  checar('Visitante sem conta NAO abre o guia da ficha (401)', r.status === 401, r);
   r = await api('POST', '/pcd/ficha', null, { causas: ['nascenca'] });
-  checar('Ficha sem login: verde para deficiencia de nascenca', r.status === 200 && r.dados.nivel === 'verde' && r.dados.levar[0] === 'Documento oficial com foto.', r.dados);
-  r = await api('POST', '/pcd/ficha', null, { causas: ['avc'], medicamentos: ['antipsicotico'], decisao: 'com-apoio', apoios: ['libras'], idade: 17, pesoKg: 48 });
+  checar('Visitante sem conta NAO preenche a ficha (401)', r.status === 401, r);
+  r = await api('POST', '/pcd/ficha', tH, { causas: ['nascenca'] });
+  checar('Hospital NAO preenche a ficha do doador (403)', r.status === 403, r);
+  r = await api('GET', '/pcd/guia', tLia);
+  checar('Guia (doador logado) traz causas, remedios, tipos e aviso', r.status === 200 && r.dados.causas.length === 11 && r.dados.medicamentos.length === 10 && r.dados.tipos.length === 7 && !!r.dados.aviso, r.dados && Object.keys(r.dados));
+  r = await api('POST', '/pcd/ficha', tLia, { causas: ['nascenca'] });
+  checar('Ficha de doador logado: verde para deficiencia de nascenca', r.status === 200 && r.dados.nivel === 'verde' && r.dados.levar[0] === 'Documento oficial com foto.', r.dados);
+  r = await api('POST', '/pcd/ficha', tLia, { causas: ['avc'], medicamentos: ['antipsicotico'], decisao: 'com-apoio', apoios: ['libras'], idade: 17, pesoKg: 48 });
   checar('Ficha combinada: vermelho (AVC) e traz tudo que levar, apoios e nota', r.status === 200 && r.dados.nivel === 'vermelho' && r.dados.levar.length >= 4 && r.dados.apoios.length === 1 && r.dados.depois.length === 2 && /Hemominas/.test(r.dados.notaPratica), r.dados);
-  r = await api('POST', '/pcd/ficha', null, { causas: ['epilepsia'] });
+  r = await api('POST', '/pcd/ficha', tLia, { causas: ['epilepsia'] });
   checar('Epilepsia sem informar a situacao: 400 explicando', r.status === 400 && /epilepsia/i.test(r.dados.erro), r.dados);
-  r = await api('POST', '/pcd/ficha', null, { causas: ['<script>'] });
+  r = await api('POST', '/pcd/ficha', tLia, { causas: ['<script>'] });
   checar('Opcao inventada: 400', r.status === 400, r.dados);
-  r = await api('POST', '/pcd/ficha', null, { causas: 'avc' });
+  r = await api('POST', '/pcd/ficha', tLia, { causas: 'avc' });
   checar('Causas fora do formato de lista: 400', r.status === 400, r.dados);
   checar('A ficha nao gravou nada no banco', !(await colunasLia()).pcd);
 

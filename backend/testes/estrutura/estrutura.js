@@ -40,9 +40,19 @@ const montados = [...servidor.matchAll(/require\('\.\/rotas\/([\w-]+)'\)/g)].map
 checar('Todo arquivo de rotas e carregado em servidor.js', arquivosDeRotas.every((a) => montados.includes(a)), arquivosDeRotas.filter((a) => !montados.includes(a)));
 checar('Todo arquivo carregado em servidor.js existe', montados.every((m) => arquivosDeRotas.includes(m)), montados.filter((m) => !arquivosDeRotas.includes(m)));
 const rotas = lerRotas();
-const PUBLICAS_QUE_ESCREVEM = ['/auth/cadastro', '/auth/login', '/recuperacao/pedir', '/recuperacao/redefinir', '/pcd/ficha'];
+const PUBLICAS_QUE_ESCREVEM = ['/auth/cadastro', '/auth/login', '/recuperacao/pedir', '/recuperacao/redefinir'];
 const abertas = rotas.filter((r) => r.acesso === 'público' && r.verbo !== 'get' && !PUBLICAS_QUE_ESCREVEM.includes(r.caminho));
 checar('Nenhuma rota que escreve (POST/PUT/PATCH/DELETE) ficou publica sem querer', abertas.length === 0, abertas.map((r) => r.verbo + ' ' + r.caminho));
+// O que o visitante (sem conta) pode ler e uma DECISAO, escrita aqui e em docs/ACESSO.md. Se alguem deixar uma rota nova
+// publica sem querer (ou fechar uma que deveria ser aberta), este teste falha e obriga a decidir de caso pensado.
+const PUBLICAS_ESPERADAS = [
+    'GET /', 'GET /saude', 'GET /locais', 'GET /noticias', 'GET /clima', 'GET /doador/placar', 'GET /hospital/estoque-publico',
+    'GET /campanha/:codigo', 'GET /hospital/cadeia/verificar', 'POST /auth/cadastro', 'POST /auth/login', 'POST /recuperacao/pedir', 'POST /recuperacao/redefinir'
+].sort();
+const publicas = rotas.filter((r) => r.acesso === 'público').map((r) => r.verbo.toUpperCase() + ' ' + r.caminho).sort();
+checar('A lista de rotas publicas e exatamente a combinada em docs/ACESSO.md (' + publicas.length + ' rotas)', JSON.stringify(publicas) === JSON.stringify(PUBLICAS_ESPERADAS),
+    { aMais: publicas.filter((p) => !PUBLICAS_ESPERADAS.includes(p)), aMenos: PUBLICAS_ESPERADAS.filter((p) => !publicas.includes(p)) });
+checar('docs/ACESSO.md existe e cita a regra do visitante', fs.existsSync(path.join(REPO, 'docs', 'ACESSO.md')) && /Sem conta/.test(ler(REPO, 'docs', 'ACESSO.md')));
 checar('Todas as rotas tem uma frase explicando o que fazem (comentario acima dela)', rotas.every((r) => r.resumo), rotas.filter((r) => !r.resumo).map((r) => r.verbo + ' ' + r.caminho));
 checar('A API tem mais de 80 rotas lidas (se cair muito, o leitor de rotas quebrou)', rotas.length > 80, rotas.length);
 

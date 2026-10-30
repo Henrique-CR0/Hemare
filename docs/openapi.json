@@ -665,7 +665,7 @@
           "Apadrinhamento"
         ],
         "summary": "PUBLICO: pacientes que estao procurando padrinhos (so de hospitais aprovados).",
-        "description": "Acesso: público.",
+        "description": "Acesso: doador.",
         "responses": {
           "200": {
             "description": "Deu certo"
@@ -673,10 +673,21 @@
           "400": {
             "description": "Dado inválido"
           },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
           "500": {
             "description": "Erro inesperado"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -2396,8 +2407,8 @@
         "tags": [
           "Ficha PcD"
         ],
-        "summary": "PUBLICO: ficha de orientacao para a triagem de PcD. Calcula na hora e nao guarda nada.",
-        "description": "Acesso: público.",
+        "summary": "DOADOR: ficha de orientacao para a triagem de PcD. Calcula na hora e nao guarda nada.",
+        "description": "Acesso: doador.",
         "responses": {
           "201": {
             "description": "Deu certo"
@@ -2405,10 +2416,21 @@
           "400": {
             "description": "Dado inválido"
           },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
           "500": {
             "description": "Erro inesperado"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -2425,8 +2447,8 @@
         "tags": [
           "Ficha PcD"
         ],
-        "summary": "PUBLICO: as perguntas e opcoes da ficha de PcD.",
-        "description": "Acesso: público.",
+        "summary": "DOADOR: as perguntas e opcoes da ficha de PcD (so para quem tem conta: e uma ficha sobre saude).",
+        "description": "Acesso: doador.",
         "responses": {
           "200": {
             "description": "Deu certo"
@@ -2434,10 +2456,21 @@
           "400": {
             "description": "Dado inválido"
           },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
           "500": {
             "description": "Erro inesperado"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/perfil": {

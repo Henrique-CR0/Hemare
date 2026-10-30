@@ -110,7 +110,11 @@ function Layout() {
 
         <nav id="menu-principal" className={'site-menu' + (menuAberto ? ' site-menu-aberto' : '')}
              ref={refMenu} tabIndex={-1} aria-label="Menu principal">
-          {menu.links.map((l) => <Link key={l.para} to={l.para}>{l.rotulo}</Link>)}
+          {menu.links.map((l) => (
+            <Link key={l.para} to={l.para} title={l.exigeConta ? 'Exige conta gratuita' : undefined}>
+              {l.exigeConta && <span aria-hidden="true">🔒 </span>}{l.rotulo}{l.exigeConta && <span className="so-leitor"> (exige conta)</span>}
+            </Link>
+          ))}
 
           {menu.aprenda && (
           <div

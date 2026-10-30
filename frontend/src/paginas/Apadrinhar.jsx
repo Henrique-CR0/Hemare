@@ -15,7 +15,7 @@ function Apadrinhar() {
   const ehDoador = !!token && !!usuario && usuario.tipo === 'doador';
 
   function carregar() {
-    fetch(URL_BACKEND + '/apadrinhamento')
+    fetch(URL_BACKEND + '/apadrinhamento', { headers: { 'Authorization': 'Bearer ' + token } })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d) => { setCasos(d.casos); setSituacao('ok'); })
       .catch(() => setSituacao('erro'));

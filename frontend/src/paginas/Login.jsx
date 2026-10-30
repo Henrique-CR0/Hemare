@@ -1,13 +1,17 @@
 // Hemare - Tela de login (refinada).
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 
 import { URL_BACKEND } from '../config';
 import { rotaInicial } from '../regras/rotaInicial';
+import { destinoSeguro, comDestino } from '../regras/destino';
+import AcessoResumo from '../componentes/AcessoResumo';
 import { lerSessao, salvarSessao, lerMotivo } from '../sessao';
 
 function Login() {
   const navegar = useNavigate();
+  const [params] = useSearchParams();
+  const destino = destinoSeguro(params.get('destino'), null);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [lembrar, setLembrar] = useState(false);
@@ -19,7 +23,7 @@ function Login() {
     const motivo = lerMotivo();
     if (motivo === 'expirou') { setMensagem('⏳ Sua sessão terminou. Entre de novo para continuar.'); return; }
     const sessao = lerSessao();
-    if (sessao) navegar(rotaInicial(sessao.usuario), { replace: true });
+    if (sessao) navegar(destino || rotaInicial(sessao.usuario), { replace: true });
   }, []);
 
   async function fazerLogin() {
@@ -34,7 +38,7 @@ function Login() {
 
       if (resposta.ok) {
         salvarSessao(dados.token, dados.usuario);
-        navegar(rotaInicial(dados.usuario));
+        navegar(destino || rotaInicial(dados.usuario));
       } else {
         setMensagem('❌ ' + dados.erro);
       }
@@ -67,12 +71,13 @@ function Login() {
           <Link to="/recuperar-senha">Esqueceu a senha?</Link>
         </p>
                 <p className="auth-troca">
-          Não tem conta? <Link to="/cadastro">Cadastre-se</Link>
+          Não tem conta? <Link to={comDestino('/cadastro', destino)}>Cadastre-se</Link>
         </p>
         <p className="auth-troca-hospital">
           É um hospital ou hemocentro? <Link to="/cadastro-hospital">Cadastre sua instituição</Link>
         </p>
       </div>
+      <AcessoResumo />
     </div>
   );
 }

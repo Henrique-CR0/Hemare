@@ -2,13 +2,15 @@
 //   <RotaProtegida>                                  so quem esta logado
 //   <RotaProtegida papeis={['hospital']}>            so esse tipo de conta (outro tipo vai para a sua propria area)
 //   <RotaProtegida papeis={['doador']} permitirVisitante>   visitante (sem login) E esse tipo; conta de outro tipo vai para a sua area
+//   <RotaProtegida papeis={['doador']} portao={PORTOES.triagem}>   visitante ve o "portao de acesso" (explica o que a conta libera), em vez do login seco
 //   <RotaProtegida soVisitante>                      so quem NAO esta logado (cadastro, recuperar senha): logado vai para a sua area
 // E so conforto de navegacao: quem realmente protege os dados e o backend.
 import { Navigate } from 'react-router-dom';
 import { lerSessao, encerrarSessao } from '../sessao';
 import { rotaInicial } from '../regras/rotaInicial';
+import PortaoDeAcesso from './PortaoDeAcesso';
 
-function RotaProtegida({ children, papeis, permitirVisitante, soVisitante }) {
+function RotaProtegida({ children, papeis, permitirVisitante, soVisitante, portao }) {
   const sessao = lerSessao();
 
   if (soVisitante) {
@@ -18,6 +20,7 @@ function RotaProtegida({ children, papeis, permitirVisitante, soVisitante }) {
   // Sem sessao (ou com o token vencido).
   if (!sessao) {
     if (permitirVisitante) return children;
+    if (portao) return <PortaoDeAcesso {...portao} />;
     if (localStorage.getItem('hemare_token')) encerrarSessao('expirou');
     return <Navigate to="/login" replace />;
   }

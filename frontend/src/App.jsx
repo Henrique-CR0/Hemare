@@ -3,6 +3,7 @@ import Clima from './paginas/Clima';
 import Radar from './paginas/Radar';
 import Agendar from './paginas/Agendar';
 import PerfilHospital from './paginas/PerfilHospital';
+import { PORTOES } from './regras/portoes';
 import MinhasDoacoes from './paginas/MinhasDoacoes';
 import VLibras from './componentes/VLibras';
 import Estoque from './paginas/Estoque';
@@ -40,7 +41,7 @@ function App() {
           <Route index element={<RotaProtegida papeis={['doador']} permitirVisitante><Inicio /></RotaProtegida>} />
           <Route path="login" element={<Login />} />
           <Route path="cadastro" element={<RotaProtegida soVisitante><Cadastro /></RotaProtegida>} />
-          <Route path="triagem" element={<RotaProtegida papeis={['doador']} permitirVisitante><Triagem /></RotaProtegida>} />
+          <Route path="triagem" element={<RotaProtegida papeis={['doador']} portao={PORTOES.triagem}><Triagem /></RotaProtegida>} />
           <Route path="locais" element={<RotaProtegida papeis={['doador']} permitirVisitante><Locais /></RotaProtegida>} />
           <Route path="orientacoes" element={<RotaProtegida papeis={['doador']} permitirVisitante><Orientacoes /></RotaProtegida>} />
           <Route path="mitos" element={<RotaProtegida papeis={['doador']} permitirVisitante><Mitos /></RotaProtegida>} />
@@ -54,7 +55,7 @@ function App() {
           <Route path="recuperar-senha" element={<RotaProtegida soVisitante><RecuperarSenha /></RotaProtegida>} />
           <Route path="estoque" element={<Estoque />} />
           <Route path="placar" element={<Placar />} />
-          <Route path="apadrinhar" element={<RotaProtegida papeis={['doador']} permitirVisitante><Apadrinhar /></RotaProtegida>} />
+          <Route path="apadrinhar" element={<RotaProtegida papeis={['doador']} portao={PORTOES.apadrinhar}><Apadrinhar /></RotaProtegida>} />
           <Route path="campanha/:codigo" element={<Campanha />} />
           <Route path="noticias" element={<Noticias />} />
           <Route path="admin" element={<RotaProtegida papeis={['admin']}><PainelAdmin /></RotaProtegida>} />

@@ -10,7 +10,7 @@ const { pool, api, conta, checar, titulo } = amb;
 const { lerRotas } = require('../../scripts/api');
 
 async function main() {
-    await amb.iniciar([]);
+    await amb.iniciar(['criar-locais.js', 'popular-locais.js', 'criar-noticias.js', 'criar-apadrinhamento.js', 'criar-campanhas.js', 'ajustar-raros.js', 'criar-estoque.js']);
 
     const tDoador = await conta('Ana Doadora', 'ana@exemplo.com', 'doador');
     const tHospital = await conta('Hospital Recife', 'h@exemplo.com', 'hospital');
@@ -53,8 +53,25 @@ async function main() {
     }
     checar('Sem login, toda rota nao publica responde 401', semLogin.length === 0, semLogin);
 
+    let r;
+    titulo('O que o visitante (sem conta) pode e nao pode ver');
+    const abertas = [['GET', '/locais'], ['GET', '/noticias'], ['GET', '/clima'], ['GET', '/hospital/estoque-publico'], ['GET', '/saude']];
+    const naoAbriu = [];
+    for (const [v, c] of abertas) { const x = await api(v, c); if (x.status !== 200) naoAbriu.push(v + ' ' + c + ' -> ' + x.status); }
+    checar('Visitante abre o que e publico (mapa, noticias, previsao, estoque publico; o placar usa GROUP BY que o pg-mem nao entende)', naoAbriu.length === 0, naoAbriu);
+    const fechadas = [['GET', '/apadrinhamento'], ['GET', '/pcd/guia'], ['POST', '/pcd/ficha'], ['GET', '/historico'], ['GET', '/agenda/hospitais'], ['GET', '/doador/conquistas'], ['GET', '/hospital/necessidades']];
+    const abriu = [];
+    for (const [v, c] of fechadas) { const x = await api(v, c, null, v === 'POST' ? { causas: [] } : undefined); if (x.status !== 401) abriu.push(v + ' ' + c + ' -> ' + x.status); }
+    checar('Visitante NAO abre a lista de pacientes, a ficha PcD, o historico, a agenda nem dados de hospital (401)', abriu.length === 0, abriu);
+    r = await api('GET', '/apadrinhamento', tHospital);
+    checar('Hospital tambem NAO abre a lista publica de apadrinhamento (ele usa a dele em /meus-casos)', r.status === 403, r);
+    r = await api('GET', '/apadrinhamento', tDoador);
+    checar('Doador abre a lista de pacientes que procuram padrinhos', r.status === 200, r);
+    r = await api('GET', '/pcd/guia', tDoador);
+    checar('Doador abre o guia da ficha PcD', r.status === 200 && r.dados.causas.length > 0, r.status);
+
     titulo('O tipo certo continua entrando');
-    let r = await api('GET', '/doador/conquistas', tDoador);
+    r = await api('GET', '/doador/conquistas', tDoador);
     checar('Doador abre as proprias conquistas (nao e barrado; sem perfil devolve 404, e normal)', r.status !== 403 && r.status !== 401, r.status);
     r = await api('GET', '/hospital/meus-dados', tHospital);
     checar('Hospital abre os proprios dados', r.status === 200 && r.dados.cnpj === '11.111.111/0001-11', r);

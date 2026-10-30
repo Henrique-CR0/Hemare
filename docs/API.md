@@ -88,7 +88,7 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 
 | Método | Caminho | Acesso | O que faz |
 |---|---|---|---|
-| `GET` | `/apadrinhamento` | público | PUBLICO: pacientes que estao procurando padrinhos (so de hospitais aprovados). |
+| `GET` | `/apadrinhamento` | doador | PUBLICO: pacientes que estao procurando padrinhos (so de hospitais aprovados). |
 | `POST` | `/apadrinhamento` | hospital aprovado | HOSPITAL: cadastra um paciente que precisa de padrinhos. |
 | `POST` | `/apadrinhamento/:id/apadrinhar` | doador | DOADOR: vira padrinho de um paciente. |
 | `DELETE` | `/apadrinhamento/:id/apadrinhar` | doador | DOADOR: deixa de ser padrinho (a qualquer momento, sem explicacao). |
@@ -182,8 +182,8 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 |---|---|---|---|
 | `GET` | `/pcd/eu` | doador | DOADOR: a propria declaracao de pessoa com deficiencia (so a pessoa ve; nunca um hospital). |
 | `PUT` | `/pcd/eu` | doador | DOADOR: declara (com consentimento) ou deixa de declarar a condicao de PcD e o que ajuda no atendimento. |
-| `POST` | `/pcd/ficha` | público | PUBLICO: ficha de orientacao para a triagem de PcD. Calcula na hora e nao guarda nada. |
-| `GET` | `/pcd/guia` | público | PUBLICO: as perguntas e opcoes da ficha de PcD. |
+| `POST` | `/pcd/ficha` | doador | DOADOR: ficha de orientacao para a triagem de PcD. Calcula na hora e nao guarda nada. |
+| `GET` | `/pcd/guia` | doador | DOADOR: as perguntas e opcoes da ficha de PcD (so para quem tem conta: e uma ficha sobre saude). |
 
 ### Perfil do doador (LGPD)
 
