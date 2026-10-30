@@ -1,16 +1,7 @@
-// Hemare - Notícias: o feed de noticias (estilo Google Noticias) e o panorama da doacao de sangue por estado.
-import SubAbas, { useAba } from '../componentes/SubAbas';
+// Hemare - Notícias: feed de noticias (estilo Google Noticias) sobre doacao de sangue, campanhas e saude.
 import FeedNoticias from '../componentes/FeedNoticias';
-import PanoramaEstados from '../componentes/PanoramaEstados';
-
-const ABAS = [
-  { id: 'ultimas', rotulo: '📰 Últimas notícias' },
-  { id: 'estados', rotulo: '🗺️ Panorama por estado' }
-];
 
 function Noticias() {
-  const [aba, trocarAba] = useAba(ABAS.map((a) => a.id));
-
   return (
     <div className="noti">
       <h1>📰 Notícias</h1>
@@ -19,9 +10,7 @@ function Noticias() {
         Cada notícia abre no site de quem a publicou.
       </p>
 
-      <SubAbas abas={ABAS} atual={aba} aoTrocar={trocarAba} />
-
-      {aba === 'ultimas' ? <FeedNoticias /> : <PanoramaEstados />}
+      <FeedNoticias />
 
       <p className="conteudo-aviso">
         O Hemare mostra só o título, um trecho curto e a imagem de divulgação que cada fonte oferece nos seus feeds públicos (RSS),

@@ -143,7 +143,7 @@ function FeedNoticias() {
   const resto = itens.slice(4);
 
   return (
-    <div id="painel-ultimas" role="tabpanel" aria-labelledby="aba-ultimas" className="gn">
+    <div className="gn">
       <div className="gn-barra">
         <input type="search" className="hemare-input gn-busca" placeholder="🔎 Buscar nas notícias" aria-label="Buscar nas notícias"
                value={texto} maxLength={60} onChange={(e) => setTexto(e.target.value)} />
