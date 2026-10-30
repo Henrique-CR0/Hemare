@@ -10,7 +10,8 @@
     "start": "node servidor.js",
     "servir-teste": "node testes/servir.js",
     "migrar": "node db/migrar.js",
-    "docs": "node scripts/api.js"
+    "docs": "node scripts/api.js",
+    "status": "node scripts/status.js"
   },
   "keywords": [],
   "author": "",
