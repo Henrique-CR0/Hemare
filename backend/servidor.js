@@ -142,3 +142,7 @@ agendarLembretes();
 // Tarefa automatica: lembrete de agendamento (doacoes marcadas para as proximas ~26 horas).
 const { agendarLembretesDeAgendamento } = require('./tarefas/lembreteAgendamento');
 agendarLembretesDeAgendamento();
+
+// Tarefa automatica: coleta dos feeds de noticias (ao ligar e de hora em hora; COLETAR_NOTICIAS=nao desliga).
+const { agendarColetaDeNoticias } = require('./tarefas/coletarNoticias');
+agendarColetaDeNoticias();

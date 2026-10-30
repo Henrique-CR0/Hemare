@@ -2,7 +2,7 @@
 
 > Gerado automaticamente a partir do código (`npm run docs`, na pasta `backend`). **Não edite à mão**: escreva um comentário `//` na linha de cima da rota e gere de novo. O mesmo conteúdo, em formato OpenAPI 3, está em [`openapi.json`](openapi.json) (abra no [Swagger Editor](https://editor.swagger.io)).
 
-**86 rotas** em 19 grupos.
+**90 rotas** em 19 grupos.
 
 ## Como usar
 
@@ -42,7 +42,7 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 | Minhas doações (`/historico`) | — | ✅ | — | — | 1 |
 | Hospital (`/hospital`) | ✅ | ✅ | ✅ | ✅ | 12 |
 | Locais de doação (`/locais`) | — | ✅ | — | — | 1 |
-| Canal de notícias (`/noticias`) | ✅ | ✅ | ✅ | ✅ | 4 |
+| Canal de notícias (`/noticias`) | ✅ | ✅ | ✅ | ✅ | 8 |
 | Ficha PcD (`/pcd`) | ✅ | ✅ | ✅ | — | 4 |
 | Perfil do doador (LGPD) (`/perfil`) | ✅ | ✅ | ✅ | — | 4 |
 | Radar preditivo (`/radar`) | — | ✅ | — | — | 1 |
@@ -175,6 +175,10 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 | `POST` | `/noticias` | admin | ADMIN: cadastra um aviso. |
 | `PUT` | `/noticias/:id` | admin | ADMIN: corrige um aviso (substitui os campos, como no cadastro). |
 | `DELETE` | `/noticias/:id` | admin | ADMIN: remove um aviso. |
+| `GET` | `/noticias/feed` | público | PUBLICO: feed de noticias (estilo Google Noticias), mais novas primeiro. Filtros: ?categoria=doacao\|estoque\|campanhas\|orgaos\|saude ?uf=PE ?q=texto ?pagina=2 |
+| `PUT` | `/noticias/feed/:id/ocultar` | admin | ADMIN: esconde (ou volta a mostrar) uma noticia do feed. Ela continua guardada, entao a coleta nao a traz de volta. |
+| `GET` | `/noticias/feed/coleta` | admin | ADMIN: resultado da ultima coleta (quais fontes responderam, quantas notícias novas). |
+| `POST` | `/noticias/feed/coletar` | admin | ADMIN: coleta os feeds agora (sem esperar a hora cheia) e mostra o resultado de cada fonte. |
 
 ### Ficha PcD
 

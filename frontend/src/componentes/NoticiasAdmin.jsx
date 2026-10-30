@@ -1,6 +1,7 @@
 // Hemare - Painel do administrador: cadastrar e remover avisos do canal de noticias.
 import { useState, useEffect } from 'react';
 import { URL_BACKEND } from '../config';
+import ColetaNoticias from './ColetaNoticias';
 
 const UFS = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
 const NIVEIS = [
@@ -67,6 +68,8 @@ function NoticiasAdmin() {
   return (
     <section className="adm-noticias">
       <h2>📰 Canal de notícias</h2>
+      <ColetaNoticias />
+      <h3>✍️ Avisos por estado (cadastro manual)</h3>
       <p className="adm-sub">
         Cadastre um aviso por matéria: escreva o resumo <strong>com as suas palavras</strong> e cole o link da matéria original.
         O nível de cada estado é o do aviso mais recente.

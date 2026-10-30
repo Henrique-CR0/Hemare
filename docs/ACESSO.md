@@ -29,7 +29,7 @@
 |---|---|
 | `GET /`, `GET /saude` | verificar que a API está de pé |
 | `GET /locais` | mapa de hemocentros (informação pública) |
-| `GET /noticias`, `GET /clima`, `GET /doador/placar`, `GET /hospital/estoque-publico` | só números agregados e avisos com link da fonte |
+| `GET /noticias`, `GET /noticias/feed`, `GET /clima`, `GET /doador/placar`, `GET /hospital/estoque-publico` | só números agregados e notícias com título, trecho curto e link da fonte |
 | `GET /campanha/:codigo` | a família compartilha o link; só apelido do paciente, sem nome nem diagnóstico |
 | `GET /hospital/cadeia/verificar` | auditoria pública da cadeia de confiança: qualquer pessoa confere que as doações não foram alteradas (devolve só números de registro e se cada um é válido, sem dado de ninguém) |
 | `POST /auth/cadastro`, `POST /auth/login`, `POST /recuperacao/pedir`, `POST /recuperacao/redefinir` | entrar e criar conta (com limite de tentativas) |

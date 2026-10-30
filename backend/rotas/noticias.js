@@ -1,11 +1,15 @@
-// Hemare - Rotas do canal de noticias por estado.
-// Publico: panorama dos 27 estados (avisos curados + sinais calculados com os hospitais do Hemare).
-// Administrador: cadastra e remove avisos (resumo proprio + link da materia original).
+// Hemare - Rotas do canal de noticias.
+// Publico: feed de noticias (estilo Google Noticias, coletado dos RSS das fontes) e o panorama dos 27 estados
+// (avisos curados + sinais calculados com os hospitais do Hemare).
+// Administrador: coleta o feed na hora, esconde noticias, e cadastra/remove avisos (resumo proprio + link da materia original).
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
 const { exigirAdmin } = require('../middleware/exigirPapel');
 const { normalizarUf, validarNoticia, montarPanorama } = require('../regras/noticias');
+const { CATEGORIAS, POR_PAGINA, lerFiltros, termoLike } = require('../regras/feed');
+const { fontesAtivas } = require('../regras/fontes');
+const { coletar, ultimaRodada } = require('../servicos/coletorNoticias');
 
 const router = express.Router();
 
@@ -92,6 +96,77 @@ router.get('/', async (req, res) => {
         res.json(montarPanorama(porUf, await calcularSinais()));
     } catch (erro) {
         res.status(500).json({ erro: 'Erro ao montar o panorama: ' + erro.message });
+    }
+});
+
+// PUBLICO: feed de noticias (estilo Google Noticias), mais novas primeiro.
+// Filtros: ?categoria=doacao|estoque|campanhas|orgaos|saude  ?uf=PE  ?q=texto  ?pagina=2
+router.get('/feed', async (req, res) => {
+    const f = lerFiltros(req.query);
+    const onde = ['oculta = false'];
+    const valores = [];
+    if (f.uf) { valores.push(f.uf); onde.push('uf = $' + valores.length); }
+    if (f.busca) { valores.push(termoLike(f.busca)); onde.push('busca LIKE $' + valores.length); }
+    const ondeSemCategoria = onde.join(' AND ');
+    if (f.categoria) { valores.push(f.categoria); onde.push('categoria = $' + valores.length); }
+    const ondeTudo = onde.join(' AND ');
+    try {
+        const total = Number((await pool.query('SELECT COUNT(*) AS n FROM noticias_feed WHERE ' + ondeTudo, valores)).rows[0].n);
+        const pagina = await pool.query(
+            `SELECT id, titulo, resumo, fonte, url, imagem, categoria, uf, publicada_em
+               FROM noticias_feed WHERE ${ondeTudo}
+              ORDER BY publicada_em DESC, id DESC LIMIT ${POR_PAGINA} OFFSET ${(f.pagina - 1) * POR_PAGINA}`, valores);
+        // Contagem de cada categoria com os mesmos filtros de estado e busca (para os botoes mostrarem quantas ha).
+        const valoresSemCategoria = f.categoria ? valores.slice(0, -1) : valores;
+        const porCategoria = {};
+        (await pool.query('SELECT categoria, COUNT(*) AS n FROM noticias_feed WHERE ' + ondeSemCategoria + ' GROUP BY categoria', valoresSemCategoria))
+            .rows.forEach((l) => { porCategoria[l.categoria] = Number(l.n); });
+        const ultima = (await pool.query('SELECT MAX(coletada_em) AS ultima FROM noticias_feed')).rows[0].ultima;
+
+        res.set('Cache-Control', 'public, max-age=60');
+        res.json({
+            itens: pagina.rows.map((n) => ({
+                id: n.id, titulo: n.titulo, resumo: n.resumo, fonte: n.fonte, url: n.url, imagem: n.imagem,
+                categoria: n.categoria, uf: n.uf, publicadaEm: new Date(n.publicada_em).toISOString()
+            })),
+            total, pagina: f.pagina, porPagina: POR_PAGINA, temMais: f.pagina * POR_PAGINA < total,
+            categorias: CATEGORIAS.map((c) => ({ id: c.id, rotulo: c.rotulo, total: porCategoria[c.id] || 0 })),
+            atualizadoEm: ultima ? new Date(ultima).toISOString() : null
+        });
+    } catch (erro) {
+        // Tabela ainda nao criada (falta rodar a migracao): a pagina mostra "sem noticias" em vez de quebrar.
+        if (erro.code === '42P01') {
+            return res.json({ itens: [], total: 0, pagina: 1, porPagina: POR_PAGINA, temMais: false,
+                categorias: CATEGORIAS.map((c) => ({ id: c.id, rotulo: c.rotulo, total: 0 })), atualizadoEm: null });
+        }
+        res.status(500).json({ erro: 'Erro ao carregar as notícias: ' + erro.message });
+    }
+});
+
+// ADMIN: coleta os feeds agora (sem esperar a hora cheia) e mostra o resultado de cada fonte.
+router.post('/feed/coletar', autenticar, exigirAdmin, async (req, res) => {
+    try {
+        res.json(await coletar());
+    } catch (erro) {
+        res.status(500).json({ erro: 'Erro na coleta: ' + erro.message });
+    }
+});
+
+// ADMIN: resultado da ultima coleta (quais fontes responderam, quantas notícias novas).
+router.get('/feed/coleta', autenticar, exigirAdmin, (req, res) => {
+    res.json({ ultima: ultimaRodada(), fontes: fontesAtivas().map((f) => ({ id: f.id, nome: f.nome, tipo: f.tipo, url: f.url, licenca: f.licenca })) });
+});
+
+// ADMIN: esconde (ou volta a mostrar) uma noticia do feed. Ela continua guardada, entao a coleta nao a traz de volta.
+router.put('/feed/:id/ocultar', autenticar, exigirAdmin, async (req, res) => {
+    if (!/^[0-9]{1,9}$/.test(req.params.id)) return res.status(400).json({ erro: 'Notícia inválida.' });
+    const oculta = !(req.body && req.body.oculta === false);
+    try {
+        const r = await pool.query('UPDATE noticias_feed SET oculta = $1 WHERE id = $2 RETURNING id', [oculta, Number(req.params.id)]);
+        if (r.rows.length === 0) return res.status(404).json({ erro: 'Notícia não encontrada.' });
+        res.json({ id: r.rows[0].id, oculta, mensagem: oculta ? 'Notícia escondida do feed.' : 'Notícia de volta ao feed.' });
+    } catch (erro) {
+        res.status(500).json({ erro: 'Erro ao atualizar: ' + erro.message });
     }
 });
 

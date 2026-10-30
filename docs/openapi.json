@@ -2333,6 +2333,147 @@
         ]
       }
     },
+    "/noticias/feed": {
+      "get": {
+        "tags": [
+          "Canal de notícias"
+        ],
+        "summary": "PUBLICO: feed de noticias (estilo Google Noticias), mais novas primeiro. Filtros: ?categoria=doacao|estoque|campanhas|orgaos|saude ?uf=PE ?q=texto ?pagina=2",
+        "description": "Acesso: público.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        }
+      }
+    },
+    "/noticias/feed/{id}/ocultar": {
+      "put": {
+        "tags": [
+          "Canal de notícias"
+        ],
+        "summary": "ADMIN: esconde (ou volta a mostrar) uma noticia do feed. Ela continua guardada, entao a coleta nao a traz de volta.",
+        "description": "Acesso: admin.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/noticias/feed/coleta": {
+      "get": {
+        "tags": [
+          "Canal de notícias"
+        ],
+        "summary": "ADMIN: resultado da ultima coleta (quais fontes responderam, quantas notícias novas).",
+        "description": "Acesso: admin.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/noticias/feed/coletar": {
+      "post": {
+        "tags": [
+          "Canal de notícias"
+        ],
+        "summary": "ADMIN: coleta os feeds agora (sem esperar a hora cheia) e mostra o resultado de cada fonte.",
+        "description": "Acesso: admin.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
     "/pcd/eu": {
       "get": {
         "tags": [
