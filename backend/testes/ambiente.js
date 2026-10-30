@@ -51,6 +51,7 @@ function criarAmbiente(porta, opcoes) {
     const doZero = !!(opcoes && opcoes.doZero);
     process.env.JWT_SECRET = 'segredo-de-teste';
     process.env.PORT = String(porta);
+    process.env.COLETAR_NOTICIAS = 'nao'; // nada de coleta automatica na internet durante os testes
 
     const db = newDb();
     if (!doZero) db.public.none(ESQUEMA_BASE);

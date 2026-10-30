@@ -32,6 +32,7 @@ const MIGRACOES = [
     { arquivo: 'criar-campanhas.js', descricao: 'campanhas de reposição' },
     { arquivo: 'criar-noticias.js', descricao: 'canal de notícias' },
     { arquivo: 'popular-noticias.js', descricao: 'panorama inicial dos 27 estados' },
+    { arquivo: 'criar-noticias-feed.js', descricao: 'feed de notícias coletado dos RSS (estilo Google Notícias)' },
     { arquivo: 'criar-agendamentos.js', descricao: 'agenda de doações' },
     { arquivo: 'ajustar-sessao.js', descricao: 'sessões encerráveis (trocar senha, sair de todos)' }
 ];

@@ -20,7 +20,7 @@ const { hojeNoBrasil } = require(path.join(BACKEND, 'regras/agendamento'));
 
 async function main() {
     // Todas as migracoes que existem na pasta db/ e que o teste conhece.
-    const extras = ['ajustar-raros.js', 'ajustar-pcd.js', 'criar-apadrinhamento.js', 'criar-campanhas.js', 'criar-noticias.js', 'criar-agendamentos.js', 'criar-feriados.js']
+    const extras = ['ajustar-raros.js', 'ajustar-pcd.js', 'criar-apadrinhamento.js', 'criar-campanhas.js', 'criar-noticias.js', 'popular-noticias.js', 'criar-noticias-feed.js', 'criar-agendamentos.js', 'criar-feriados.js']
         .filter((f) => require('fs').existsSync(path.join(BACKEND, 'db', f)));
     await amb.iniciar(extras);
 
@@ -62,6 +62,13 @@ async function main() {
         const hash = calcularHash(anterior, idLia, idAprovado, data);
         await pool.query('INSERT INTO doacoes (doador_id, hospital_id, data_doacao, hash, hash_anterior) VALUES ($1, $2, $3, $4, $5)', [idLia, idAprovado, data, hash, anterior]);
         anterior = hash;
+    }
+    // Feed de noticias: coleta de verdade (so leitura dos RSS publicos), para a aba "Notícias" nao ficar vazia.
+    try {
+        const r = await require(path.join(BACKEND, 'servicos/coletorNoticias')).coletar();
+        console.log('Feed de noticias: ' + r.novos + ' noticias coletadas dos RSS.');
+    } catch (erro) {
+        console.log('Feed de noticias nao coletado (sem internet?): ' + erro.message);
     }
     console.log('Servidor de demonstracao pronto em ' + amb.URL + ' (contas na documentacao do arquivo testes/servir.js).');
 }

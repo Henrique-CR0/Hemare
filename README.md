@@ -38,7 +38,8 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 - 🤝 **Traga um amigo** — cada doador tem um link de convite (`/cadastro?ref=CÓDIGO`) para copiar ou mandar pelo WhatsApp; o convite só conta quando o amigo faz a **primeira doação confirmada por um hospital** (contas falsas não rendem nada), e rende os emblemas *Recrutador* (1 amigo) e *Multiplicador* (3 amigos). O doador vê só números, nunca o nome de quem convidou
 - 🩸 **Quem doa por mim (campanhas de reposição)** — quando alguém é internado e o hospital pede reposição de sangue, a família deixa de pedir doador por mensagem solta: o hospital abre uma campanha com **link público**, meta de bolsas e prazo; cada amigo **promete uma data** (só datas em que estará apto pelo intervalo entre doações) e a doação só entra na meta quando o **hospital confirma**, já registrada na cadeia de confiança. O paciente aparece só por apelido, e o hospital vê nome e telefone apenas de quem prometeu naquela campanha. Quem doa ganha o emblema *Solidário* e um convite para continuar doando
 - 💝 **Apadrinhamento de pacientes** — quem precisa de transfusões regulares (anemia falciforme, talassemia...) é cadastrado pelo hospital com um **apelido** (nunca o nome), tipo sanguíneo e frequência; doadores compatíveis viram padrinhos (até 3 pacientes por pessoa), acompanham a meta e ganham o emblema *Padrinho*. O hospital chama por email só os padrinhos **aptos hoje** (no máximo uma vez por semana por paciente) e nunca vê quem são
-- 📰 **Canal de notícias por estado** — página pública com os 27 estados ordenados do mais grave ao mais tranquilo: avisos dos hemocentros e da imprensa (resumo próprio + link da matéria original, com nível e data de referência) somados aos **sinais do Hemare** calculados na hora com os hospitais aprovados do estado (estoque crítico, pedidos urgentes, campanhas de reposição, pacientes procurando padrinhos). O administrador cadastra e remove avisos pelo painel
+- 📰 **Feed de notícias (estilo Google Notícias)** — a aba *Notícias* mostra, sempre atualizadas, as reportagens sobre **doação de sangue, estoques e urgências, campanhas, órgãos/medula/leite e saúde**: destaques em grade com foto, lista logo abaixo, "há 2 horas", busca, filtro por assunto e por estado e "ver mais". O servidor lê de hora em hora os **feeds RSS** de fontes públicas e de hemocentros (Agência Brasil, Agência Câmara e Senado, Fiocruz, hemocentro da USP de Ribeirão Preto, Agência Minas), descarta o que não interessa, junta repetidas e guarda só **título, trecho curto, imagem de divulgação e link da matéria original**, sempre com o nome da fonte; o clique abre no site de quem publicou. Por que não o Google Notícias? O feed dele proíbe uso fora de leitor pessoal. Veículos comerciais (g1) ficam **desligados** até alguém conferir os termos. O administrador vê quais fontes responderam, coleta na hora e esconde notícias. Pesquisa, fontes e como acrescentar uma: `docs/NOTICIAS.md`
+- 🗺️ **Panorama por estado** (segunda aba de *Notícias*) — os 27 estados ordenados do mais grave ao mais tranquilo: avisos dos hemocentros e da imprensa (resumo próprio + link da matéria original, com nível e data de referência) somados aos **sinais do Hemare** calculados na hora com os hospitais aprovados do estado (estoque crítico, pedidos urgentes, campanhas de reposição, pacientes procurando padrinhos). O administrador cadastra e remove avisos pelo painel
 - 🏙️ **Placar das cidades** — página pública com as cidades que mais doam, só com números agregados (cidades com menos de 3 doadores não aparecem, por privacidade)
 - 📚 Conteúdo educativo — guia completo da doação, 16 mitos e verdades e os direitos do doador (folga na CLT, etc.)
 
@@ -104,7 +105,8 @@ Hemare/
 ├── docs/
 │   ├── API.md             # todas as rotas e o CRUD de cada recurso (gerado do código)
 │   ├── openapi.json       # a mesma API em OpenAPI 3 (abra no Swagger Editor)
-│   └── ARQUITETURA.md     # revisão arquitetural, REST, login e roteiro de melhorias
+│   ├── ARQUITETURA.md     # revisão arquitetural, REST, login e roteiro de melhorias
+│   └── NOTICIAS.md        # feed de notícias: pesquisa, fontes, licenças e como acrescentar uma
 └── .github/workflows/     # CI: testes, lint e build a cada PR
 ```
 
@@ -123,6 +125,8 @@ npm install
 #   JWT_SECRET=uma_chave_secreta
 #   RESEND_API_KEY=sua_chave_do_resend
 #   FRONTEND_URL=https://seu-site   (opcional: libera só esse site no CORS e põe links nos e-mails)
+#   COLETAR_NOTICIAS=nao            (opcional: desliga a coleta automática do feed de notícias)
+#   NOTICIAS_FONTES_OPCIONAIS=g1-saude,g1   (opcional: liga fontes comerciais, só depois de conferir os termos delas)
 # O servidor NÃO liga sem JWT_SECRET (mínimo de 8 caracteres).
 npm run migrar                 # monta o banco inteiro, na ordem certa (só o que ainda não foi feito)
 node db/tornar-admin.js seu@email.com  # torna uma conta já cadastrada administrador
@@ -174,6 +178,8 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Programa "Traga um amigo" (link de convite e emblemas de recrutador)
 - [x] Campanhas de reposição com link, meta e promessas de doação ("Quem doa por mim")
 - [x] Canal de notícias por estado, com panorama dos 27 estados e sinais dos hospitais
+- [x] Feed de notícias atualizado de hora em hora (RSS de fontes públicas), no estilo Google Notícias
+- [ ] Mais fontes: hemocentros estaduais que publiquem RSS (a lista está em `backend/regras/fontes.js`)
 - [x] Perfil completo do doador com foto, carteirinha digital e direitos da LGPD
 - [x] Rede de sangue raro com confirmação de laudo e chamados que protegem os dados do doador
 - [x] Ficha PcD: orientação de triagem para pessoas com deficiência, baseada na norma federal

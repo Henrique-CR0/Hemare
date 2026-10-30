@@ -46,7 +46,7 @@ checar('Nenhuma rota que escreve (POST/PUT/PATCH/DELETE) ficou publica sem quere
 // O que o visitante (sem conta) pode ler e uma DECISAO, escrita aqui e em docs/ACESSO.md. Se alguem deixar uma rota nova
 // publica sem querer (ou fechar uma que deveria ser aberta), este teste falha e obriga a decidir de caso pensado.
 const PUBLICAS_ESPERADAS = [
-    'GET /', 'GET /saude', 'GET /locais', 'GET /noticias', 'GET /clima', 'GET /doador/placar', 'GET /hospital/estoque-publico',
+    'GET /', 'GET /saude', 'GET /locais', 'GET /noticias', 'GET /noticias/feed', 'GET /clima', 'GET /doador/placar', 'GET /hospital/estoque-publico',
     'GET /campanha/:codigo', 'GET /hospital/cadeia/verificar', 'POST /auth/cadastro', 'POST /auth/login', 'POST /recuperacao/pedir', 'POST /recuperacao/redefinir'
 ].sort();
 const publicas = rotas.filter((r) => r.acesso === 'público').map((r) => r.verbo.toUpperCase() + ' ' + r.caminho).sort();
