@@ -4,6 +4,10 @@
 const { TIPOS_SANGUINEOS } = require('./perfil');
 
 const URGENCIAS = ['estavel', 'alerta', 'critico', 'emergencia'];
+// "normal" era o valor padrao antigo da API e ainda existe em linhas antigas do banco: vale como "estavel".
+function normalizarUrgencia(valor) {
+    return valor === 'normal' ? 'estavel' : valor;
+}
 const STATUS = ['aberta', 'atendida', 'cancelada'];
 const TIPOS_DOACAO = ['sangue', 'plaquetas', 'plasma'];
 
@@ -14,7 +18,7 @@ const TIPOS_PEDIDO = TIPOS_SANGUINEOS.filter((t) => /^(O|A|B|AB)[+-]$/.test(t));
 function validarNecessidade(corpo) {
     const c = corpo || {};
     if (!TIPOS_PEDIDO.includes(c.tipoSanguineo)) return { erro: 'Escolha o tipo sanguíneo necessário (O+, O-, A+, A-, B+, B-, AB+ ou AB-).' };
-    const urgencia = c.urgencia === undefined || c.urgencia === '' ? 'estavel' : c.urgencia;
+    const urgencia = c.urgencia === undefined || c.urgencia === '' ? 'estavel' : normalizarUrgencia(c.urgencia);
     if (!URGENCIAS.includes(urgencia)) return { erro: 'Urgência inválida. Use estável, alerta, crítico ou emergência.' };
     const tipoDoacao = c.tipoDoacao === undefined || c.tipoDoacao === '' ? 'sangue' : c.tipoDoacao;
     if (!TIPOS_DOACAO.includes(tipoDoacao)) return { erro: 'Tipo de doação inválido. Use sangue, plaquetas ou plasma.' };
@@ -31,8 +35,9 @@ function validarAtualizacao(corpo) {
         mudancas.status = c.status;
     }
     if (c.urgencia !== undefined) {
-        if (!URGENCIAS.includes(c.urgencia)) return { erro: 'Urgência inválida. Use estável, alerta, crítico ou emergência.' };
-        mudancas.urgencia = c.urgencia;
+        const urgencia = normalizarUrgencia(c.urgencia);
+        if (!URGENCIAS.includes(urgencia)) return { erro: 'Urgência inválida. Use estável, alerta, crítico ou emergência.' };
+        mudancas.urgencia = urgencia;
     }
     if (Object.keys(mudancas).length === 0) return { erro: 'Informe o que mudar: status ou urgência.' };
     return { mudancas };

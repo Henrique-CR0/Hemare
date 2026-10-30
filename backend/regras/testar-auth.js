@@ -98,6 +98,8 @@ verificar('mensagem curta', A.mensagemDeEspera(20), 'Muitas tentativas. Tente de
 console.log('--- Necessidade de sangue ---');
 verificar('publicar valida', N.validarNecessidade({ tipoSanguineo: 'O-', urgencia: 'critico' }).necessidade, { tipoSanguineo: 'O-', tipoDoacao: 'sangue', urgencia: 'critico' });
 verificar('urgencia padrao e estavel', N.validarNecessidade({ tipoSanguineo: 'A+' }).necessidade.urgencia, 'estavel');
+verificar('"normal" (valor antigo da API) vale como estavel', N.validarNecessidade({ tipoSanguineo: 'O+', urgencia: 'normal' }).necessidade.urgencia, 'estavel');
+verificar('"normal" tambem vale ao atualizar', N.validarAtualizacao({ urgencia: 'normal' }).mudancas, { urgencia: 'estavel' });
 verificar('tipo inventado', temErro(N.validarNecessidade({ tipoSanguineo: 'Z+' })), true);
 verificar('sem tipo', temErro(N.validarNecessidade({})), true);
 verificar('Rh nulo tem rede propria: nao e pedido comum', temErro(N.validarNecessidade({ tipoSanguineo: 'Rh nulo (sangue dourado)' })), true);
