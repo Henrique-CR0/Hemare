@@ -39,6 +39,7 @@ function vagaLivre(v, agora) {
 
 // ===================== CONSULTA (doador ou qualquer pessoa logada) =====================
 
+// HOSPITAIS aprovados que tem horario livre para agendar (com o proximo horario).
 router.get('/hospitais', autenticar, async (req, res) => {
     try {
         const agora = new Date();
@@ -69,6 +70,7 @@ router.get('/hospitais', autenticar, async (req, res) => {
     }
 });
 
+// HORARIOS livres de um hospital, agrupados por dia.
 router.get('/hospitais/:id/vagas', autenticar, async (req, res) => {
     const id = idValido(req.params.id);
     if (!id) return res.status(400).json({ erro: 'Hospital inválido.' });
@@ -100,6 +102,7 @@ router.get('/hospitais/:id/vagas', autenticar, async (req, res) => {
 
 // ===================== HOSPITAL: vagas =====================
 
+// HOSPITAL: abre horarios em lote (periodo, dias da semana, horarios e capacidade).
 router.post('/vagas', autenticar, exigirHospitalAprovado, async (req, res) => {
     const { erro, vagas } = A.validarLote(req.body, A.hojeNoBrasil(new Date()));
     if (erro) return res.status(400).json({ erro });
@@ -122,6 +125,7 @@ router.post('/vagas', autenticar, exigirHospitalAprovado, async (req, res) => {
     }
 });
 
+// HOSPITAL: seus horarios abertos, com quantas vagas ja foram reservadas (?de=&ate=).
 router.get('/vagas', autenticar, exigirHospitalAprovado, async (req, res) => {
     const hoje = A.hojeNoBrasil(new Date());
     const de = req.query.de === undefined ? hoje : req.query.de;
@@ -137,6 +141,7 @@ router.get('/vagas', autenticar, exigirHospitalAprovado, async (req, res) => {
     }
 });
 
+// HOSPITAL: muda a capacidade de um horario (nunca abaixo de quem ja agendou).
 router.patch('/vagas/:id', autenticar, exigirHospitalAprovado, async (req, res) => {
     const id = idValido(req.params.id);
     if (!id) return res.status(400).json({ erro: 'Vaga inválida.' });
@@ -157,6 +162,7 @@ router.patch('/vagas/:id', autenticar, exigirHospitalAprovado, async (req, res) 
     }
 });
 
+// HOSPITAL: apaga um horario vazio e sem historico (204).
 router.delete('/vagas/:id', autenticar, exigirHospitalAprovado, async (req, res) => {
     const id = idValido(req.params.id);
     if (!id) return res.status(400).json({ erro: 'Vaga inválida.' });
@@ -176,6 +182,7 @@ router.delete('/vagas/:id', autenticar, exigirHospitalAprovado, async (req, res)
 
 // ===================== HOSPITAL: quem agendou =====================
 
+// HOSPITAL: quem agendou para um dia (?data=AAAA-MM-DD, padrao hoje): so nome, tipo sanguineo e horario.
 router.get('/agendamentos', autenticar, exigirHospitalAprovado, async (req, res) => {
     const data = req.query.data === undefined ? A.hojeNoBrasil(new Date()) : req.query.data;
     if (!dataValida(data)) return res.status(400).json({ erro: 'Use a data no formato AAAA-MM-DD.' });
@@ -200,6 +207,7 @@ router.get('/agendamentos', autenticar, exigirHospitalAprovado, async (req, res)
     }
 });
 
+// HOSPITAL: marca "compareceu" (so no dia; a doacao entra na cadeia de confianca), "faltou" ou "cancelado".
 router.patch('/agendamentos/:id', autenticar, exigirHospitalAprovado, async (req, res) => {
     const id = idValido(req.params.id);
     const novoStatus = req.body && req.body.status;

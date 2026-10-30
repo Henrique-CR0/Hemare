@@ -46,12 +46,14 @@ const MIGRACOES_BASE = [
 
 function dormir(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
-function criarAmbiente(porta) {
+// opcoes.doZero: banco totalmente vazio (sem o esquema base) para provar que a lista de db/ordem.js monta o sistema do zero.
+function criarAmbiente(porta, opcoes) {
+    const doZero = !!(opcoes && opcoes.doZero);
     process.env.JWT_SECRET = 'segredo-de-teste';
     process.env.PORT = String(porta);
 
     const db = newDb();
-    db.public.none(ESQUEMA_BASE);
+    if (!doZero) db.public.none(ESQUEMA_BASE);
     const { Pool } = db.adapters.createPg();
     const pool = new Pool();
 
@@ -91,7 +93,7 @@ function criarAmbiente(porta) {
     }
 
     async function iniciar(migracoes) {
-        for (const nome of [...MIGRACOES_BASE, ...(migracoes || [])]) await rodarMigracao(nome);
+        for (const nome of [...(doZero ? [] : MIGRACOES_BASE), ...(migracoes || [])]) await rodarMigracao(nome);
         const log = console.log;
         console.log = () => {};
         require(path.join(BACKEND, 'servidor.js'));

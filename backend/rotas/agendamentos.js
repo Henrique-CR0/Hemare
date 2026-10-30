@@ -102,6 +102,7 @@ async function dadosDoEmail(usuarioId, agendamentoId) {
         endereco: [l.endereco, l.numero, l.bairro].filter(Boolean).join(', ') };
 }
 
+// DOADOR: agenda um horario (vagaId). Responde 201 com Location; 409 se lotou ou se ja tem agendamento ativo.
 router.post('/', async (req, res) => {
     const vagaId = idValido(req.body && req.body.vagaId);
     if (!vagaId) return res.status(400).json({ erro: 'Informe o horário (vagaId).' });
@@ -144,6 +145,7 @@ router.post('/', async (req, res) => {
     }
 });
 
+// DOADOR: seus agendamentos (?status=agendado|compareceu|faltou|cancelado).
 router.get('/', async (req, res) => {
     const status = req.query.status;
     if (status !== undefined && !A.STATUS.includes(status)) return res.status(400).json({ erro: 'Status inválido.' });
@@ -157,6 +159,7 @@ router.get('/', async (req, res) => {
     }
 });
 
+// DOADOR: um agendamento seu (404 se for de outra pessoa).
 router.get('/:id', async (req, res) => {
     const id = idValido(req.params.id);
     if (!id) return res.status(400).json({ erro: 'Agendamento inválido.' });
@@ -170,6 +173,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// DOADOR: reagenda para outro horario (vagaId); o antigo so e liberado quando o novo e confirmado.
 router.patch('/:id', async (req, res) => {
     const id = idValido(req.params.id);
     const novaVagaId = idValido(req.body && req.body.vagaId);
@@ -213,6 +217,7 @@ router.patch('/:id', async (req, res) => {
     }
 });
 
+// DOADOR: cancela o agendamento e libera a vaga (204).
 router.delete('/:id', async (req, res) => {
     const id = idValido(req.params.id);
     if (!id) return res.status(400).json({ erro: 'Agendamento inválido.' });

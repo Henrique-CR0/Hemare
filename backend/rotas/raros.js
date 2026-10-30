@@ -93,6 +93,7 @@ async function montarMinhaParticipacao(usuarioId) {
     };
 }
 
+// DOADOR: sua participacao na rede de sangue raro, o codigo para o hospital conferir o laudo e os chamados abertos.
 router.get('/eu', async (req, res) => {
     try {
         const m = await montarMinhaParticipacao(req.usuario.id);
@@ -195,6 +196,7 @@ router.get('/codigo/:codigo', autenticar, exigirHospitalAprovado, async (req, re
     }
 });
 
+// HOSPITAL: confirma o fenotipo do doador depois de conferir o laudo pessoalmente.
 router.post('/codigo/:codigo/confirmar', autenticar, exigirHospitalAprovado, async (req, res) => {
     const codigo = normalizarCodigo(req.params.codigo);
     if (!codigo) return res.status(404).json({ erro: 'Código não encontrado.' });
@@ -350,6 +352,7 @@ router.post('/pedidos/:id/confirmar-doacao', autenticar, exigirHospitalAprovado,
     }
 });
 
+// HOSPITAL: encerra o pedido de emergencia (os contatos voltam a ficar protegidos).
 router.post('/pedidos/:id/encerrar', autenticar, exigirHospitalAprovado, async (req, res) => {
     const id = idValido(req.params.id);
     if (!id) return res.status(400).json({ erro: 'Pedido inválido.' });

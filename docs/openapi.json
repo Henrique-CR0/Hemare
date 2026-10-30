@@ -1,0 +1,3078 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API do Hemare",
+    "version": "1.0.0",
+    "description": "Gerado automaticamente por backend/scripts/api.js. Veja docs/API.md."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/admin/hospitais": {
+      "get": {
+        "tags": [
+          "Administrador"
+        ],
+        "summary": "LISTAR hospitais para verificacao (?status=pendente|aprovado|recusado|todos).",
+        "description": "Acesso: admin.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin/hospitais/{id}/aprovar": {
+      "post": {
+        "tags": [
+          "Administrador"
+        ],
+        "summary": "APROVAR um hospital.",
+        "description": "Acesso: admin.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/hospitais/{id}/recusar": {
+      "post": {
+        "tags": [
+          "Administrador"
+        ],
+        "summary": "RECUSAR (ou revogar a aprovacao de) um hospital, com motivo obrigatorio.",
+        "description": "Acesso: admin.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agenda/agendamentos": {
+      "get": {
+        "tags": [
+          "Agenda do hospital"
+        ],
+        "summary": "HOSPITAL: quem agendou para um dia (?data=AAAA-MM-DD, padrao hoje): so nome, tipo sanguineo e horario.",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/agenda/agendamentos/{id}": {
+      "patch": {
+        "tags": [
+          "Agenda do hospital"
+        ],
+        "summary": "HOSPITAL: marca \"compareceu\" (so no dia; a doacao entra na cadeia de confianca), \"faltou\" ou \"cancelado\".",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agenda/hospitais": {
+      "get": {
+        "tags": [
+          "Agenda do hospital"
+        ],
+        "summary": "HOSPITAIS aprovados que tem horario livre para agendar (com o proximo horario).",
+        "description": "Acesso: logado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/agenda/hospitais/{id}/vagas": {
+      "get": {
+        "tags": [
+          "Agenda do hospital"
+        ],
+        "summary": "HORARIOS livres de um hospital, agrupados por dia.",
+        "description": "Acesso: logado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/agenda/vagas": {
+      "get": {
+        "tags": [
+          "Agenda do hospital"
+        ],
+        "summary": "HOSPITAL: seus horarios abertos, com quantas vagas ja foram reservadas (?de=&ate=).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Agenda do hospital"
+        ],
+        "summary": "HOSPITAL: abre horarios em lote (periodo, dias da semana, horarios e capacidade).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agenda/vagas/{id}": {
+      "patch": {
+        "tags": [
+          "Agenda do hospital"
+        ],
+        "summary": "HOSPITAL: muda a capacidade de um horario (nunca abaixo de quem ja agendou).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Agenda do hospital"
+        ],
+        "summary": "HOSPITAL: apaga um horario vazio e sem historico (204).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "204": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/agendamentos": {
+      "get": {
+        "tags": [
+          "Agendamentos do doador"
+        ],
+        "summary": "DOADOR: seus agendamentos (?status=agendado|compareceu|faltou|cancelado).",
+        "description": "Acesso: doador.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Agendamentos do doador"
+        ],
+        "summary": "DOADOR: agenda um horario (vagaId). Responde 201 com Location; 409 se lotou ou se ja tem agendamento ativo.",
+        "description": "Acesso: doador.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agendamentos/{id}": {
+      "get": {
+        "tags": [
+          "Agendamentos do doador"
+        ],
+        "summary": "DOADOR: um agendamento seu (404 se for de outra pessoa).",
+        "description": "Acesso: doador.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Agendamentos do doador"
+        ],
+        "summary": "DOADOR: reagenda para outro horario (vagaId); o antigo so e liberado quando o novo e confirmado.",
+        "description": "Acesso: doador.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Agendamentos do doador"
+        ],
+        "summary": "DOADOR: cancela o agendamento e libera a vaga (204).",
+        "description": "Acesso: doador.",
+        "responses": {
+          "204": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/apadrinhamento": {
+      "get": {
+        "tags": [
+          "Apadrinhamento"
+        ],
+        "summary": "PUBLICO: pacientes que estao procurando padrinhos (so de hospitais aprovados).",
+        "description": "Acesso: público.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Apadrinhamento"
+        ],
+        "summary": "HOSPITAL: cadastra um paciente que precisa de padrinhos.",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apadrinhamento/{id}/apadrinhar": {
+      "post": {
+        "tags": [
+          "Apadrinhamento"
+        ],
+        "summary": "DOADOR: vira padrinho de um paciente.",
+        "description": "Acesso: logado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Apadrinhamento"
+        ],
+        "summary": "DOADOR: deixa de ser padrinho (a qualquer momento, sem explicacao).",
+        "description": "Acesso: logado.",
+        "responses": {
+          "204": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/apadrinhamento/{id}/chamar": {
+      "post": {
+        "tags": [
+          "Apadrinhamento"
+        ],
+        "summary": "HOSPITAL: chama por email os padrinhos deste paciente que ja podem doar (no maximo 1 vez por semana).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apadrinhamento/{id}/encerrar": {
+      "post": {
+        "tags": [
+          "Apadrinhamento"
+        ],
+        "summary": "HOSPITAL: encerra o pedido (o paciente sai da lista publica).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apadrinhamento/meus-afilhados": {
+      "get": {
+        "tags": [
+          "Apadrinhamento"
+        ],
+        "summary": "DOADOR: pacientes que ele apadrinha e se ja pode doar.",
+        "description": "Acesso: logado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/apadrinhamento/meus-casos": {
+      "get": {
+        "tags": [
+          "Apadrinhamento"
+        ],
+        "summary": "HOSPITAL: seus pacientes ativos, com quantos padrinhos e se ja pode chamar de novo.",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/auth/cadastro": {
+      "post": {
+        "tags": [
+          "Conta e sessão"
+        ],
+        "summary": "CADASTRO: cria apenas a conta (usuario). O perfil de doador e preenchido depois do login.",
+        "description": "Acesso: público.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/eu": {
+      "get": {
+        "tags": [
+          "Conta e sessão"
+        ],
+        "summary": "Quem esta logado (e a conta ainda existe). O site chama ao abrir: e o \"login automatico\".",
+        "description": "Acesso: logado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Conta e sessão"
+        ],
+        "summary": "Muda o nome da conta (o e-mail nao muda por aqui: exigiria confirmar o novo endereco).",
+        "description": "Acesso: logado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Conta e sessão"
+        ],
+        "summary": "LOGIN: confere email e senha; se baterem, devolve um token JWT.",
+        "description": "Acesso: público.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/renovar": {
+      "post": {
+        "tags": [
+          "Conta e sessão"
+        ],
+        "summary": "Sessao deslizante: troca o token por outro novo (com a mesma \"vida\") enquanto a pessoa usa o site.",
+        "description": "Acesso: logado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/sair-de-todos": {
+      "post": {
+        "tags": [
+          "Conta e sessão"
+        ],
+        "summary": "\"Sair de todos os aparelhos\": encerra todas as sessoes, inclusive esta.",
+        "description": "Acesso: logado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/senha": {
+      "put": {
+        "tags": [
+          "Conta e sessão"
+        ],
+        "summary": "Trocar a senha: pede a atual, valida a nova e encerra as outras sessoes (esta continua, com um token novo).",
+        "description": "Acesso: logado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campanha": {
+      "post": {
+        "tags": [
+          "Campanhas de reposição"
+        ],
+        "summary": "HOSPITAL: abre uma campanha para um paciente internado.",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campanha/{codigo}": {
+      "get": {
+        "tags": [
+          "Campanhas de reposição"
+        ],
+        "summary": "PUBLICO: pagina da campanha (quem recebe o link ve isto, sem precisar de conta).",
+        "description": "Acesso: público.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "codigo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/campanha/{codigo}/confirmar": {
+      "post": {
+        "tags": [
+          "Campanhas de reposição"
+        ],
+        "summary": "HOSPITAL: confirma a doacao de quem prometeu (entra na cadeia de confianca e conta para a campanha).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "codigo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campanha/{codigo}/encerrar": {
+      "post": {
+        "tags": [
+          "Campanhas de reposição"
+        ],
+        "summary": "HOSPITAL: encerra a campanha (a pagina publica passa a mostrar \"encerrada\").",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "codigo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campanha/{codigo}/prometer": {
+      "post": {
+        "tags": [
+          "Campanhas de reposição"
+        ],
+        "summary": "DOADOR: promete doar em uma data (o hospital passa a ver seu nome e telefone so para esta campanha).",
+        "description": "Acesso: logado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "codigo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Campanhas de reposição"
+        ],
+        "summary": "DOADOR: desiste da promessa (so enquanto o hospital nao confirmou a doacao).",
+        "description": "Acesso: logado.",
+        "responses": {
+          "204": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "codigo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/campanha/minhas": {
+      "get": {
+        "tags": [
+          "Campanhas de reposição"
+        ],
+        "summary": "HOSPITAL: suas campanhas ativas, com quem prometeu doar (nome e telefone, que o doador autorizou ao prometer).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/campanha/minhas-promessas": {
+      "get": {
+        "tags": [
+          "Campanhas de reposição"
+        ],
+        "summary": "DOADOR: campanhas em que prometeu doar.",
+        "description": "Acesso: logado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/clima": {
+      "get": {
+        "tags": [
+          "Previsão do sangue"
+        ],
+        "summary": "PREVISAO DO SANGUE: o \"clima\" de cada cidade pelo pior nivel de estoque dos hospitais aprovados.",
+        "description": "Acesso: público.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        }
+      }
+    },
+    "/doador/conquistas": {
+      "get": {
+        "tags": [
+          "Doador"
+        ],
+        "summary": "CONQUISTAS: nivel, emblemas e quando o doador logado pode doar de novo (gamificacao).",
+        "description": "Acesso: logado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/doador/indicacao": {
+      "get": {
+        "tags": [
+          "Doador"
+        ],
+        "summary": "TRAGA UM AMIGO: codigo de convite do doador (criado na primeira vez) e quantos amigos vieram. So devolve numeros: nunca o nome de quem foi convidado.",
+        "description": "Acesso: doador.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/doador/lembrete": {
+      "post": {
+        "tags": [
+          "Doador"
+        ],
+        "summary": "LEMBRETE DE RETORNO: o doador liga ou desliga o email \"voce ja pode doar de novo\" (opt-in).",
+        "description": "Acesso: logado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/doador/perfil": {
+      "post": {
+        "tags": [
+          "Doador"
+        ],
+        "summary": "COMPLETAR PERFIL: salva os dados do doador logado.",
+        "description": "Acesso: logado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/doador/placar": {
+      "get": {
+        "tags": [
+          "Doador"
+        ],
+        "summary": "PUBLICO: placar das cidades que mais doam (so numeros agregados, sem dados pessoais).",
+        "description": "Acesso: público.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        }
+      }
+    },
+    "/historico": {
+      "get": {
+        "tags": [
+          "Minhas doações"
+        ],
+        "summary": "DOADOR: \"Minhas doacoes\": total, vidas, quando fica apto, limite do ano e linha do tempo com selo da cadeia.",
+        "description": "Acesso: doador.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/hospital/cadeia/verificar": {
+      "get": {
+        "tags": [
+          "Hospital"
+        ],
+        "summary": "PUBLICO: verifica a integridade de toda a cadeia de doacoes (auditoria).",
+        "description": "Acesso: público.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        }
+      }
+    },
+    "/hospital/confirmar-doacao": {
+      "post": {
+        "tags": [
+          "Hospital"
+        ],
+        "summary": "CONFIRMAR DOACAO: registra a doacao com hash encadeado (cadeia de confianca / auditabilidade).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hospital/estoque": {
+      "get": {
+        "tags": [
+          "Hospital"
+        ],
+        "summary": "LISTAR o estoque do hospital logado.",
+        "description": "Acesso: logado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Hospital"
+        ],
+        "summary": "DEFINIR/ATUALIZAR o nivel de estoque de um tipo sanguineo (hospital logado).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hospital/estoque-publico": {
+      "get": {
+        "tags": [
+          "Hospital"
+        ],
+        "summary": "PUBLICO: lista o estoque de todos os hospitais (para o termometro publico).",
+        "description": "Acesso: público.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        }
+      }
+    },
+    "/hospital/match/{necessidadeId}": {
+      "get": {
+        "tags": [
+          "Hospital"
+        ],
+        "summary": "MATCH: dado o id de uma necessidade, acha os doadores compativeis. So o hospital aprovado DONO da necessidade ve os doadores (e o contato de quem consentiu).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "necessidadeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/hospital/meus-dados": {
+      "get": {
+        "tags": [
+          "Hospital"
+        ],
+        "summary": "DADOS do hospital logado (nome, cidade, status de verificacao).",
+        "description": "Acesso: logado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/hospital/necessidade": {
+      "post": {
+        "tags": [
+          "Hospital"
+        ],
+        "summary": "PUBLICAR uma necessidade (o hospital pede um tipo sanguineo).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hospital/necessidades": {
+      "get": {
+        "tags": [
+          "Hospital"
+        ],
+        "summary": "LISTAR as necessidades do hospital logado.",
+        "description": "Acesso: logado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/hospital/necessidades/{id}": {
+      "patch": {
+        "tags": [
+          "Hospital"
+        ],
+        "summary": "ATUALIZAR uma necessidade: fechar como \"atendida\" ou \"cancelada\", reabrir ou mudar a urgencia. Fechada, ela deixa de contar como urgencia no canal de noticias.",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Hospital"
+        ],
+        "summary": "APAGAR uma necessidade do proprio hospital (de vez). Para so tirar do ar, prefira marcar como \"cancelada\".",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "204": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/hospital/perfil": {
+      "post": {
+        "tags": [
+          "Hospital"
+        ],
+        "summary": "COMPLETAR/ATUALIZAR PERFIL do hospital (dados completos).",
+        "description": "Acesso: hospital.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/locais": {
+      "get": {
+        "tags": [
+          "Locais de doação"
+        ],
+        "summary": "LISTAR locais. Aceita ?cidade=Recife para filtrar.",
+        "description": "Acesso: público.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        }
+      }
+    },
+    "/noticias": {
+      "get": {
+        "tags": [
+          "Canal de notícias"
+        ],
+        "summary": "PUBLICO: panorama dos 27 estados, do mais grave para o mais tranquilo.",
+        "description": "Acesso: público.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Canal de notícias"
+        ],
+        "summary": "ADMIN: cadastra um aviso.",
+        "description": "Acesso: admin.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/noticias/{id}": {
+      "put": {
+        "tags": [
+          "Canal de notícias"
+        ],
+        "summary": "ADMIN: corrige um aviso (substitui os campos, como no cadastro).",
+        "description": "Acesso: admin.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Canal de notícias"
+        ],
+        "summary": "ADMIN: remove um aviso.",
+        "description": "Acesso: admin.",
+        "responses": {
+          "204": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/pcd/eu": {
+      "get": {
+        "tags": [
+          "Ficha PcD"
+        ],
+        "summary": "DOADOR: a propria declaracao de pessoa com deficiencia (so a pessoa ve; nunca um hospital).",
+        "description": "Acesso: doador.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Ficha PcD"
+        ],
+        "summary": "DOADOR: declara (com consentimento) ou deixa de declarar a condicao de PcD e o que ajuda no atendimento.",
+        "description": "Acesso: doador.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pcd/ficha": {
+      "post": {
+        "tags": [
+          "Ficha PcD"
+        ],
+        "summary": "PUBLICO: ficha de orientacao para a triagem de PcD. Calcula na hora e nao guarda nada.",
+        "description": "Acesso: público.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pcd/guia": {
+      "get": {
+        "tags": [
+          "Ficha PcD"
+        ],
+        "summary": "PUBLICO: as perguntas e opcoes da ficha de PcD.",
+        "description": "Acesso: público.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        }
+      }
+    },
+    "/perfil": {
+      "get": {
+        "tags": [
+          "Perfil do doador (LGPD)"
+        ],
+        "summary": "VER o proprio perfil.",
+        "description": "Acesso: doador.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Perfil do doador (LGPD)"
+        ],
+        "summary": "EDITAR o perfil (nome, dados pessoais, foto, privacidade).",
+        "description": "Acesso: doador.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/perfil/excluir": {
+      "post": {
+        "tags": [
+          "Perfil do doador (LGPD)"
+        ],
+        "summary": "EXCLUIR a conta (direito de eliminacao da LGPD). Pede a senha. Os dados pessoais sao apagados; as doacoes ja confirmadas ficam SEM nenhum dado pessoal, porque fazem parte da cadeia de confianca e nao podem sumir.",
+        "description": "Acesso: doador.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/perfil/exportar": {
+      "get": {
+        "tags": [
+          "Perfil do doador (LGPD)"
+        ],
+        "summary": "BAIXAR os proprios dados (direito de acesso da LGPD): um arquivo JSON com tudo que o Hemare guarda da pessoa.",
+        "description": "Acesso: doador.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/radar/aptidao": {
+      "get": {
+        "tags": [
+          "Radar preditivo"
+        ],
+        "summary": "RADAR PREDITIVO: quantos doadores de cada tipo estao aptos agora, em ate 7 dias e em ate 30 dias (so numeros).",
+        "description": "Acesso: logado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "Raiz"
+        ],
+        "summary": "Rota de teste: quando alguem acessar a raiz, responde uma mensagem.",
+        "description": "Acesso: público.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        }
+      }
+    },
+    "/raros/codigo/{codigo}": {
+      "get": {
+        "tags": [
+          "Rede de sangue raro"
+        ],
+        "summary": "Conferir o laudo pessoalmente: o doador mostra o codigo; o hospital ve so o primeiro nome e o fenotipo declarado.",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "codigo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/raros/codigo/{codigo}/confirmar": {
+      "post": {
+        "tags": [
+          "Rede de sangue raro"
+        ],
+        "summary": "HOSPITAL: confirma o fenotipo do doador depois de conferir o laudo pessoalmente.",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "codigo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/raros/convocacoes/{pedidoId}/responder": {
+      "post": {
+        "tags": [
+          "Rede de sangue raro"
+        ],
+        "summary": "Responder a um chamado: \"posso ajudar\" libera nome e telefone so para o hospital deste pedido.",
+        "description": "Acesso: doador.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/raros/eu": {
+      "get": {
+        "tags": [
+          "Rede de sangue raro"
+        ],
+        "summary": "DOADOR: sua participacao na rede de sangue raro, o codigo para o hospital conferir o laudo e os chamados abertos.",
+        "description": "Acesso: doador.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Rede de sangue raro"
+        ],
+        "summary": "Entrar, mudar ou sair da rede.",
+        "description": "Acesso: doador.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/raros/pedidos": {
+      "get": {
+        "tags": [
+          "Rede de sangue raro"
+        ],
+        "summary": "Pedidos do hospital. Nome e telefone so aparecem de quem respondeu \"disponivel\", e so enquanto o pedido esta aberto.",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Rede de sangue raro"
+        ],
+        "summary": "Abre o pedido e chama os doadores compativeis.",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/raros/pedidos/{id}/confirmar-doacao": {
+      "post": {
+        "tags": [
+          "Rede de sangue raro"
+        ],
+        "summary": "Confirma a doacao de quem respondeu \"posso ajudar\" (entra na cadeia de confianca).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/raros/pedidos/{id}/encerrar": {
+      "post": {
+        "tags": [
+          "Rede de sangue raro"
+        ],
+        "summary": "HOSPITAL: encerra o pedido de emergencia (os contatos voltam a ficar protegidos).",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/raros/previa": {
+      "get": {
+        "tags": [
+          "Rede de sangue raro"
+        ],
+        "summary": "Previa: so numeros (nunca quem sao). Ajuda o hospital a decidir antes de chamar.",
+        "description": "Acesso: hospital aprovado.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/recuperacao/pedir": {
+      "post": {
+        "tags": [
+          "Recuperação de senha"
+        ],
+        "summary": "PEDIR RECUPERACAO: gera um codigo, salva e envia por email.",
+        "description": "Acesso: público.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recuperacao/redefinir": {
+      "post": {
+        "tags": [
+          "Recuperação de senha"
+        ],
+        "summary": "REDEFINIR: confere o codigo e troca a senha.",
+        "description": "Acesso: público.",
+        "responses": {
+          "201": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/saude": {
+      "get": {
+        "tags": [
+          "Saúde"
+        ],
+        "summary": "Saude da API (para monitoramento e para conferir que o servidor esta de pe).",
+        "description": "Acesso: público.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        }
+      }
+    }
+  }
+}

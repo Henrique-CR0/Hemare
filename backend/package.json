@@ -8,7 +8,9 @@
     "test:regras": "node testes/rodar.js regras",
     "test:e2e": "node testes/rodar.js e2e",
     "start": "node servidor.js",
-    "servir-teste": "node testes/servir.js"
+    "servir-teste": "node testes/servir.js",
+    "migrar": "node db/migrar.js",
+    "docs": "node scripts/api.js"
   },
   "keywords": [],
   "author": "",

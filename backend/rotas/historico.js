@@ -23,6 +23,7 @@ async function opcional(sql, parametros) {
     }
 }
 
+// DOADOR: "Minhas doacoes": total, vidas, quando fica apto, limite do ano e linha do tempo com selo da cadeia.
 router.get('/', async (req, res) => {
     try {
         const rD = await pool.query('SELECT id, sexo, ultima_doacao, total_doacoes FROM doadores WHERE usuario_id = $1', [req.usuario.id]);

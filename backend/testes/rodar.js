@@ -1,6 +1,7 @@
 // Hemare - Roda TODOS os testes do backend e mostra um resumo. Uso:  npm test
 //   node testes/rodar.js            tudo (regras + ponta a ponta)
 //   node testes/rodar.js regras     so os testes das regras (rapido, sem banco)
+//   node testes/rodar.js estrutura  so as conferencias de estrutura (migracoes, rotas, documentacao, seguranca)
 //   node testes/rodar.js e2e        so os de ponta a ponta (pg-mem)
 //   node testes/rodar.js agenda     so os arquivos cujo nome contem "agenda"
 const fs = require('fs');
@@ -16,9 +17,11 @@ function listar(pasta, ok) {
 }
 
 const regras = listar('regras', (f) => /^testar-.*\.js$/.test(f));
+const estrutura = listar('testes/estrutura', (f) => f.endsWith('.js'));
 const e2e = listar('testes/e2e', (f) => f.endsWith('.js'));
-let alvos = [...regras, ...e2e];
+let alvos = [...regras, ...estrutura, ...e2e];
 if (filtro === 'regras') alvos = regras;
+else if (filtro === 'estrutura') alvos = estrutura;
 else if (filtro === 'e2e') alvos = e2e;
 else if (filtro) alvos = alvos.filter((a) => a.includes(filtro));
 

@@ -33,6 +33,10 @@ app.use(cors(origensPermitidas.length === 0 ? undefined : {
     }
 }));
 
+// Em producao, erro 500 nao mostra detalhe interno (vai para o log).
+const { esconderDetalhes500 } = require('./middleware/erros500');
+app.use(esconderDetalhes500);
+
 // Middlewares: entender JSON no corpo das requisicoes.
 // Limite maior que o padrao (100kb) so para caber a foto de perfil, que chega reduzida (~256x256).
 app.use(express.json({ limit: '200kb' }));

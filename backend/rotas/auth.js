@@ -6,6 +6,7 @@
 //   PATCH /auth/eu               muda o nome da conta
 //   PUT   /auth/senha            troca a senha (pede a atual) e encerra as outras sessoes
 //   POST  /auth/sair-de-todos    encerra todas as sessoes, inclusive esta
+const crypto = require('crypto');
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -19,7 +20,7 @@ const router = express.Router();
 
 // Hash de uma senha que ninguem tem: serve para gastar o MESMO tempo quando o e-mail nao existe,
 // para ninguem descobrir quem tem conta medindo o tempo da resposta.
-const HASH_FALSO = bcrypt.hashSync('hemare-sem-conta-' + Math.random(), 10);
+const HASH_FALSO = bcrypt.hashSync('hemare-sem-conta-' + crypto.randomBytes(16).toString('hex'), 10);
 
 // Maximo de senhas erradas por e-mail em 15 minutos; passou disso, a conta fica travada ate a janela acabar.
 const limiteLogin = R.criarLimite({ maximo: 8, janelaMs: 15 * 60 * 1000 });

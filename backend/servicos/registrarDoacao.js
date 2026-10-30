@@ -23,6 +23,11 @@ async function registrarDoacao(hospitalId, doadorId) {
 
         await cliente.query('BEGIN');
 
+        // A cadeia e global: duas confirmacoes ao mesmo tempo leriam o mesmo "ultimo hash" e abririam um galho (a verificacao
+        // da cadeia passaria a acusar quebra). O trava-transacao do Postgres faz uma esperar a outra. (O pg-mem dos testes
+        // nao tem essa funcao: la o erro e ignorado, e la tudo roda em fila de qualquer jeito.)
+        await cliente.query('SELECT pg_advisory_xact_lock($1)', [74100]).catch(() => {});
+
         // Pega o hash do ULTIMO registro de toda a cadeia (nao so deste doador - a cadeia e global).
         const rUltimo = await cliente.query('SELECT hash FROM doacoes ORDER BY id DESC LIMIT 1');
         const hashAnterior = rUltimo.rows.length > 0 ? rUltimo.rows[0].hash : GENESIS;

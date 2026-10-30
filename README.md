@@ -61,6 +61,7 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 ## 🧠 Destaques técnicos
 
 - **Regras de negócio isoladas e testadas** — compatibilidade sanguínea, elegibilidade, triagem, gamificação, convite de amigos, apadrinhamento, campanha de reposição, notícias por estado, alerta inteligente, lembrete de retorno e cálculo de distância (fórmula de Haversine) são funções puras, com testes próprios, independentes de interface e banco
+- **Qualidade conferida por máquina** — a cada PR o GitHub Actions roda os testes (regras, estrutura e ponta a ponta com Postgres simulado), o lint e o build; a documentação da API é gerada do código e um teste falha se ela ficar desatualizada; outro teste monta um banco vazio só com `db/ordem.js` e usa o sistema; e há conferências de arquitetura (nenhuma rota de escrita pública sem querer, nenhuma consulta SQL montada com texto do usuário, cópia da triagem igual no navegador e no servidor). Veja `docs/ARQUITETURA.md`
 - **Sessão e login** — e-mail sem diferença de maiúsculas, senha validada (8 a 72 bytes, sem as senhas mais comuns), limite de tentativas por conta (8 erros em 15 min travam o login) sem revelar se o e-mail existe nem pelo tempo de resposta, código de recuperação sorteado com `crypto` e com limite de tentativas, trocar a senha ou "sair de todos os aparelhos" encerra as outras sessões de verdade (os JWT antigos deixam de valer), erros sempre em JSON e cabeçalhos de segurança
 - **Segurança em camadas** — bcrypt para senhas, JWT com middleware no backend e guarda de rota no frontend, tokens de recuperação de senha com expiração e uso único, permissões por papel (doador, hospital aprovado, administrador) conferidas no backend
 - **Minimização de dados (LGPD)** — o match do hospital nunca expõe nome, CPF ou contato de doadores que não consentiram (e mostra o nome social quando existe); o apadrinhamento não guarda nome de paciente (só apelido e uma condição de lista fixa, com autorização registrada)
@@ -79,19 +80,30 @@ O Hemare ataca três raízes do problema: **desinformação**, **dificuldade de 
 
 ## 📁 Estrutura do projeto
 
+```
 Hemare/
 ├── backend/
-│ ├── servidor.js # servidor Express e rotas
-│ ├── banco.js # conexão com o PostgreSQL
-│ ├── regras/ # lógica de negócio (compatibilidade, elegibilidade, triagem, distância)
-│ ├── rotas/ # endpoints (auth, doador, hospital, admin, locais, recuperação, radar)
-│ ├── middleware/ # autenticação (JWT) e permissões por papel
-│ └── db/ # scripts de criação e povoamento das tabelas
-└── frontend/
-└── src/
-├── paginas/ # telas (Início, Login, Triagem, Locais, Painel, Radar...)
-├── componentes/ # Layout (com acessibilidade), mapa, rota protegida
-└── regras/ # cópias das regras usadas no navegador
+│   ├── servidor.js        # servidor Express: CORS, cabeçalhos, rotas, 404 e erros em JSON
+│   ├── banco.js           # conexão com o PostgreSQL
+│   ├── regras/            # lógica de negócio PURA (sem banco), cada uma com o seu testar-*.js
+│   ├── rotas/             # endpoints (86 rotas; lista em docs/API.md)
+│   ├── servicos/          # registrarDoacao (cadeia de confiança), sessões, e-mails
+│   ├── middleware/        # autenticação (JWT + sessão encerrável), papéis, erros 500
+│   ├── tarefas/           # lembretes por e-mail
+│   ├── db/                # scripts do banco; a ordem certa está em db/ordem.js (npm run migrar)
+│   ├── scripts/           # gerador da documentação da API
+│   └── testes/            # ambiente de teste (pg-mem), ponta a ponta e estrutura (npm test)
+├── frontend/src/
+│   ├── paginas/           # telas
+│   ├── componentes/       # Layout (acessibilidade), mapa, rota protegida, painéis
+│   ├── regras/            # cópias das regras usadas no navegador e textos de data
+│   └── sessao.js          # login automático, renovação e saída segura
+├── docs/
+│   ├── API.md             # todas as rotas e o CRUD de cada recurso (gerado do código)
+│   ├── openapi.json       # a mesma API em OpenAPI 3 (abra no Swagger Editor)
+│   └── ARQUITETURA.md     # revisão arquitetural, REST, login e roteiro de melhorias
+└── .github/workflows/     # CI: testes, lint e build a cada PR
+```
 
 ---
 
@@ -109,35 +121,21 @@ npm install
 #   RESEND_API_KEY=sua_chave_do_resend
 #   FRONTEND_URL=https://seu-site   (opcional: libera só esse site no CORS e põe links nos e-mails)
 # O servidor NÃO liga sem JWT_SECRET (mínimo de 8 caracteres).
-node db/criar-tabelas.js       # cria as tabelas principais
-node db/criar-hospital.js      # tabelas de hospital
-node db/criar-locais.js        # tabela de locais + popular-locais.js
-node db/criar-recuperacao.js   # tabela de recuperação de senha
-node db/criar-estoque.js       # tabela de estoque
-node db/criar-doacoes.js       # tabela de doações confirmadas
-node db/ajustar-verificacao.js # verificação de hospitais (novos começam pendentes)
-node db/ajustar-alertas.js     # data do último alerta de cada doador (alerta inteligente)
-node db/ajustar-lembretes.js   # lembrete de retorno (opt-in do doador)
-node db/ajustar-indicacao.js   # código de convite e quem convidou (Traga um amigo)
-node db/ajustar-perfil.js      # colunas do perfil completo (foto, nascimento, gênero, peso, contato de emergência)
-node db/ajustar-raros.js       # rede de sangue raro (participação do doador, pedidos e chamados)
-node db/ajustar-pcd.js         # ficha PcD (declaração de pessoa com deficiência no perfil)
-node db/criar-agendamentos.js  # agenda de doações (vagas dos hospitais e agendamentos dos doadores)
-node db/ajustar-sessao.js      # sessões encerráveis (trocar a senha / sair de todos os aparelhos)
-node db/criar-apadrinhamento.js # tabelas do apadrinhamento de pacientes
-node db/criar-campanhas.js     # tabelas das campanhas de reposição (Quem doa por mim)
-node db/criar-noticias.js      # tabela do canal de notícias por estado
-node db/popular-noticias.js    # panorama inicial dos 27 estados (pesquisa de 29/09/2026)
+npm run migrar                 # monta o banco inteiro, na ordem certa (só o que ainda não foi feito)
 node db/tornar-admin.js seu@email.com  # torna uma conta já cadastrada administrador
-node servidor.js               # inicia a API (porta 3000)
+npm start                      # inicia a API (porta 3000)
 ```
+
+**Banco novo ou já existente?** `npm run migrar` guarda numa tabela (`migracoes_aplicadas`) o que já rodou. Se você já montou o banco na mão, rode **uma vez** `npm run migrar -- --marcar-aplicadas` para anotar tudo como feito, e daí em diante só os scripts novos rodam. `npm run migrar -- --listar` mostra a lista e o que falta. A lista completa fica em `backend/db/ordem.js`. Versões antigas deste README esqueciam alguns scripts (`ajustar-doadores`, `ajustar-hospitais`, `ajustar-cadeia`...), e um teste agora monta um banco vazio só com essa lista para garantir que nada falte.
 
 **Testes (sem banco real e sem internet):**
 ```bash
 cd backend
-npm test                       # regras + ponta a ponta (Postgres simulado com pg-mem)
+npm test                       # tudo: regras + estrutura + ponta a ponta (Postgres simulado com pg-mem)
 npm run test:regras            # só as regras de negócio (rápido)
-npm run test:e2e               # só os testes de ponta a ponta
+npm run test:e2e               # só os testes de ponta a ponta (login, agenda, perfil, rede rara, banco do zero...)
+node testes/rodar.js estrutura # só as conferências automáticas de estrutura (migrações, rotas, documentação, segurança)
+npm run docs                   # gera docs/API.md e docs/openapi.json a partir das rotas
 npm run servir-teste           # API de demonstração com dados de exemplo (contas em backend/testes/servir.js)
 ```
 
@@ -179,6 +177,7 @@ npm run dev                    # inicia o site (porta 5173)
 - [x] Agendamento de doação e histórico "Minhas doações"
 - [x] Testes de ponta a ponta no repositório (`npm test`)
 - [x] Login automático, sessões encerráveis, limite de tentativas e troca de senha
+- [x] Documentação da API (OpenAPI + tabela de CRUD), revisão arquitetural, CI e `npm run migrar`
 - [x] CRUD completo de necessidades (fechar, reabrir, apagar) e edição de avisos do canal de notícias
 - [x] Apadrinhamento de pacientes com necessidade recorrente de doação
 
