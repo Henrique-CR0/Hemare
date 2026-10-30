@@ -13,6 +13,7 @@ import Campanha from './paginas/Campanha';
 import Noticias from './paginas/Noticias';
 import MeuPerfil from './paginas/MeuPerfil';
 import PainelAdmin from './paginas/PainelAdmin';
+import StatusDev from './paginas/StatusDev';
 import RecuperarSenha from './paginas/RecuperarSenha';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PainelHospital from './paginas/PainelHospital';
@@ -59,6 +60,7 @@ function App() {
           <Route path="campanha/:codigo" element={<Campanha />} />
           <Route path="noticias" element={<Noticias />} />
           <Route path="admin" element={<RotaProtegida papeis={['admin']}><PainelAdmin /></RotaProtegida>} />
+          <Route path="admin/status" element={<RotaProtegida papeis={['admin']}><StatusDev /></RotaProtegida>} />
           <Route path="radar" element={<RotaProtegida papeis={['hospital', 'admin']}><Radar /></RotaProtegida>} />
           <Route path="agendar" element={<RotaProtegida papeis={['doador']}><Agendar /></RotaProtegida>} />
           <Route path="minhas-doacoes" element={<RotaProtegida papeis={['doador']}><MinhasDoacoes /></RotaProtegida>} />

@@ -909,3 +909,28 @@ a.area-avatar { text-decoration: none; overflow: hidden; }
 .coleta-ok { color: #17733e; }
 .coleta-erro { color: #a30c24; }
 .coleta-licenca { color: #8a6b6f; font-size: 12px; }
+
+/* ===== STATUS DO DESENVOLVIMENTO (administrador) ===== */
+.status-secao { font-size: 19px; color: #2b0d10; margin: 22px 0 10px; }
+.status-numeros { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-bottom: 26px; }
+.status-numero { background: #fff; border: 1px solid #f0d4d9; border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.status-numero strong { font-size: 28px; color: #c8102e; line-height: 1; }
+.status-numero span { font-size: 13px; color: #6b5054; }
+.md { text-align: left; color: #2b0d10; line-height: 1.55; }
+.md h3 { font-size: 22px; margin: 30px 0 10px; color: #c8102e; }
+.md h4 { font-size: 18px; margin: 22px 0 8px; }
+.md h5 { font-size: 16px; margin: 18px 0 6px; }
+.md p, .md li { overflow-wrap: anywhere; }
+.md ul, .md ol { padding-left: 22px; }
+.md code { background: #f6e9eb; border-radius: 6px; padding: 1px 6px; font-size: 0.92em; }
+.md a { color: #c8102e; font-weight: 600; }
+.md blockquote { margin: 12px 0; padding: 10px 16px; background: #fbf1f3; border-left: 4px solid #e8112d; border-radius: 0 10px 10px 0; color: #4a3437; }
+.md hr { border: 0; border-top: 1px solid #f0d4d9; margin: 24px 0; }
+.md-tabela { overflow-x: auto; margin: 12px 0; border: 1px solid #f0d4d9; border-radius: 12px; background: #fff; }
+.md-tabela:focus-visible { outline: 3px solid #c8102e; outline-offset: 2px; }
+.md table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.md th, .md td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid #f6e3e6; min-width: 90px; }
+.md th { background: #fbf1f3; color: #6b5054; white-space: nowrap; }
+.md tr:last-child td { border-bottom: 0; }
+.alto-contraste .status-numero, .alto-contraste .md-tabela, .alto-contraste .md blockquote { background: #000 !important; border-color: #fff !important; color: #fff !important; }
+.alto-contraste .md, .alto-contraste .md h3, .alto-contraste .md th, .alto-contraste .status-numero strong, .alto-contraste .status-numero span, .alto-contraste .status-secao { color: #fff !important; background: transparent; }

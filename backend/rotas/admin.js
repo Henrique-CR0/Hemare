@@ -7,6 +7,7 @@ const autenticar = require('../middleware/autenticar');
 const { exigirAdmin } = require('../middleware/exigirPapel');
 const { statusVerificacao, validarMotivoRecusa } = require('../regras/verificacao');
 const { escaparHtml } = require('../regras/html');
+const { montar } = require('../servicos/statusProjeto');
 
 const router = express.Router();
 
@@ -75,6 +76,15 @@ async function registrarDecisao(hospitalId, adminId, aprovado, motivo) {
     const u = await pool.query('SELECT nome, email FROM usuarios WHERE id = $1', [r.rows[0].usuario_id]);
     return u.rows[0] || null;
 }
+
+// STATUS do desenvolvimento: o relatorio (docs/STATUS.md) e o uso real do sistema (so numeros agregados).
+router.get('/status', async (req, res) => {
+    try {
+        res.json(await montar());
+    } catch (erro) {
+        res.status(500).json({ erro: 'Erro ao montar o status: ' + erro.message });
+    }
+});
 
 // APROVAR um hospital.
 router.post('/hospitais/:id/aprovar', async (req, res) => {

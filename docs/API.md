@@ -2,7 +2,7 @@
 
 > Gerado automaticamente a partir do código (`npm run docs`, na pasta `backend`). **Não edite à mão**: escreva um comentário `//` na linha de cima da rota e gere de novo. O mesmo conteúdo, em formato OpenAPI 3, está em [`openapi.json`](openapi.json) (abra no [Swagger Editor](https://editor.swagger.io)).
 
-**90 rotas** em 19 grupos.
+**91 rotas** em 19 grupos.
 
 ## Como usar
 
@@ -31,7 +31,7 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 
 | Grupo | C | R | U | D | Rotas |
 |---|:-:|:-:|:-:|:-:|--:|
-| Administrador (`/admin`) | ✅ | ✅ | — | — | 3 |
+| Administrador (`/admin`) | ✅ | ✅ | — | — | 4 |
 | Agenda do hospital (`/agenda`) | ✅ | ✅ | ✅ | ✅ | 8 |
 | Agendamentos do doador (`/agendamentos`) | ✅ | ✅ | ✅ | ✅ | 5 |
 | Apadrinhamento (`/apadrinhamento`) | ✅ | ✅ | — | ✅ | 8 |
@@ -60,6 +60,7 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 | `GET` | `/admin/hospitais` | admin | LISTAR hospitais para verificacao (?status=pendente\|aprovado\|recusado\|todos). |
 | `POST` | `/admin/hospitais/:id/aprovar` | admin | APROVAR um hospital. |
 | `POST` | `/admin/hospitais/:id/recusar` | admin | RECUSAR (ou revogar a aprovacao de) um hospital, com motivo obrigatorio. |
+| `GET` | `/admin/status` | admin | STATUS do desenvolvimento: o relatorio (docs/STATUS.md) e o uso real do sistema (so numeros agregados). |
 
 ### Agenda do hospital
 

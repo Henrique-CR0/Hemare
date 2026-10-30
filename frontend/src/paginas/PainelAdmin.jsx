@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { URL_BACKEND } from '../config';
 import NoticiasAdmin from '../componentes/NoticiasAdmin';
+import AbasConta from '../componentes/AbasConta';
 
 const FILTROS = [
   { valor: 'pendente', rotulo: '⏳ Pendentes' },
@@ -147,6 +148,7 @@ function PainelAdmin() {
 
   return (
     <div className="painel">
+      <AbasConta tipo="admin" />
       <h1>🛡️ Verificação de hospitais</h1>
       <p className="painel-sub">
         Confira o CNPJ e o CNES de cada hospital antes de aprovar. Só hospitais aprovados veem contatos de doadores,
