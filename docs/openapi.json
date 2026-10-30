@@ -151,6 +151,37 @@
         }
       }
     },
+    "/admin/status": {
+      "get": {
+        "tags": [
+          "Administrador"
+        ],
+        "summary": "STATUS do desenvolvimento: o relatorio (docs/STATUS.md) e o uso real do sistema (so numeros agregados).",
+        "description": "Acesso: admin.",
+        "responses": {
+          "200": {
+            "description": "Deu certo"
+          },
+          "400": {
+            "description": "Dado inválido"
+          },
+          "401": {
+            "description": "Sem sessão válida"
+          },
+          "403": {
+            "description": "O papel da conta não permite"
+          },
+          "500": {
+            "description": "Erro inesperado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/agenda/agendamentos": {
       "get": {
         "tags": [

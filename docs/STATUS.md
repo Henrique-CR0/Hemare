@@ -1,6 +1,6 @@
 # Status Report do Desenvolvimento
 
-> **Posição em 30/10/2026**, sobre a `main` (PRs até o #30). Os **números** abaixo são gerados do código por `npm run status` (pasta `backend`); o resto é análise escrita por uma pessoa e deve ser relida a cada rodada. Como o relatório foi montado e as fontes da pesquisa estão na seção 8.
+> **Posição em 30/10/2026**, sobre a `main` (PRs até o #30). Os **números** abaixo são gerados do código por `npm run status` (pasta `backend`); o resto é análise escrita por uma pessoa e deve ser relida a cada rodada. O administrador vê este relatório, mais o uso real ao vivo, em **/admin/status** no site. Como o relatório foi montado e as fontes da pesquisa estão na seção 8.
 
 ## 1. Resumo em 30 segundos
 
@@ -66,7 +66,7 @@ Probabilidade e impacto: **A** alta, **M** média, **B** baixa. A coluna "Ação
 | R9 | **Volume do feed de notícias** de dezenas de itens por semana. | A | B | Mais fontes que publiquem RSS; ligar o g1 só depois de conferir os termos. | P |
 | R10 | **Pacote do site de 556 KB** (o mapa vai junto para quem só abre o login). | A | B | `React.lazy` nas telas pesadas (M6). | P |
 
-Esforço: P horas · M dias · G semanas. A lista completa de achados (alta, média e baixa) está em [`ARQUITETURA.md`](ARQUITETURA.md).
+Esforço: P horas · M dias · G semanas. A lista completa de achados (alta, média e baixa) está em `docs/ARQUITETURA.md`.
 
 ## 6. Próximos passos (em ordem sugerida)
 

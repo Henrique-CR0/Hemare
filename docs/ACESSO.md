@@ -18,7 +18,7 @@
 | **Apadrinhar** (lista de pacientes por apelido) | 🔒 *portão de acesso* (API: 401) | ✅ | gerencia os seus | — |
 | Agendar, Minhas doações, Meu perfil, Conquistas | 🔒 (login) | ✅ | — | — |
 | Estoque, necessidades, agenda, campanhas, sangue raro, Perfil do hospital | 🔒 | — | ✅ (aprovado) | — |
-| Aprovar hospitais, avisos do canal de notícias | 🔒 | — | — | ✅ |
+| Aprovar hospitais, coleta e moderação do feed de notícias, **Status do desenvolvimento** (relatório + números de uso) | 🔒 | — | — | ✅ |
 | Radar de aptidão | 🔒 | — | ✅ | ✅ |
 
 🔒 = exige conta. "Portão de acesso" = em vez de um login seco, o visitante vê o que a conta libera, por que ela é necessária e o que continua aberto; depois de entrar ou se cadastrar, **volta para a tela que queria** (`?destino=`).

@@ -10,6 +10,10 @@ const ABAS = {
   hospital: [
     { para: '/painel-hospital', rotulo: '🏠 Minha área' },
     { para: '/perfil-hospital', rotulo: '🏥 Perfil do hospital' }
+  ],
+  admin: [
+    { para: '/admin', rotulo: '🛡️ Hospitais e notícias' },
+    { para: '/admin/status', rotulo: '📊 Status do desenvolvimento' }
   ]
 };
 
