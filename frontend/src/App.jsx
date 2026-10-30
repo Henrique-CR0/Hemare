@@ -36,24 +36,25 @@ function App() {
       <VLibras />
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Inicio />} />
+          {/* Telas abertas ao publico e ao doador: hospital e administrador logados vao para a propria area. */}
+          <Route index element={<RotaProtegida papeis={['doador']} permitirVisitante><Inicio /></RotaProtegida>} />
           <Route path="login" element={<Login />} />
-          <Route path="cadastro" element={<Cadastro />} />
-          <Route path="triagem" element={<Triagem />} />
-          <Route path="locais" element={<Locais />} />
-          <Route path="orientacoes" element={<Orientacoes />} />
-          <Route path="mitos" element={<Mitos />} />
-          <Route path="direitos" element={<Direitos />} />
+          <Route path="cadastro" element={<RotaProtegida soVisitante><Cadastro /></RotaProtegida>} />
+          <Route path="triagem" element={<RotaProtegida papeis={['doador']} permitirVisitante><Triagem /></RotaProtegida>} />
+          <Route path="locais" element={<RotaProtegida papeis={['doador']} permitirVisitante><Locais /></RotaProtegida>} />
+          <Route path="orientacoes" element={<RotaProtegida papeis={['doador']} permitirVisitante><Orientacoes /></RotaProtegida>} />
+          <Route path="mitos" element={<RotaProtegida papeis={['doador']} permitirVisitante><Mitos /></RotaProtegida>} />
+          <Route path="direitos" element={<RotaProtegida papeis={['doador']} permitirVisitante><Direitos /></RotaProtegida>} />
           <Route path="area-doador" element={<RotaProtegida papeis={['doador']}><AreaDoador /></RotaProtegida>} />
           <Route path="meu-perfil" element={<RotaProtegida papeis={['doador']}><MeuPerfil /></RotaProtegida>} />
           <Route path="completar-perfil" element={<RotaProtegida papeis={['doador']}><CompletarPerfil /></RotaProtegida>} />
-          <Route path="cadastro-hospital" element={<CadastroHospital />} />
+          <Route path="cadastro-hospital" element={<RotaProtegida soVisitante><CadastroHospital /></RotaProtegida>} />
           <Route path="painel-hospital" element={<RotaProtegida papeis={['hospital']}><PainelHospital /></RotaProtegida>} />
           <Route path="perfil-hospital" element={<RotaProtegida papeis={['hospital']}><PerfilHospital /></RotaProtegida>} />
-          <Route path="recuperar-senha" element={<RecuperarSenha />} />
+          <Route path="recuperar-senha" element={<RotaProtegida soVisitante><RecuperarSenha /></RotaProtegida>} />
           <Route path="estoque" element={<Estoque />} />
           <Route path="placar" element={<Placar />} />
-          <Route path="apadrinhar" element={<Apadrinhar />} />
+          <Route path="apadrinhar" element={<RotaProtegida papeis={['doador']} permitirVisitante><Apadrinhar /></RotaProtegida>} />
           <Route path="campanha/:codigo" element={<Campanha />} />
           <Route path="noticias" element={<Noticias />} />
           <Route path="admin" element={<RotaProtegida papeis={['admin']}><PainelAdmin /></RotaProtegida>} />

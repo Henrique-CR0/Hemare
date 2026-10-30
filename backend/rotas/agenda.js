@@ -11,7 +11,7 @@
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
-const { exigirHospitalAprovado } = require('../middleware/exigirPapel');
+const { exigirHospitalAprovado, exigirDoador } = require('../middleware/exigirPapel');
 const { statusVerificacao } = require('../regras/verificacao');
 const { paraDia } = require('../regras/alerta');
 const { somarDias, dataValida } = require('../regras/campanha');
@@ -40,7 +40,7 @@ function vagaLivre(v, agora) {
 // ===================== CONSULTA (doador ou qualquer pessoa logada) =====================
 
 // HOSPITAIS aprovados que tem horario livre para agendar (com o proximo horario).
-router.get('/hospitais', autenticar, async (req, res) => {
+router.get('/hospitais', autenticar, exigirDoador, async (req, res) => {
     try {
         const agora = new Date();
         const hoje = A.hojeNoBrasil(agora);
@@ -71,7 +71,7 @@ router.get('/hospitais', autenticar, async (req, res) => {
 });
 
 // HORARIOS livres de um hospital, agrupados por dia.
-router.get('/hospitais/:id/vagas', autenticar, async (req, res) => {
+router.get('/hospitais/:id/vagas', autenticar, exigirDoador, async (req, res) => {
     const id = idValido(req.params.id);
     if (!id) return res.status(400).json({ erro: 'Hospital inválido.' });
     try {

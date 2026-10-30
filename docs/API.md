@@ -67,8 +67,8 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 |---|---|---|---|
 | `GET` | `/agenda/agendamentos` | hospital aprovado | HOSPITAL: quem agendou para um dia (?data=AAAA-MM-DD, padrao hoje): so nome, tipo sanguineo e horario. |
 | `PATCH` | `/agenda/agendamentos/:id` | hospital aprovado | HOSPITAL: marca "compareceu" (so no dia; a doacao entra na cadeia de confianca), "faltou" ou "cancelado". |
-| `GET` | `/agenda/hospitais` | logado | HOSPITAIS aprovados que tem horario livre para agendar (com o proximo horario). |
-| `GET` | `/agenda/hospitais/:id/vagas` | logado | HORARIOS livres de um hospital, agrupados por dia. |
+| `GET` | `/agenda/hospitais` | doador | HOSPITAIS aprovados que tem horario livre para agendar (com o proximo horario). |
+| `GET` | `/agenda/hospitais/:id/vagas` | doador | HORARIOS livres de um hospital, agrupados por dia. |
 | `GET` | `/agenda/vagas` | hospital aprovado | HOSPITAL: seus horarios abertos, com quantas vagas ja foram reservadas (?de=&ate=). |
 | `POST` | `/agenda/vagas` | hospital aprovado | HOSPITAL: abre horarios em lote (periodo, dias da semana, horarios e capacidade). |
 | `PATCH` | `/agenda/vagas/:id` | hospital aprovado | HOSPITAL: muda a capacidade de um horario (nunca abaixo de quem ja agendou). |
@@ -90,11 +90,11 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 |---|---|---|---|
 | `GET` | `/apadrinhamento` | público | PUBLICO: pacientes que estao procurando padrinhos (so de hospitais aprovados). |
 | `POST` | `/apadrinhamento` | hospital aprovado | HOSPITAL: cadastra um paciente que precisa de padrinhos. |
-| `POST` | `/apadrinhamento/:id/apadrinhar` | logado | DOADOR: vira padrinho de um paciente. |
-| `DELETE` | `/apadrinhamento/:id/apadrinhar` | logado | DOADOR: deixa de ser padrinho (a qualquer momento, sem explicacao). |
+| `POST` | `/apadrinhamento/:id/apadrinhar` | doador | DOADOR: vira padrinho de um paciente. |
+| `DELETE` | `/apadrinhamento/:id/apadrinhar` | doador | DOADOR: deixa de ser padrinho (a qualquer momento, sem explicacao). |
 | `POST` | `/apadrinhamento/:id/chamar` | hospital aprovado | HOSPITAL: chama por email os padrinhos deste paciente que ja podem doar (no maximo 1 vez por semana). |
 | `POST` | `/apadrinhamento/:id/encerrar` | hospital aprovado | HOSPITAL: encerra o pedido (o paciente sai da lista publica). |
-| `GET` | `/apadrinhamento/meus-afilhados` | logado | DOADOR: pacientes que ele apadrinha e se ja pode doar. |
+| `GET` | `/apadrinhamento/meus-afilhados` | doador | DOADOR: pacientes que ele apadrinha e se ja pode doar. |
 | `GET` | `/apadrinhamento/meus-casos` | hospital aprovado | HOSPITAL: seus pacientes ativos, com quantos padrinhos e se ja pode chamar de novo. |
 
 ### Conta e sessão
@@ -117,10 +117,10 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 | `GET` | `/campanha/:codigo` | público | PUBLICO: pagina da campanha (quem recebe o link ve isto, sem precisar de conta). |
 | `POST` | `/campanha/:codigo/confirmar` | hospital aprovado | HOSPITAL: confirma a doacao de quem prometeu (entra na cadeia de confianca e conta para a campanha). |
 | `POST` | `/campanha/:codigo/encerrar` | hospital aprovado | HOSPITAL: encerra a campanha (a pagina publica passa a mostrar "encerrada"). |
-| `POST` | `/campanha/:codigo/prometer` | logado | DOADOR: promete doar em uma data (o hospital passa a ver seu nome e telefone so para esta campanha). |
-| `DELETE` | `/campanha/:codigo/prometer` | logado | DOADOR: desiste da promessa (so enquanto o hospital nao confirmou a doacao). |
+| `POST` | `/campanha/:codigo/prometer` | doador | DOADOR: promete doar em uma data (o hospital passa a ver seu nome e telefone so para esta campanha). |
+| `DELETE` | `/campanha/:codigo/prometer` | doador | DOADOR: desiste da promessa (so enquanto o hospital nao confirmou a doacao). |
 | `GET` | `/campanha/minhas` | hospital aprovado | HOSPITAL: suas campanhas ativas, com quem prometeu doar (nome e telefone, que o doador autorizou ao prometer). |
-| `GET` | `/campanha/minhas-promessas` | logado | DOADOR: campanhas em que prometeu doar. |
+| `GET` | `/campanha/minhas-promessas` | doador | DOADOR: campanhas em que prometeu doar. |
 
 ### Previsão do sangue
 
@@ -132,10 +132,10 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 
 | Método | Caminho | Acesso | O que faz |
 |---|---|---|---|
-| `GET` | `/doador/conquistas` | logado | CONQUISTAS: nivel, emblemas e quando o doador logado pode doar de novo (gamificacao). |
+| `GET` | `/doador/conquistas` | doador | CONQUISTAS: nivel, emblemas e quando o doador logado pode doar de novo (gamificacao). |
 | `GET` | `/doador/indicacao` | doador | TRAGA UM AMIGO: codigo de convite do doador (criado na primeira vez) e quantos amigos vieram. So devolve numeros: nunca o nome de quem foi convidado. |
-| `POST` | `/doador/lembrete` | logado | LEMBRETE DE RETORNO: o doador liga ou desliga o email "voce ja pode doar de novo" (opt-in). |
-| `POST` | `/doador/perfil` | logado | COMPLETAR PERFIL: salva os dados do doador logado. |
+| `POST` | `/doador/lembrete` | doador | LEMBRETE DE RETORNO: o doador liga ou desliga o email "voce ja pode doar de novo" (opt-in). |
+| `POST` | `/doador/perfil` | doador | COMPLETAR PERFIL: salva os dados do doador logado. |
 | `GET` | `/doador/placar` | público | PUBLICO: placar das cidades que mais doam (so numeros agregados, sem dados pessoais). |
 
 ### Minhas doações
@@ -150,13 +150,13 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 |---|---|---|---|
 | `GET` | `/hospital/cadeia/verificar` | público | PUBLICO: verifica a integridade de toda a cadeia de doacoes (auditoria). |
 | `POST` | `/hospital/confirmar-doacao` | hospital aprovado | CONFIRMAR DOACAO: registra a doacao com hash encadeado (cadeia de confianca / auditabilidade). |
-| `GET` | `/hospital/estoque` | logado | LISTAR o estoque do hospital logado. |
+| `GET` | `/hospital/estoque` | hospital | LISTAR o estoque do hospital logado. |
 | `POST` | `/hospital/estoque` | hospital aprovado | DEFINIR/ATUALIZAR o nivel de estoque de um tipo sanguineo (hospital logado). |
 | `GET` | `/hospital/estoque-publico` | público | PUBLICO: lista o estoque de todos os hospitais (para o termometro publico). |
 | `GET` | `/hospital/match/:necessidadeId` | hospital aprovado | MATCH: dado o id de uma necessidade, acha os doadores compativeis. So o hospital aprovado DONO da necessidade ve os doadores (e o contato de quem consentiu). |
-| `GET` | `/hospital/meus-dados` | logado | DADOS do hospital logado (nome, e-mail, CNPJ, CNES, endereco e status de verificacao): sao do proprio hospital. |
+| `GET` | `/hospital/meus-dados` | hospital | DADOS do hospital logado (nome, e-mail, CNPJ, CNES, endereco e status de verificacao): sao do proprio hospital. |
 | `POST` | `/hospital/necessidade` | hospital aprovado | PUBLICAR uma necessidade (o hospital pede um tipo sanguineo). |
-| `GET` | `/hospital/necessidades` | logado | LISTAR as necessidades do hospital logado. |
+| `GET` | `/hospital/necessidades` | hospital | LISTAR as necessidades do hospital logado. |
 | `PATCH` | `/hospital/necessidades/:id` | hospital aprovado | ATUALIZAR uma necessidade: fechar como "atendida" ou "cancelada", reabrir ou mudar a urgencia. Fechada, ela deixa de contar como urgencia no canal de noticias. |
 | `DELETE` | `/hospital/necessidades/:id` | hospital aprovado | APAGAR uma necessidade do proprio hospital (de vez). Para so tirar do ar, prefira marcar como "cancelada". |
 | `POST` | `/hospital/perfil` | hospital | COMPLETAR/ATUALIZAR PERFIL do hospital (dados completos). |
@@ -198,7 +198,7 @@ C = criar (`POST`) · R = ler (`GET`) · U = atualizar (`PUT`/`PATCH`) · D = ap
 
 | Método | Caminho | Acesso | O que faz |
 |---|---|---|---|
-| `GET` | `/radar/aptidao` | logado | RADAR PREDITIVO: quantos doadores de cada tipo estao aptos agora, em ate 7 dias e em ate 30 dias (so numeros). |
+| `GET` | `/radar/aptidao` | hospital ou admin | RADAR PREDITIVO: quantos doadores de cada tipo estao aptos agora, em ate 7 dias e em ate 30 dias (so numeros). |
 
 ### Raiz
 

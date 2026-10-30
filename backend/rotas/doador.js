@@ -2,6 +2,7 @@
 const express = require('express');
 const pool = require('../banco');
 const autenticar = require('../middleware/autenticar');
+const { exigirDoador } = require('../middleware/exigirPapel');
 const { calcularConquistas, montarPlacar } = require('../regras/gamificacao');
 const { verificarElegibilidade } = require('../regras/elegibilidade');
 const { gerarCodigo } = require('../regras/indicacao');
@@ -56,7 +57,7 @@ async function contarDoacoesEmCampanha(doadorId) {
 }
 
 // COMPLETAR PERFIL: salva os dados do doador logado.
-router.post('/perfil', autenticar, async (req, res) => {
+router.post('/perfil', autenticar, exigirDoador, async (req, res) => {
     const usuarioId = req.usuario.id;
     const { tipoSanguineo, sexo, cidade, nomeSocial, cpf, telefone, visibilidade } = req.body;
 
@@ -88,7 +89,7 @@ router.post('/perfil', autenticar, async (req, res) => {
 });
 
 // CONQUISTAS: nivel, emblemas e quando o doador logado pode doar de novo (gamificacao).
-router.get('/conquistas', autenticar, async (req, res) => {
+router.get('/conquistas', autenticar, exigirDoador, async (req, res) => {
     try {
         // SELECT * para funcionar mesmo antes de rodar db/ajustar-lembretes.js (quer_lembrete pode nao existir ainda).
         const r = await pool.query('SELECT * FROM doadores WHERE usuario_id = $1', [req.usuario.id]);
@@ -127,7 +128,7 @@ router.get('/conquistas', autenticar, async (req, res) => {
 
 // TRAGA UM AMIGO: codigo de convite do doador (criado na primeira vez) e quantos amigos vieram.
 // So devolve numeros: nunca o nome de quem foi convidado.
-router.get('/indicacao', autenticar, async (req, res) => {
+router.get('/indicacao', autenticar, exigirDoador, async (req, res) => {
     if (req.usuario.tipo !== 'doador') {
         return res.status(403).json({ erro: 'O convite de amigos e para contas de doador.' });
     }
@@ -170,7 +171,7 @@ router.get('/indicacao', autenticar, async (req, res) => {
 });
 
 // LEMBRETE DE RETORNO: o doador liga ou desliga o email "voce ja pode doar de novo" (opt-in).
-router.post('/lembrete', autenticar, async (req, res) => {
+router.post('/lembrete', autenticar, exigirDoador, async (req, res) => {
     if (typeof req.body.ativo !== 'boolean') {
         return res.status(400).json({ erro: 'Informe se o lembrete fica ativo (true ou false).' });
     }
