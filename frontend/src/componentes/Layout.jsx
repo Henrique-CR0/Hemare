@@ -87,7 +87,7 @@ function Layout() {
   return (
     <div className={'site' + (altoContraste ? ' alto-contraste' : '')}>
       {/* Links de pular, visiveis so ao navegar por teclado (padrao eMAG) */}
-      <a href="#conteudo-principal" className="link-pular">Ir para o conteúdo [ALT+1]</a>
+      <a href="#conteudo-principal" className="link-pular" onClick={(e) => { e.preventDefault(); refConteudo.current?.focus(); }}>Ir para o conteúdo [ALT+1]</a>
 
       <header className="site-topo">
         <Link to={destinoDoLogo(tipoDaConta, rotaArea)} className="site-logo">🩸 Hemare</Link>

@@ -15,7 +15,7 @@ import MeuPerfil from './paginas/MeuPerfil';
 import PainelAdmin from './paginas/PainelAdmin';
 import StatusDev from './paginas/StatusDev';
 import RecuperarSenha from './paginas/RecuperarSenha';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import PainelHospital from './paginas/PainelHospital';
 import CadastroHospital from './paginas/CadastroHospital';
 import Layout from './componentes/Layout';
@@ -34,7 +34,7 @@ import './App.css';
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <VLibras />
       <Routes>
         <Route path="/" element={<Layout />}>
@@ -67,7 +67,7 @@ function App() {
           <Route path="clima" element={<Clima />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
